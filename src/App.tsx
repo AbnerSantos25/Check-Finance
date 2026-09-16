@@ -174,7 +174,7 @@ export default function App() {
                 Calculadora de Investimento a Longo Prazo
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
-                Descubra como aportes constantes com reajustes anuais e juros compostos multiplicam seu patrimônio ao longo do tempo.
+                A ferramenta mais completa do mercado: descubra como aportes com <strong>reajustes anuais</strong>, <strong>juros compostos</strong> e o <strong>desconto da inflação</strong> afetam seu patrimônio real ao longo do tempo.
               </p>
             </div>
 
@@ -289,7 +289,7 @@ export default function App() {
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-slate-400">
               <TrendingUp className="w-4 h-4 text-emerald-400" />
-              <span className="font-semibold text-slate-300">Investimento ao Longo Prazo</span>
+              <span className="font-semibold text-slate-300">CheckFinance</span>
               <span>— Hub de Ferramentas Financeiras</span>
             </div>
             <div className="flex items-center gap-4 text-[11px]">
@@ -321,7 +321,7 @@ export default function App() {
           </div>
           <div className="max-w-7xl mx-auto mt-4 pt-4 border-t border-white/5 text-[10px] text-slate-400 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-2">
             <span>
-              © {new Date().getFullYear()} Investimento ao Longo Prazo. Ferramenta de fins educativos e de simulação. Não constitui recomendação de investimento.
+              © {new Date().getFullYear()} CheckFinance. Ferramenta de fins educativos e de simulação. Não constitui recomendação de investimento.
             </span>
             <span className="text-slate-400 font-mono">
               Português (Brasil) • v1.0 MVP

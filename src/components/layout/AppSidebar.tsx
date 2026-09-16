@@ -51,7 +51,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           {!isCollapsed && (
             <div className="flex flex-col min-w-0">
               <span className="text-[15px] font-bold tracking-tight text-white truncate flex items-center gap-1.5">
-                InvestLongoPrazo
+                CheckFinance
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               </span>
               <span className="text-[11px] font-medium text-slate-400 tracking-wide">
