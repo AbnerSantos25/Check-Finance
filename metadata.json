@@ -1,0 +1,6 @@
+{
+  "name": "Investimento ao Longo Prazo",
+  "description": "Hub financeiro público com calculadora de investimento a longo prazo, juros compostos, projeção de patrimônio e renda passiva.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

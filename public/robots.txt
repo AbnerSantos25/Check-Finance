@@ -1,0 +1,10 @@
+# Robots.txt — Hub Financeiro (Investimento ao Longo Prazo)
+User-agent: *
+Allow: /
+
+# Permitir indexação completa de ativos e scripts
+Allow: /assets/
+Allow: /sitemap.xml
+
+# Sitemap oficial
+Sitemap: https://investimentolp.com.br/sitemap.xml
