@@ -148,7 +148,7 @@ function ibovespaIndicator(quote: IbovespaQuote): EconomicIndicator {
     change: `${quote.changePercent >= 0 ? '+' : ''}${formatNumber(quote.changePercent)}%`,
     positive: quote.changePercent >= 0,
     status: quote.stale ? 'reference' : 'live',
-    asOf: isToday ? time : shortDate(fetchedAt),
+    asOf: isToday ? time : `fech. ${shortDate(fetchedAt)}`,
     source: 'B3, via HG Brasil',
   };
 }

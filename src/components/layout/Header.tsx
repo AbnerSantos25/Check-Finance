@@ -73,7 +73,9 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="text-slate-400 font-medium text-[11px]">{ind.name}</span>
               <span className="text-slate-200 font-mono font-semibold text-[11px]">{ind.value}</span>
               {ind.status === 'reference' ? (
-                <span className="text-[10px] font-medium text-amber-400">ref. {ind.asOf.slice(0, 5)}</span>
+                <span className="text-[10px] font-medium text-amber-400">
+                  ref. {ind.asOf.replace(/^(\d{2}\/\d{2})\/\d{4}$/, '$1')}
+                </span>
               ) : (
                 ind.change && (
                   <span
