@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Sliders, 
   RotateCcw, 
@@ -10,40 +10,64 @@ import {
   TrendingUp,
   ShieldCheck
 } from 'lucide-react';
-import { InvestmentParams } from '../../types';
-import { formatBRL } from '../../lib/calculations';
+import { InvestmentParams, MarketRates } from '../../types';
+import { formatBRL, formatNumber, formatPercent, monthlyEquivalentRate } from '../../lib/calculations';
+import { REFERENCE_DATE } from '../../lib/economicApi';
 
 interface InvestmentFormProps {
   params: InvestmentParams;
   onChange: (newParams: Partial<InvestmentParams>) => void;
   onReset: () => void;
-  liveRates?: {
-    selic: number;
-    cdi: number;
-    ipca: number;
-  };
+  marketRates: MarketRates;
+  ratesAreLive: boolean;
 }
+
+type DraftNumberInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> & {
+  value: number;
+  onCommit: (value: number) => void;
+};
+
+// Keeps the typed text while editing, so a field can be cleared and retyped;
+// only complete numbers are committed, and the sanitized value shows again on blur.
+const DraftNumberInput: React.FC<DraftNumberInputProps> = ({ value, onCommit, onBlur, ...rest }) => {
+  const [draft, setDraft] = useState<string | null>(null);
+  return (
+    <input
+      {...rest}
+      type="number"
+      value={draft ?? value}
+      onChange={(e) => {
+        const text = e.target.value;
+        setDraft(text);
+        if (text.trim() !== '' && Number.isFinite(Number(text))) onCommit(Number(text));
+      }}
+      onBlur={(e) => {
+        setDraft(null);
+        onBlur?.(e);
+      }}
+    />
+  );
+};
+
+const round2 = (value: number) => Math.round(value * 100) / 100;
 
 export const InvestmentForm: React.FC<InvestmentFormProps> = ({
   params,
   onChange,
   onReset,
-  liveRates,
+  marketRates,
+  ratesAreLive,
 }) => {
-  const currentSelic = liveRates?.selic || 10.75;
-  const currentIpca = liveRates?.ipca || 4.42;
+  const currentIpca = round2(marketRates.ipca);
 
-  // Market benchmark presets with live Selic / CDI
+  // Each preset carries the IR regime of the product it represents.
   const presets = [
-    { name: 'Poupança', rate: 6.17, desc: '6,17% a.a.' },
-    { 
-      name: 'Tesouro Selic / CDI', 
-      rate: Number(currentSelic.toFixed(2)), 
-      desc: `${currentSelic.toFixed(2).replace('.', ',')}% a.a.` 
-    },
-    { name: 'Fundos Imob. (FIIs)', rate: 11.5, desc: '11,5% a.a.' },
-    { name: 'Bolsa / S&P 500', rate: 13.0, desc: '13% a.a.' },
+    { name: 'Poupança', rate: round2(marketRates.poupanca), taxExempt: true, hint: 'Rentabilidade vigente (BCB), isenta de IR' },
+    { name: 'Tesouro Selic', rate: round2(marketRates.selic), taxExempt: false, hint: 'Aproximação pela Selic meta, IR pela tabela regressiva' },
+    { name: 'CDB 100% do CDI', rate: round2(marketRates.cdi), taxExempt: false, hint: 'CDI anualizado (BCB), IR pela tabela regressiva' },
   ];
+
+  const inflationPresets = [3.5, currentIpca, 6];
 
   return (
     <div 
@@ -200,7 +224,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               </span>
             </label>
             <span className="text-xs font-mono font-medium text-emerald-400">
-              {params.annualAdjustmentRate}% a.a.
+              {formatNumber(params.annualAdjustmentRate, 1)}% a.a.
             </span>
           </div>
 
@@ -216,14 +240,13 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               className="w-full accent-emerald-400 h-1.5 bg-[#1f2638] rounded-lg cursor-pointer"
             />
             <div className="w-20 shrink-0 relative">
-              <input
+              <DraftNumberInput
                 id="annual-adjustment-input"
-                type="number"
                 min="0"
                 max="50"
                 step="0.5"
                 value={params.annualAdjustmentRate}
-                onChange={(e) => onChange({ annualAdjustmentRate: Number(e.target.value) })}
+                onCommit={(v) => onChange({ annualAdjustmentRate: v })}
                 className="w-full px-2.5 py-2 bg-[#0b0e14] border border-[#22293b] rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
               <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">
@@ -235,7 +258,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
           <div className="text-[11px] text-slate-400 pt-1">
             {params.annualAdjustmentRate === 0 
               ? 'Aporte fixo ao longo dos anos' 
-              : `A cada 12 meses o aporte cresce ${params.annualAdjustmentRate}%`}
+              : `A cada 12 meses o aporte cresce ${formatPercent(params.annualAdjustmentRate, 1)}`}
           </div>
         </div>
 
@@ -255,7 +278,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               </span>
             </label>
             <span className="text-xs font-mono font-medium text-emerald-400">
-              {params.annualInterestRate}% a.a.
+              {formatNumber(params.annualInterestRate)}% a.a.
             </span>
           </div>
 
@@ -271,14 +294,13 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               className="w-full accent-emerald-400 h-1.5 bg-[#1f2638] rounded-lg cursor-pointer"
             />
             <div className="w-20 shrink-0 relative">
-              <input
+              <DraftNumberInput
                 id="annual-interest-input"
-                type="number"
                 min="0.1"
                 max="50"
                 step="0.25"
                 value={params.annualInterestRate}
-                onChange={(e) => onChange({ annualInterestRate: Number(e.target.value) })}
+                onCommit={(v) => onChange({ annualInterestRate: v })}
                 className="w-full px-2.5 py-2 bg-[#0b0e14] border border-[#22293b] rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
               <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">
@@ -288,22 +310,31 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
           </div>
 
           {/* Presets rápidos de mercado */}
-          <div className="grid grid-cols-2 gap-1.5 pt-1">
+          <div className="grid grid-cols-1 gap-1.5 pt-1">
             {presets.map((preset) => (
               <button
                 key={preset.name}
                 type="button"
-                onClick={() => onChange({ annualInterestRate: preset.rate })}
-                className={`text-[10px] px-2 py-1 rounded-lg border text-left flex items-center justify-between transition-all ${
-                  params.annualInterestRate === preset.rate
+                title={preset.hint}
+                onClick={() => onChange({ annualInterestRate: preset.rate, taxExempt: preset.taxExempt })}
+                className={`text-[10px] px-2 py-1 rounded-lg border text-left flex items-center justify-between gap-2 transition-all ${
+                  params.annualInterestRate === preset.rate && params.taxExempt === preset.taxExempt
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold'
                     : 'bg-[#161a25] border-[#222938] text-slate-400 hover:text-slate-200'
                 }`}
               >
-                <span className="truncate">{preset.name}</span>
-                <span className="font-mono text-emerald-400/80 shrink-0">{preset.desc}</span>
+                <span className="truncate">
+                  {preset.name}
+                  <span className="text-slate-400 font-normal"> · {preset.taxExempt ? 'isento' : 'com IR'}</span>
+                </span>
+                <span className="font-mono text-emerald-400/80 shrink-0">{formatNumber(preset.rate)}% a.a.</span>
               </button>
             ))}
+          </div>
+          <div className="text-[10px] text-slate-400">
+            {ratesAreLive
+              ? 'Taxas atuais do Banco Central; não garantem rentabilidade futura.'
+              : `Taxas de referência de ${REFERENCE_DATE}; Banco Central indisponível.`}
           </div>
         </div>
 
@@ -323,7 +354,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               </span>
             </label>
             <span className="text-xs font-mono font-medium text-amber-400">
-              {params.annualInflationRate}% a.a.
+              {formatNumber(params.annualInflationRate)}% a.a.
             </span>
           </div>
 
@@ -339,14 +370,13 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               className="w-full accent-amber-400 h-1.5 bg-[#1f2638] rounded-lg cursor-pointer"
             />
             <div className="w-20 shrink-0 relative">
-              <input
+              <DraftNumberInput
                 id="annual-inflation-input"
-                type="number"
                 min="0"
                 max="30"
                 step="0.5"
                 value={params.annualInflationRate}
-                onChange={(e) => onChange({ annualInflationRate: Number(e.target.value) })}
+                onCommit={(v) => onChange({ annualInflationRate: v })}
                 className="w-full px-2.5 py-2 bg-[#0b0e14] border border-[#22293b] rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-amber-500"
               />
               <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">
@@ -356,20 +386,19 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5 pt-1">
-            {[3.5, Number(currentIpca.toFixed(2)), 6.0].map((inf) => (
+            {inflationPresets.map((inf, index) => (
               <button
-                key={inf}
+                key={index}
                 type="button"
                 onClick={() => onChange({ annualInflationRate: inf })}
+                title={index === 1 ? 'IPCA acumulado nos últimos 12 meses (IBGE, via BCB)' : undefined}
                 className={`text-[11px] px-2 py-1 rounded-lg border transition-all ${
                   params.annualInflationRate === inf
                     ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 font-semibold'
                     : 'bg-[#161a25] border-[#222938] text-slate-400 hover:text-slate-200'
                 }`}
               >
-                {inf === Number(currentIpca.toFixed(2)) 
-                  ? `IPCA Oficial (${currentIpca.toFixed(2).replace('.', ',')}%)` 
-                  : `${inf}%`}
+                {index === 1 ? `IPCA 12m (${formatPercent(inf)})` : formatPercent(inf, 1)}
               </button>
             ))}
           </div>
@@ -407,14 +436,13 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               className="w-full accent-emerald-400 h-1.5 bg-[#1f2638] rounded-lg cursor-pointer"
             />
             <div className="w-20 shrink-0 relative">
-              <input
+              <DraftNumberInput
                 id="years-period-input"
-                type="number"
                 min="1"
                 max="60"
                 step="1"
                 value={params.years}
-                onChange={(e) => onChange({ years: Number(e.target.value) })}
+                onCommit={(v) => onChange({ years: v })}
                 className="w-full px-2.5 py-2 bg-[#0b0e14] border border-[#22293b] rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">
@@ -448,36 +476,37 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         <div className="flex items-center gap-3 text-xs text-slate-400">
           <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>
-            Imposto de Renda para Renda Passiva Líquida:
+            Imposto de Renda sobre os ganhos:
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
-              onClick={() => onChange({ taxRate: 15 })}
+              onClick={() => onChange({ taxExempt: false })}
+              title="22,5% até 180 dias, 20% até 360, 17,5% até 720 e 15% acima, aplicado a cada aporte"
               className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all ${
-                params.taxRate === 15
+                !params.taxExempt
                   ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
                   : 'bg-[#161a25] border-[#222938] text-slate-400'
               }`}
             >
-              15% (Longo Prazo / Tabela Regressiva)
+              Tributado (tabela regressiva: 22,5% a 15%)
             </button>
             <button
               type="button"
-              onClick={() => onChange({ taxRate: 0 })}
+              onClick={() => onChange({ taxExempt: true })}
               className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all ${
-                params.taxRate === 0
+                params.taxExempt
                   ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
                   : 'bg-[#161a25] border-[#222938] text-slate-400'
               }`}
             >
-              0% (Isento: LCI, LCA, FIIs, CRI, CRA)
+              Isento (poupança, LCI, LCA, CRI, CRA)
             </button>
           </div>
         </div>
 
         <div className="text-[11px] text-slate-400">
-          Taxa mensal efetiva: <span className="text-white font-mono font-semibold">{((Math.pow(1 + params.annualInterestRate/100, 1/12) - 1) * 100).toFixed(2)}% ao mês</span>
+          Taxa mensal equivalente: <span className="text-white font-mono font-semibold">{formatNumber(monthlyEquivalentRate(params.annualInterestRate) * 100, 4)}% ao mês</span>
         </div>
       </div>
     </div>

@@ -1,23 +1,38 @@
 import React from 'react';
-import { X, BookOpen, Calculator, Sparkles, CheckCircle2 } from 'lucide-react';
+import { X, BookOpen, Calculator, Sparkles, CheckCircle2, Landmark, Database, AlertTriangle } from 'lucide-react';
+import { REFERENCE_DATE } from '../../lib/economicApi';
 
 interface MethodologyModalProps {
   isOpen: boolean;
   onClose: () => void;
+  taxExempt: boolean;
 }
 
-export const MethodologyModal: React.FC<MethodologyModalProps> = ({
-  isOpen,
-  onClose,
-}) => {
+const Formula: React.FC<{ color: string; children: React.ReactNode }> = ({ color, children }) => (
+  <div className={`p-2.5 rounded-lg bg-[#141824] font-mono text-xs ${color}`}>{children}</div>
+);
+
+const Block: React.FC<{ icon: React.ReactNode; title: string; children: React.ReactNode }> = ({ icon, title, children }) => (
+  <div className="p-4 rounded-xl bg-[#0a0d14] border border-[#1f2638] space-y-2">
+    <div className="flex items-center gap-2 font-bold text-white">
+      {icon}
+      {title}
+    </div>
+    {children}
+  </div>
+);
+
+export const MethodologyModal: React.FC<MethodologyModalProps> = ({ isOpen, onClose, taxExempt }) => {
   if (!isOpen) return null;
 
+  const incomeTaxDecimal = taxExempt ? '0' : '0,15';
+
   return (
-    <div 
+    <div
       id="methodology-modal-overlay"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200"
     >
-      <div 
+      <div
         id="methodology-modal-content"
         className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl bg-gradient-to-b from-[#141824] to-[#0f121a] border border-[#263044] p-6 sm:p-8 shadow-2xl text-white"
       >
@@ -34,77 +49,101 @@ export const MethodologyModal: React.FC<MethodologyModalProps> = ({
             <BookOpen className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">
-              Metodologia & Fórmulas Financeiras
-            </h3>
-            <p className="text-xs text-slate-400">
-              Transparência matemática de cada indicador exibido no simulador.
-            </p>
+            <h3 className="text-lg font-bold text-white">Metodologia & Fórmulas Financeiras</h3>
+            <p className="text-xs text-slate-400">Como cada número do simulador é calculado, e o que ele não considera.</p>
           </div>
         </div>
 
         <div className="space-y-5 text-xs sm:text-sm text-slate-300 leading-relaxed">
-          {/* 1. Juros Compostos Mês a Mês */}
-          <div className="p-4 rounded-xl bg-[#0a0d14] border border-[#1f2638] space-y-2">
-            <div className="flex items-center gap-2 font-bold text-white">
-              <Calculator className="w-4 h-4 text-emerald-400" />
-              1. Conversão de Taxa Anual para Mensal Efetiva
-            </div>
+          <Block icon={<Calculator className="w-4 h-4 text-emerald-400" />} title="1. Taxa mensal equivalente">
             <p className="text-slate-400 text-xs">
-              No mercado financeiro brasileiro, a taxa mensal equivalente a uma taxa anual é calculada pela fórmula de equivalência de juros compostos:
+              A taxa anual informada é convertida na taxa mensal que, capitalizada por 12 meses, reproduz exatamente a taxa anual:
             </p>
-            <div className="p-2.5 rounded-lg bg-[#141824] font-mono text-emerald-400 text-xs">
-              i_mensal = (1 + i_anual)^(1/12) - 1
-            </div>
+            <Formula color="text-emerald-400">i_mensal = (1 + i_anual)^(1/12) − 1</Formula>
             <p className="text-[11px] text-slate-400">
-              Isso garante precisão milimétrica, evitando a distorção da divisão linear (i_anual / 12) que subestima os rendimentos.
+              Dividir a taxa anual por 12 superestimaria o resultado: 12% ÷ 12 = 1% ao mês, que capitaliza para 12,68% ao ano.
             </p>
-          </div>
+          </Block>
 
-          {/* 2. Reajuste Anual dos Aportes */}
-          <div className="p-4 rounded-xl bg-[#0a0d14] border border-[#1f2638] space-y-2">
-            <div className="flex items-center gap-2 font-bold text-white">
-              <Sparkles className="w-4 h-4 text-blue-400" />
-              2. Reajuste Anual do Aporte (Crescimento Real)
-            </div>
+          <Block icon={<Sparkles className="w-4 h-4 text-blue-400" />} title="2. Aportes e saldo">
             <p className="text-slate-400 text-xs">
-              A cada 12 meses decorridos, o valor do aporte mensal é reajustado pelo percentual configurado pelo usuário:
+              O aporte inicial é feito no mês zero. Os aportes mensais entram no <strong className="text-slate-300">fim</strong> de cada mês e são reajustados a cada 12 meses:
             </p>
-            <div className="p-2.5 rounded-lg bg-[#141824] font-mono text-blue-400 text-xs">
-              Aporte(ano k) = Aporte_inicial × (1 + taxa_reajuste)^(k - 1)
-            </div>
+            <Formula color="text-blue-400">
+              Aporte(ano k) = Aporte_mensal × (1 + reajuste)^(k − 1)
+              <br />
+              Saldo(mês) = Saldo(mês anterior) × (1 + i_mensal) + Aporte
+            </Formula>
+          </Block>
+
+          <Block icon={<Landmark className="w-4 h-4 text-amber-400" />} title="3. Imposto de Renda">
+            <p className="text-slate-400 text-xs">
+              O saldo bruto é o valor antes do imposto. O saldo líquido desconta o IR como num resgate total. Cada aporte é tributado
+              pelo seu próprio prazo, conforme a tabela regressiva da renda fixa (Lei 11.033/2004):
+            </p>
+            <Formula color="text-amber-300">
+              IR = Σ ganho_do_aporte × alíquota(dias aplicado)
+              <br />
+              até 180 dias: 22,5% · até 360: 20% · até 720: 17,5% · acima: 15%
+            </Formula>
             <p className="text-[11px] text-slate-400">
-              Isso simula o crescimento natural da capacidade de poupança ao longo da carreira.
+              {taxExempt
+                ? 'Opção selecionada: isento. Nenhum IR é descontado.'
+                : 'Opção selecionada: tributado. Em prazos longos, a alíquota efetiva fica pouco acima de 15%, porque só os aportes mais recentes pagam mais.'}{' '}
+              Os dias são contados como meses × 30,44.
             </p>
-          </div>
+          </Block>
 
-          {/* 3. Poder de Compra Real (Inflação Descontada) */}
-          <div className="p-4 rounded-xl bg-[#0a0d14] border border-[#1f2638] space-y-2">
-            <div className="flex items-center gap-2 font-bold text-white">
-              <CheckCircle2 className="w-4 h-4 text-amber-400" />
-              3. Poder de Compra Real (Deflação pelo IPCA)
-            </div>
+          <Block icon={<CheckCircle2 className="w-4 h-4 text-amber-400" />} title="4. Valores de hoje (inflação)">
             <p className="text-slate-400 text-xs">
-              O montante futuro é deflacionado para o poder de compra da data presente:
+              Valores futuros são trazidos para o poder de compra atual. Cada aporte também é deflacionado pelo mês em que foi feito:
             </p>
-            <div className="p-2.5 rounded-lg bg-[#141824] font-mono text-amber-300 text-xs">
-              Valor_Real = Saldo_Futuro / (1 + inflacao_anual)^anos
-            </div>
-          </div>
+            <Formula color="text-amber-300">
+              Valor_hoje = Valor_futuro / (1 + inflação_anual)^anos
+              <br />
+              Multiplicador_real = Saldo_líquido_hoje / Aportes_em_valores_de_hoje
+            </Formula>
+          </Block>
 
-          {/* 4. Renda Passiva Mensal Líquida */}
-          <div className="p-4 rounded-xl bg-[#0a0d14] border border-[#1f2638] space-y-2">
-            <div className="flex items-center gap-2 font-bold text-white">
-              <Calculator className="w-4 h-4 text-teal-400" />
-              4. Renda Passiva Mensal Líquida
-            </div>
+          <Block icon={<Calculator className="w-4 h-4 text-teal-400" />} title="5. Renda sustentável">
             <p className="text-slate-400 text-xs">
-              Calcula quanto o patrimônio acumulado renderia mensalmente, já descontando 15% de Imposto de Renda (regra geral de longo prazo):
+              É quanto se pode sacar por mês sem reduzir o poder de compra do patrimônio: o rendimento após o IR, menos a parte que
+              precisa ser reinvestida para repor a inflação. O cálculo parte do saldo líquido, uma premissa conservadora, e usa IR de
+              15% sobre o rendimento, porque na fase de renda o capital já está aplicado há mais de 720 dias.
             </p>
-            <div className="p-2.5 rounded-lg bg-[#141824] font-mono text-teal-300 text-xs">
-              Renda_Liquida_Mensal = (Patrimonio_Final × i_mensal) × (1 - 0.15)
-            </div>
-          </div>
+            <Formula color="text-teal-300">
+              Renda = Saldo_líquido × (i_mensal × (1 − {incomeTaxDecimal}) − inflação_mensal)
+            </Formula>
+            <p className="text-[11px] text-slate-400">
+              Sacar o rendimento líquido inteiro mantém o saldo nominal, mas a inflação reduz seu poder de compra ano após ano.
+              Se o rendimento líquido não supera a inflação, a renda sustentável é zero.
+            </p>
+          </Block>
+
+          <Block icon={<Database className="w-4 h-4 text-emerald-400" />} title="6. Fontes dos indicadores">
+            <p className="text-slate-400 text-xs">Séries do Sistema Gerenciador de Séries Temporais (SGS) do Banco Central:</p>
+            <ul className="text-[11px] text-slate-400 space-y-1 list-disc pl-4">
+              <li>SELIC meta: série 432, considerando só a taxa já em vigor</li>
+              <li>CDI anualizado: série 4389</li>
+              <li>IPCA acumulado em 12 meses: série 13522</li>
+              <li>Poupança: série 195, rentabilidade mensal vigente anualizada</li>
+              <li>Dólar PTAX de venda: série 1</li>
+            </ul>
+            <p className="text-[11px] text-slate-400">
+              Quando uma fonte está indisponível, o valor aparece marcado como referência de {REFERENCE_DATE}. O atalho Tesouro Selic
+              usa a Selic meta como aproximação e não inclui taxa de custódia.
+            </p>
+          </Block>
+
+          <Block icon={<AlertTriangle className="w-4 h-4 text-amber-400" />} title="7. O que o simulador não considera">
+            <ul className="text-[11px] text-slate-400 space-y-1 list-disc pl-4">
+              <li>Variação das taxas ao longo do tempo: juros e inflação são constantes durante todo o período.</li>
+              <li>Custos: taxas de administração e custódia, come-cotas de fundos e IOF em resgates antes de 30 dias.</li>
+              <li>Regras próprias de renda variável, como IR sobre vendas de ações e ganho de capital em FIIs.</li>
+              <li>Mudanças futuras na legislação tributária.</li>
+            </ul>
+            <p className="text-[11px] text-slate-400">Ferramenta educativa. Não constitui recomendação de investimento.</p>
+          </Block>
         </div>
 
         <div className="mt-6 pt-4 border-t border-[#1c2230] flex justify-end">

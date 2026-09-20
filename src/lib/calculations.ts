@@ -1,8 +1,72 @@
 import { InvestmentParams, CalculationSummary, YearlyResult } from '../types';
 
+type NumericParam = Exclude<keyof InvestmentParams, 'taxExempt'>;
+
+export const PARAM_LIMITS: Record<NumericParam, { min: number; max: number }> = {
+  initialDeposit: { min: 0, max: 1_000_000_000 },
+  monthlyDeposit: { min: 0, max: 100_000_000 },
+  annualAdjustmentRate: { min: 0, max: 50 },
+  annualInterestRate: { min: 0.1, max: 50 },
+  annualInflationRate: { min: 0, max: 30 },
+  years: { min: 1, max: 60 },
+};
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
 /**
- * Calculates compound interest month-by-month with annual deposit adjustments,
- * inflation deflation, and passive net monthly income estimations.
+ * Drops non-finite values and clamps the rest to the supported range.
+ * Years are whole numbers because the engine compounds in 12-month blocks.
+ */
+export function sanitizeParams(
+  current: InvestmentParams,
+  changes: Partial<InvestmentParams>
+): InvestmentParams {
+  const next = { ...current };
+  if (typeof changes.taxExempt === 'boolean') next.taxExempt = changes.taxExempt;
+  for (const key of Object.keys(PARAM_LIMITS) as NumericParam[]) {
+    const raw = changes[key];
+    if (raw === undefined || !Number.isFinite(raw)) continue;
+    const { min, max } = PARAM_LIMITS[key];
+    next[key] = clamp(key === 'years' ? Math.round(raw) : raw, min, max);
+  }
+  return next;
+}
+
+const round2 = (value: number) => Math.round(value * 100) / 100;
+
+export const monthlyEquivalentRate = (annualPercent: number) =>
+  Math.pow(1 + annualPercent / 100, 1 / 12) - 1;
+
+// Regressive IR table for fixed income (Lei 11.033/2004), by days invested.
+export const LONG_TERM_TAX_RATE = 15;
+const DAYS_PER_MONTH = 365.25 / 12;
+
+export function regressiveTaxRate(daysInvested: number): number {
+  if (daysInvested <= 180) return 22.5;
+  if (daysInvested <= 360) return 20;
+  if (daysInvested <= 720) return 17.5;
+  return LONG_TERM_TAX_RATE;
+}
+
+interface DepositLot {
+  month: number;
+  amount: number;
+}
+
+/** IR due if everything were redeemed at `currentMonth`; each deposit is taxed by its own holding period. */
+function redemptionTax(lots: DepositLot[], currentMonth: number, monthlyRate: number): number {
+  let tax = 0;
+  for (const lot of lots) {
+    const monthsHeld = currentMonth - lot.month;
+    const gain = lot.amount * (Math.pow(1 + monthlyRate, monthsHeld) - 1);
+    tax += gain * (regressiveTaxRate(monthsHeld * DAYS_PER_MONTH) / 100);
+  }
+  return tax;
+}
+
+/**
+ * Month-by-month compounding with end-of-month deposits adjusted every 12 months.
+ * IR follows the regressive table per deposit; real values are deflated monthly.
  */
 export function calculateInvestment(params: InvestmentParams): CalculationSummary {
   const {
@@ -12,79 +76,82 @@ export function calculateInvestment(params: InvestmentParams): CalculationSummar
     annualInterestRate,
     annualInflationRate,
     years,
-    taxRate,
+    taxExempt,
   } = params;
 
-  // Equivalent monthly interest rate: (1 + i_annual)^(1/12) - 1
-  const monthlyRate = annualInterestRate > 0 
-    ? Math.pow(1 + annualInterestRate / 100, 1 / 12) - 1 
-    : 0;
+  const monthlyRate = monthlyEquivalentRate(annualInterestRate);
+  const monthlyInflation = monthlyEquivalentRate(annualInflationRate);
+  // Income is withdrawn after the accumulation phase, from positions held well over 720 days.
+  const incomeTax = taxExempt ? 0 : LONG_TERM_TAX_RATE / 100;
 
-  let currentGrossBalance = Math.max(0, initialDeposit);
-  let currentSavingsOnly = Math.max(0, initialDeposit);
-  let accumulatedDeposits = Math.max(0, initialDeposit);
+  let grossBalance = initialDeposit;
+  let accumulatedDeposits = initialDeposit;
+  let depositsInTodaysMoney = initialDeposit;
+  let previousYearBalance = grossBalance;
+  let month = 0;
+  let taxDue = 0;
 
+  const lots: DepositLot[] = initialDeposit > 0 ? [{ month: 0, amount: initialDeposit }] : [];
   const yearlyData: YearlyResult[] = [];
-  let previousYearBalance = currentGrossBalance;
+
+  // Net income that leaves the capital's purchasing power intact:
+  // monthly yield after IR, minus what must be reinvested to offset inflation.
+  const sustainableIncome = (netBalance: number) =>
+    Math.max(0, netBalance * (monthlyRate * (1 - incomeTax) - monthlyInflation));
 
   for (let year = 1; year <= years; year++) {
-    // Annual adjustment on the monthly deposit: increases every year by annualAdjustmentRate%
-    const currentMonthlyDeposit = Math.max(
-      0,
-      monthlyDeposit * Math.pow(1 + annualAdjustmentRate / 100, year - 1)
-    );
+    const currentMonthlyDeposit = monthlyDeposit * Math.pow(1 + annualAdjustmentRate / 100, year - 1);
 
-    for (let month = 1; month <= 12; month++) {
-      currentGrossBalance = currentGrossBalance * (1 + monthlyRate) + currentMonthlyDeposit;
-      currentSavingsOnly += currentMonthlyDeposit;
+    for (let m = 1; m <= 12; m++) {
+      month++;
+      grossBalance = grossBalance * (1 + monthlyRate) + currentMonthlyDeposit;
       accumulatedDeposits += currentMonthlyDeposit;
+      depositsInTodaysMoney += currentMonthlyDeposit / Math.pow(1 + monthlyInflation, month);
+      if (currentMonthlyDeposit > 0) lots.push({ month, amount: currentMonthlyDeposit });
     }
 
-    const totalInterestGained = Math.max(0, currentGrossBalance - accumulatedDeposits);
-    const yearlyInterestGained = Math.max(0, currentGrossBalance - previousYearBalance - (currentMonthlyDeposit * 12));
-    previousYearBalance = currentGrossBalance;
-
-    // Purchasing power discounted by cumulative inflation: M / (1 + inflation)^years
+    const totalInterestGained = grossBalance - accumulatedDeposits;
+    taxDue = taxExempt ? 0 : redemptionTax(lots, month, monthlyRate);
+    const netBalance = grossBalance - taxDue;
     const inflationFactor = Math.pow(1 + annualInflationRate / 100, year);
-    const realBalance = inflationFactor > 0 ? currentGrossBalance / inflationFactor : currentGrossBalance;
-
-    // Monthly gross return on final capital * (1 - taxRate)
-    const grossMonthlyYield = currentGrossBalance * monthlyRate;
-    const monthlyNetIncome = Math.max(0, grossMonthlyYield * (1 - taxRate / 100));
 
     yearlyData.push({
       year,
-      totalDeposited: Math.round(accumulatedDeposits * 100) / 100,
-      grossBalance: Math.round(currentGrossBalance * 100) / 100,
-      totalInterestGained: Math.round(totalInterestGained * 100) / 100,
-      yearlyInterestGained: Math.round(yearlyInterestGained * 100) / 100,
-      savingsOnlyBalance: Math.round(currentSavingsOnly * 100) / 100,
-      differenceWithSavings: Math.round((currentGrossBalance - currentSavingsOnly) * 100) / 100,
-      monthlyNetIncome: Math.round(monthlyNetIncome * 100) / 100,
-      realBalance: Math.round(realBalance * 100) / 100,
+      totalDeposited: round2(accumulatedDeposits),
+      grossBalance: round2(grossBalance),
+      netBalance: round2(netBalance),
+      totalInterestGained: round2(totalInterestGained),
+      yearlyInterestGained: round2(grossBalance - previousYearBalance - currentMonthlyDeposit * 12),
+      savingsOnlyBalance: round2(accumulatedDeposits),
+      sustainableMonthlyIncome: round2(sustainableIncome(netBalance)),
+      realNetBalance: round2(netBalance / inflationFactor),
     });
+
+    previousYearBalance = grossBalance;
   }
 
-  const finalGrossBalance = currentGrossBalance;
-  const totalInvested = accumulatedDeposits;
-  const totalInterestGained = Math.max(0, finalGrossBalance - totalInvested);
-  const interestPercentage = totalInvested > 0 ? (totalInterestGained / totalInvested) * 100 : 0;
-  const profitMultiplier = totalInvested > 0 ? finalGrossBalance / totalInvested : 1;
-
-  const finalGrossMonthlyYield = finalGrossBalance * monthlyRate;
-  const finalMonthlyNetIncome = Math.max(0, finalGrossMonthlyYield * (1 - taxRate / 100));
+  const totalInterestGained = grossBalance - accumulatedDeposits;
+  const finalNetBalance = grossBalance - taxDue;
   const finalInflationFactor = Math.pow(1 + annualInflationRate / 100, years);
-  const finalRealBalance = finalInflationFactor > 0 ? finalGrossBalance / finalInflationFactor : finalGrossBalance;
+  const finalRealNetBalance = finalNetBalance / finalInflationFactor;
+  const sustainable = sustainableIncome(finalNetBalance);
+  const surpassRow = yearlyData.find((row) => row.totalInterestGained > row.totalDeposited);
 
   return {
-    totalInvested: Math.round(totalInvested * 100) / 100,
-    finalGrossBalance: Math.round(finalGrossBalance * 100) / 100,
-    totalInterestGained: Math.round(totalInterestGained * 100) / 100,
-    finalMonthlyNetIncome: Math.round(finalMonthlyNetIncome * 100) / 100,
-    finalRealBalance: Math.round(finalRealBalance * 100) / 100,
-    interestPercentage: Math.round(interestPercentage * 10) / 10,
-    savingsOnlyTotal: Math.round(currentSavingsOnly * 100) / 100,
-    profitMultiplier: Math.round(profitMultiplier * 100) / 100,
+    totalInvested: round2(accumulatedDeposits),
+    totalInvestedReal: round2(depositsInTodaysMoney),
+    finalGrossBalance: round2(grossBalance),
+    finalNetBalance: round2(finalNetBalance),
+    finalRealNetBalance: round2(finalRealNetBalance),
+    totalInterestGained: round2(totalInterestGained),
+    totalInterestNet: round2(totalInterestGained - taxDue),
+    incomeTax: round2(taxDue),
+    effectiveTaxRate: totalInterestGained > 0 ? (taxDue / totalInterestGained) * 100 : 0,
+    realMultiplier: depositsInTodaysMoney > 0 ? round2(finalRealNetBalance / depositsInTodaysMoney) : 0,
+    fullYieldMonthlyNetIncome: round2(finalNetBalance * monthlyRate * (1 - incomeTax)),
+    sustainableMonthlyIncome: round2(sustainable),
+    sustainableMonthlyIncomeReal: round2(sustainable / finalInflationFactor),
+    interestSurpassesDepositsYear: surpassRow ? surpassRow.year : null,
     yearlyData,
   };
 }
@@ -128,4 +195,12 @@ export function formatPercent(value: number, decimals: number = 2): string {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   })}%`;
+}
+
+export function formatNumber(value: number, decimals: number = 2): string {
+  if (isNaN(value) || !isFinite(value)) return '0';
+  return value.toLocaleString('pt-BR', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
 }

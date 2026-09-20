@@ -8,13 +8,9 @@ import { InvestmentTable } from './components/calculadora/InvestmentTable';
 import { PixModal } from './components/modals/PixModal';
 import { ComingSoonModal } from './components/modals/ComingSoonModal';
 import { MethodologyModal } from './components/modals/MethodologyModal';
-import { InvestmentParams, EconomicIndicator } from './types';
-import { calculateInvestment, formatBRL } from './lib/calculations';
-import { 
-  loadLiveEconomicIndicators, 
-  DEFAULT_ECONOMIC_INDICATORS, 
-  DEFAULT_RAW_RATES 
-} from './lib/economicApi';
+import { InvestmentParams } from './types';
+import { calculateInvestment, formatBRL, formatPercent, sanitizeParams } from './lib/calculations';
+import { loadEconomicIndicators, buildReferenceData, EconomicData } from './lib/economicApi';
 import { 
   Sparkles, 
   TrendingUp, 
@@ -36,7 +32,7 @@ const DEFAULT_PARAMS: InvestmentParams = {
   annualInterestRate: 12,
   annualInflationRate: 4.5,
   years: 30,
-  taxRate: 15,
+  taxExempt: false,
 };
 
 export default function App() {
@@ -45,21 +41,18 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('calculadora');
 
-  // Economic indicators state
-  const [indicators, setIndicators] = useState<EconomicIndicator[]>(DEFAULT_ECONOMIC_INDICATORS);
-  const [rawRates, setRawRates] = useState(DEFAULT_RAW_RATES);
+  const [economicData, setEconomicData] = useState<EconomicData>(buildReferenceData);
+  const [hasFetchedRates, setHasFetchedRates] = useState(false);
   const [isLoadingRates, setIsLoadingRates] = useState(false);
 
-  // Fetch live economic rates from BCB & AwesomeAPI on mount
-  const fetchRates = async () => {
+  const fetchRates = async (force = false) => {
     setIsLoadingRates(true);
     try {
-      const data = await loadLiveEconomicIndicators();
-      setIndicators(data.indicators);
-      setRawRates(data.rawRates);
+      setEconomicData(await loadEconomicIndicators({ force }));
     } catch (e) {
       console.error('Failed to load economic indicators', e);
     } finally {
+      setHasFetchedRates(true);
       setIsLoadingRates(false);
     }
   };
@@ -86,8 +79,22 @@ export default function App() {
     return calculateInvestment(params);
   }, [params]);
 
+  // Compares the user's deposit adjustment against a fixed deposit (or 5% a.a. when already fixed).
+  const adjustmentEffect = useMemo(() => {
+    const userAdjusts = params.annualAdjustmentRate > 0;
+    const rate = userAdjusts ? params.annualAdjustmentRate : 5;
+    const withAdjustment = userAdjusts
+      ? summary.finalGrossBalance
+      : calculateInvestment({ ...params, annualAdjustmentRate: rate }).finalGrossBalance;
+    const fixed = userAdjusts
+      ? calculateInvestment({ ...params, annualAdjustmentRate: 0 }).finalGrossBalance
+      : summary.finalGrossBalance;
+    const increase = fixed > 0 ? (withAdjustment / fixed - 1) * 100 : 0;
+    return { userAdjusts, rate, increase };
+  }, [params, summary.finalGrossBalance]);
+
   const handleParamChange = (newValues: Partial<InvestmentParams>) => {
-    setParams((prev) => ({ ...prev, ...newValues }));
+    setParams((prev) => sanitizeParams(prev, newValues));
   };
 
   const handleResetParams = () => {
@@ -157,9 +164,10 @@ export default function App() {
         <Header
           onOpenPix={() => setPixModalOpen(true)}
           onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
-          indicators={indicators}
+          indicators={economicData.indicators}
+          hasFetchedRates={hasFetchedRates}
           isLoadingRates={isLoadingRates}
-          onRefreshRates={fetchRates}
+          onRefreshRates={() => fetchRates(true)}
         />
 
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto w-full">
@@ -191,21 +199,22 @@ export default function App() {
           </div>
 
           {/* 3. Summary Metric Cards */}
-          <SummaryCards summary={summary} years={params.years} />
+          <SummaryCards summary={summary} years={params.years} taxExempt={params.taxExempt} />
 
           {/* 4. Interactive Simulation Form */}
           <InvestmentForm
             params={params}
             onChange={handleParamChange}
             onReset={handleResetParams}
-            liveRates={rawRates}
+            marketRates={economicData.rates}
+            ratesAreLive={hasFetchedRates && economicData.liveCount > 0}
           />
 
           {/* 5. Responsive Charts (Evolution Area + Donut Breakdown) */}
-          <ComparisonCharts summary={summary} />
+          <ComparisonCharts summary={summary} taxExempt={params.taxExempt} />
 
           {/* 6. Yearly Breakdown Table with CSV Export */}
-          <InvestmentTable summary={summary} years={params.years} />
+          <InvestmentTable summary={summary} years={params.years} taxExempt={params.taxExempt} />
 
           {/* 7. Educational & SEO Insights Section */}
           <section className="mt-12 pt-8 border-t border-[#1c2230]">
@@ -227,7 +236,10 @@ export default function App() {
                   1. O Tempo é o Maior Fator
                 </h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Na fórmula de juros compostos, o tempo está no expoente. Nos primeiros 5 a 10 anos, a maior parte do patrimônio vem dos seus aportes. Depois de 15 a 20 anos, os juros superam os aportes e geram uma bola de neve imparável.
+                  Na fórmula de juros compostos, o tempo está no expoente. No começo, quase todo o patrimônio vem dos seus aportes; com os anos, os juros passam a crescer mais rápido que eles.{' '}
+                  {summary.interestSurpassesDepositsYear
+                    ? `No seu cenário, os juros acumulados superam o total aportado no ano ${summary.interestSurpassesDepositsYear}.`
+                    : 'No seu cenário, os juros acumulados ainda não superam o total aportado dentro do período.'}
                 </p>
               </div>
 
@@ -239,7 +251,10 @@ export default function App() {
                   2. Reajuste Anual dos Aportes
                 </h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Manter o mesmo valor de aporte por 30 anos reduz seu esforço real devido à inflação. Ao aumentar seu aporte em apenas 5% ao ano (acompanhando promoções e dissídios), o patrimônio final chega a dobrar.
+                  Manter o mesmo valor de aporte por décadas reduz seu esforço real, porque a inflação corrói esse valor.{' '}
+                  {adjustmentEffect.userAdjusts
+                    ? `No seu cenário, reajustar o aporte em ${formatPercent(adjustmentEffect.rate, 1)} ao ano deixa o patrimônio final ${formatPercent(adjustmentEffect.increase, 1)} maior do que manter o aporte fixo.`
+                    : `No seu cenário, reajustar o aporte em ${formatPercent(adjustmentEffect.rate, 1)} ao ano deixaria o patrimônio final ${formatPercent(adjustmentEffect.increase, 1)} maior.`}
                 </p>
               </div>
 
@@ -251,7 +266,10 @@ export default function App() {
                   3. Viver de Renda Passiva
                 </h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Ao acumular o patrimônio final, você não precisa gastar o capital principal: os rendimentos mensais líquidos ({formatBRL(summary.finalMonthlyNetIncome)}/mês) pagam seu custo de vida perpétuo com margem de segurança.
+                  Para viver de renda sem empobrecer, saque só o que sobra do rendimento depois do IR e de repor a inflação.{' '}
+                  {summary.sustainableMonthlyIncomeReal > 0
+                    ? `No seu cenário, isso dá ${formatBRL(summary.sustainableMonthlyIncomeReal)}/mês em valores de hoje. Sacar o rendimento inteiro (${formatBRL(summary.fullYieldMonthlyNetIncome)}/mês nominais) consumiria o poder de compra do patrimônio.`
+                    : 'No seu cenário, o rendimento líquido não cobre a inflação: qualquer saque reduz o poder de compra do patrimônio.'}
                 </p>
               </div>
             </div>
@@ -346,6 +364,7 @@ export default function App() {
       <MethodologyModal
         isOpen={methodologyModalOpen}
         onClose={() => setMethodologyModalOpen(false)}
+        taxExempt={params.taxExempt}
       />
     </div>
   );

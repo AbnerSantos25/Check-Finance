@@ -1,230 +1,213 @@
-import { EconomicIndicator } from '../types';
+import { EconomicIndicator, IndicatorStatus, MarketRates } from '../types';
+import { formatNumber } from './calculations';
 
-interface CachedIndicators {
-  timestamp: number;
-  indicators: EconomicIndicator[];
-  rawRates: {
-    selic: number;
-    cdi: number;
-    ipca: number;
-    dolar: number;
-    ibov: number;
-  };
-}
+const CACHE_KEY = 'hub_financeiro_economic_indicators_v2';
+const CACHE_TTL_MS = 60 * 60 * 1000;
+const FETCH_TIMEOUT_MS = 6000;
 
-const CACHE_KEY = 'hub_financeiro_economic_indicators_v1';
-const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hora de cache
-
-export const DEFAULT_ECONOMIC_INDICATORS: EconomicIndicator[] = [
-  { name: 'SELIC', value: '10,75% a.a.', change: 'Copom', positive: true },
-  { name: 'CDI', value: '10,65% a.a.', change: 'B3', positive: true },
-  { name: 'IPCA (12m)', value: '4,42%', change: 'IBGE', positive: true },
-  { name: 'IBOVESPA', value: '134.850 pts', change: '+0,64%', positive: true },
-  { name: 'DÓLAR PTAX', value: 'R$ 5,61', change: '-0,35%', positive: true },
-];
-
-export const DEFAULT_RAW_RATES = {
-  selic: 10.75,
-  cdi: 10.65,
-  ipca: 4.42,
-  dolar: 5.61,
-  ibov: 134850,
+// Values published by BCB/SGS on this date; shown only when a source is unreachable.
+export const REFERENCE_DATE = '16/09/2026';
+export const REFERENCE_RATES: MarketRates = {
+  selic: 14.0,
+  cdi: 13.9,
+  ipca: 4.22,
+  poupanca: 8.34,
 };
+const REFERENCE_IPCA_MONTH = 'ago/26';
+const REFERENCE_PTAX = 5.1527;
 
-/**
- * Busca cotações do Dólar em tempo real via AwesomeAPI
- */
-async function fetchAwesomeApiRates(): Promise<{ dolar: number; dolarVar: string; dolarPos: boolean } | null> {
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-    const res = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL', {
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    if (!res.ok) return null;
-    const data = await res.json();
-    const usd = data?.USDBRL;
-    if (usd) {
-      const bid = parseFloat(usd.bid);
-      const pctChange = parseFloat(usd.pctChange);
-      return {
-        dolar: bid,
-        dolarVar: `${pctChange >= 0 ? '+' : ''}${pctChange.toFixed(2)}%`,
-        dolarPos: pctChange <= 0, // Dólar caindo costuma ser visto como positivo para inflação
-      };
-    }
-  } catch (err) {
-    console.warn('AwesomeAPI fetch failed or timeout, using fallback', err);
-  }
-  return null;
+interface SgsPoint {
+  date: Date;
+  label: string;
+  value: number;
 }
 
-/**
- * Busca taxas do Banco Central do Brasil (SGS)
- * Série 432: Taxa de juros - Selic meta (% a.a.)
- * Série 13522: IPCA acumulado 12 meses (%)
- */
-async function fetchBcbSeries(seriesId: number): Promise<number | null> {
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-    const res = await fetch(
-      `https://api.bcb.gov.br/dados/serie/bcdata.sgs.${seriesId}/dados/ultimos/1?formato=json`,
-      { signal: controller.signal }
-    );
-    clearTimeout(timeoutId);
-
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (Array.isArray(data) && data.length > 0 && data[0].valor) {
-      const parsed = parseFloat(data[0].valor.replace(',', '.'));
-      if (!isNaN(parsed) && parsed > 0) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.warn(`BCB SGS series ${seriesId} fetch failed, using fallback`, err);
-  }
-  return null;
-}
-
-/**
- * Busca IBOVESPA via Brapi ou fallback
- */
-async function fetchIbovRate(): Promise<{ ibov: number; change: string; positive: boolean } | null> {
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-    const res = await fetch('https://brapi.dev/api/quote/%5EBVSP', {
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    if (!res.ok) return null;
-    const data = await res.json();
-    const quote = data?.results?.[0];
-    if (quote && quote.regularMarketPrice) {
-      const changePct = quote.regularMarketChangePercent || 0;
-      return {
-        ibov: quote.regularMarketPrice,
-        change: `${changePct >= 0 ? '+' : ''}${changePct.toFixed(2)}%`,
-        positive: changePct >= 0,
-      };
-    }
-  } catch (err) {
-    console.warn('Brapi IBOV fetch failed, using fallback', err);
-  }
-  return null;
-}
-
-/**
- * Função mestre que carrega os indicadores com cache local no navegador
- */
-export async function loadLiveEconomicIndicators(): Promise<{
+export interface EconomicData {
   indicators: EconomicIndicator[];
-  rawRates: {
-    selic: number;
-    cdi: number;
-    ipca: number;
-    dolar: number;
-    ibov: number;
-  };
-  isLive: boolean;
-}> {
-  // 1. Tenta recuperar do cache local do navegador
+  rates: MarketRates;
+  liveCount: number;
+}
+
+const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+
+const toBcbDate = (date: Date) =>
+  `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+
+function parseBcbDate(label: string): Date | null {
+  const [day, month, year] = label.split('/').map(Number);
+  if (!day || !month || !year) return null;
+  return new Date(year, month - 1, day);
+}
+
+/**
+ * Fetches a BCB/SGS series and returns its points up to today, oldest first.
+ * Some series (e.g. 432, Selic meta) publish future-dated rows until the next Copom meeting.
+ */
+async function fetchSgs(seriesId: number, query: string): Promise<SgsPoint[] | null> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
-    const cachedStr = localStorage.getItem(CACHE_KEY);
-    if (cachedStr) {
-      const cached: CachedIndicators = JSON.parse(cachedStr);
-      const isFresh = Date.now() - cached.timestamp < CACHE_TTL_MS;
-      if (isFresh && cached.indicators && cached.indicators.length > 0) {
-        return {
-          indicators: cached.indicators,
-          rawRates: cached.rawRates,
-          isLive: true,
-        };
-      }
-    }
-  } catch (e) {
-    // ignore local storage error
+    const res = await fetch(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.${seriesId}/dados${query}`, {
+      signal: controller.signal,
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data)) return null;
+
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
+    const points = data
+      .map((row: { data?: string; valor?: string }) => {
+        const date = row.data ? parseBcbDate(row.data) : null;
+        const value = row.valor !== undefined ? parseFloat(String(row.valor).replace(',', '.')) : NaN;
+        return date && Number.isFinite(value) ? { date, label: row.data as string, value } : null;
+      })
+      .filter((p): p is SgsPoint => p !== null && p.date <= endOfToday)
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+
+    return points.length > 0 ? points : null;
+  } catch (err) {
+    console.warn(`BCB SGS series ${seriesId} unavailable`, err);
+    return null;
+  } finally {
+    clearTimeout(timeoutId);
   }
+}
 
-  // 2. Faz fetch paralelo das APIs públicas
-  const [dolarData, selicVal, ipcaVal, ibovData] = await Promise.all([
-    fetchAwesomeApiRates(),
-    fetchBcbSeries(432),   // Selic Meta anual
-    fetchBcbSeries(13522), // IPCA acumulado 12m
-    fetchIbovRate(),       // IBOVESPA
-  ]);
+const lastPoint = (points: SgsPoint[] | null) => (points ? points[points.length - 1] : null);
 
-  const selic = selicVal || DEFAULT_RAW_RATES.selic;
-  // CDI é convencionalmente Selic - 0.10%
-  const cdi = Math.max(0, selic - 0.10);
-  const ipca = ipcaVal || DEFAULT_RAW_RATES.ipca;
-  const dolar = dolarData ? dolarData.dolar : DEFAULT_RAW_RATES.dolar;
-  const ibov = ibovData ? ibovData.ibov : DEFAULT_RAW_RATES.ibov;
+const shortDate = (date: Date) =>
+  `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+const monthLabel = (date: Date) => `${MONTHS[date.getMonth()]}/${String(date.getFullYear()).slice(2)}`;
+
+function readCache(): EconomicData | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const cached = JSON.parse(raw) as { timestamp: number; data: EconomicData };
+    return Date.now() - cached.timestamp < CACHE_TTL_MS ? cached.data : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(data: EconomicData) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data }));
+  } catch {
+    // Storage may be unavailable (private mode); the data is simply refetched next time.
+  }
+}
+
+export function buildReferenceData(): EconomicData {
+  return buildEconomicData({ selic: null, cdi: null, ipca: null, poupanca: null, ptax: null });
+}
+
+interface FetchedSeries {
+  selic: SgsPoint | null;
+  cdi: SgsPoint | null;
+  ipca: SgsPoint | null;
+  poupanca: SgsPoint | null;
+  ptax: SgsPoint[] | null;
+}
+
+function buildEconomicData(series: FetchedSeries): EconomicData {
+  const status = (point: unknown): IndicatorStatus => (point ? 'live' : 'reference');
+
+  const selic = series.selic?.value ?? REFERENCE_RATES.selic;
+  const cdi = series.cdi?.value ?? REFERENCE_RATES.cdi;
+  const ipca = series.ipca?.value ?? REFERENCE_RATES.ipca;
+  // Series 195 is the monthly yield for deposits made on that date.
+  const poupanca = series.poupanca
+    ? (Math.pow(1 + series.poupanca.value / 100, 12) - 1) * 100
+    : REFERENCE_RATES.poupanca;
+
+  const ptaxLast = series.ptax ? series.ptax[series.ptax.length - 1] : null;
+  const ptaxPrev = series.ptax && series.ptax.length > 1 ? series.ptax[series.ptax.length - 2] : null;
+  const ptax = ptaxLast?.value ?? REFERENCE_PTAX;
+  const ptaxChange = ptaxLast && ptaxPrev ? (ptaxLast.value / ptaxPrev.value - 1) * 100 : null;
 
   const indicators: EconomicIndicator[] = [
     {
-      name: 'SELIC (BCB)',
-      value: `${selic.toFixed(2).replace('.', ',')}% a.a.`,
-      change: 'Meta Copom',
+      name: 'SELIC meta',
+      value: `${formatNumber(selic)}% a.a.`,
+      change: 'Copom',
       positive: true,
+      status: status(series.selic),
+      asOf: series.selic ? shortDate(series.selic.date) : REFERENCE_DATE,
     },
     {
-      name: 'CDI (B3)',
-      value: `${cdi.toFixed(2).replace('.', ',')}% a.a.`,
-      change: '100% CDI',
+      name: 'CDI',
+      value: `${formatNumber(cdi)}% a.a.`,
+      change: 'BCB',
       positive: true,
+      status: status(series.cdi),
+      asOf: series.cdi ? shortDate(series.cdi.date) : REFERENCE_DATE,
     },
     {
-      name: 'IPCA (12m)',
-      value: `${ipca.toFixed(2).replace('.', ',')}%`,
-      change: 'IBGE Oficial',
+      name: 'IPCA 12m',
+      value: `${formatNumber(ipca)}%`,
+      change: series.ipca ? monthLabel(series.ipca.date) : REFERENCE_IPCA_MONTH,
       positive: true,
+      status: status(series.ipca),
+      asOf: series.ipca ? monthLabel(series.ipca.date) : REFERENCE_DATE,
     },
     {
-      name: 'IBOVESPA',
-      value: `${Math.round(ibov).toLocaleString('pt-BR')} pts`,
-      change: ibovData ? ibovData.change : '+0,64%',
-      positive: ibovData ? ibovData.positive : true,
+      name: 'Poupança',
+      value: `${formatNumber(poupanca)}% a.a.`,
+      change: 'BCB',
+      positive: true,
+      status: status(series.poupanca),
+      asOf: series.poupanca ? shortDate(series.poupanca.date) : REFERENCE_DATE,
     },
     {
-      name: 'DÓLAR PTAX',
-      value: `R$ ${dolar.toFixed(2).replace('.', ',')}`,
-      change: dolarData ? dolarData.dolarVar : '-0,35%',
-      positive: dolarData ? dolarData.dolarPos : true,
+      name: 'Dólar PTAX',
+      value: `R$ ${formatNumber(ptax, 4)}`,
+      change: ptaxChange !== null ? `${ptaxChange >= 0 ? '+' : ''}${formatNumber(ptaxChange)}%` : undefined,
+      positive: ptaxChange !== null ? ptaxChange <= 0 : true,
+      status: status(ptaxLast),
+      asOf: ptaxLast ? shortDate(ptaxLast.date) : REFERENCE_DATE,
     },
   ];
 
-  const rawRates = {
-    selic,
-    cdi,
-    ipca,
-    dolar,
-    ibov,
-  };
-
-  // Salva no cache do navegador
-  try {
-    const toCache: CachedIndicators = {
-      timestamp: Date.now(),
-      indicators,
-      rawRates,
-    };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(toCache));
-  } catch (e) {
-    // ignore
-  }
-
   return {
     indicators,
-    rawRates,
-    isLive: true,
+    rates: { selic, cdi, ipca, poupanca },
+    liveCount: indicators.filter((i) => i.status === 'live').length,
   };
+}
+
+/**
+ * Loads indicators from BCB/SGS. Unreachable sources fall back to dated reference values
+ * and are flagged as such; only fully live results are cached.
+ */
+export async function loadEconomicIndicators(options: { force?: boolean } = {}): Promise<EconomicData> {
+  if (!options.force) {
+    const cached = readCache();
+    if (cached) return cached;
+  }
+
+  const today = new Date();
+  const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const [selic, cdi, ipca, poupanca, ptax] = await Promise.all([
+    fetchSgs(432, `?formato=json&dataInicial=${toBcbDate(monthAgo)}&dataFinal=${toBcbDate(today)}`),
+    fetchSgs(4389, '/ultimos/1?formato=json'),
+    fetchSgs(13522, '/ultimos/1?formato=json'),
+    fetchSgs(195, '/ultimos/5?formato=json'),
+    fetchSgs(1, '/ultimos/2?formato=json'),
+  ]);
+
+  const data = buildEconomicData({
+    selic: lastPoint(selic),
+    cdi: lastPoint(cdi),
+    ipca: lastPoint(ipca),
+    poupanca: lastPoint(poupanca),
+    ptax,
+  });
+
+  if (data.liveCount === data.indicators.length) writeCache(data);
+  return data;
 }

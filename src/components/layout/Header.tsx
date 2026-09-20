@@ -14,7 +14,7 @@ interface HeaderProps {
   onOpenPix: () => void;
   onOpenMobileMenu: () => void;
   indicators: EconomicIndicator[];
-  isLiveRates?: boolean;
+  hasFetchedRates: boolean;
   isLoadingRates?: boolean;
   onRefreshRates?: () => void;
 }
@@ -23,11 +23,20 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenPix,
   onOpenMobileMenu,
   indicators,
-  isLiveRates = true,
+  hasFetchedRates,
   isLoadingRates = false,
   onRefreshRates,
 }) => {
   const [copiedLink, setCopiedLink] = useState(false);
+
+  const liveCount = indicators.filter((ind) => ind.status === 'live').length;
+  const sourceStatus = !hasFetchedRates
+    ? { text: 'Consultando o Banco Central…', dot: 'bg-slate-500', color: 'text-slate-400' }
+    : liveCount === indicators.length
+      ? { text: 'Dados do Banco Central atualizados', dot: 'bg-emerald-500', color: 'text-emerald-400' }
+      : liveCount === 0
+        ? { text: 'Sem conexão com o BCB · valores de referência', dot: 'bg-amber-500', color: 'text-amber-400' }
+        : { text: `${liveCount} de ${indicators.length} fontes atualizadas · demais são referência`, dot: 'bg-amber-500', color: 'text-amber-400' };
 
   const handleShare = async () => {
     if (navigator.clipboard) {
@@ -48,20 +57,28 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-6 overflow-x-auto py-0.5 scrollbar-none">
           <span className="flex items-center gap-1.5 text-slate-400 font-semibold text-[11px] shrink-0">
             <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-            Taxas de Referência (BCB & B3):
+            Indicadores (BCB):
           </span>
           {indicators.map((ind, i) => (
-            <div key={i} className="flex items-center gap-2 shrink-0">
+            <div
+              key={ind.name}
+              className="flex items-center gap-2 shrink-0"
+              title={ind.status === 'live' ? `Dado de ${ind.asOf}` : `Valor de referência de ${ind.asOf}: fonte indisponível`}
+            >
               <span className="text-slate-400 font-medium text-[11px]">{ind.name}</span>
               <span className="text-slate-200 font-mono font-semibold text-[11px]">{ind.value}</span>
-              {ind.change && (
-                <span
-                  className={`text-[10px] font-medium ${
-                    ind.positive ? 'text-emerald-400' : 'text-rose-400'
-                  }`}
-                >
-                  {ind.change}
-                </span>
+              {ind.status === 'reference' ? (
+                <span className="text-[10px] font-medium text-amber-400">ref. {ind.asOf.slice(0, 5)}</span>
+              ) : (
+                ind.change && (
+                  <span
+                    className={`text-[10px] font-medium ${
+                      ind.positive ? 'text-emerald-400' : 'text-rose-400'
+                    }`}
+                  >
+                    {ind.change}
+                  </span>
+                )
               )}
               {i < indicators.length - 1 && (
                 <span className="text-slate-700 mx-1">|</span>
@@ -71,9 +88,9 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-3 text-[11px] text-slate-400 shrink-0">
-          <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Dados Oficiais Conectados</span>
+          <span className={`flex items-center gap-1.5 font-medium ${sourceStatus.color}`}>
+            <span className={`inline-block w-1.5 h-1.5 rounded-full ${sourceStatus.dot}`} />
+            <span>{sourceStatus.text}</span>
           </span>
           {onRefreshRates && (
             <button

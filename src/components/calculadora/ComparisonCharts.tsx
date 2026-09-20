@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   AreaChart,
   Area,
@@ -18,12 +18,10 @@ import { BarChart3, PieChart as PieIcon, Sparkles } from 'lucide-react';
 
 interface ComparisonChartsProps {
   summary: CalculationSummary;
+  taxExempt: boolean;
 }
 
-export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary }) => {
-  const [chartView, setChartView] = useState<'area' | 'pie'>('area');
-
-  // Prepare data for Area chart
+export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, taxExempt }) => {
   const areaData = summary.yearlyData.map((d) => ({
     name: `Ano ${d.year}`,
     year: d.year,
@@ -31,7 +29,8 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary }) =
     totalDeposited: d.totalDeposited,
     savingsOnlyBalance: d.savingsOnlyBalance,
     totalInterestGained: d.totalInterestGained,
-    realBalance: d.realBalance,
+    netBalance: d.netBalance,
+    realNetBalance: d.realNetBalance,
   }));
 
   // Prepare data for Pie chart
@@ -49,8 +48,8 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary }) =
   ];
 
   const interestPercentage = summary.finalGrossBalance > 0
-    ? ((summary.totalInterestGained / summary.finalGrossBalance) * 100).toFixed(1)
-    : '0';
+    ? (summary.totalInterestGained / summary.finalGrossBalance) * 100
+    : 0;
 
   return (
     <div 
@@ -66,7 +65,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary }) =
               Evolução do Patrimônio ao Longo do Tempo
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Comparativo entre poupar sem juros vs o efeito exponencial dos juros compostos.
+              Saldo bruto investido vs apenas guardar os aportes, em valores nominais.
             </p>
           </div>
 
@@ -130,7 +129,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary }) =
                           </span>
                         </div>
                         <div className="flex justify-between items-center text-emerald-400 font-medium">
-                          <span>Patrimônio Investido:</span>
+                          <span>Saldo bruto:</span>
                           <span className="font-mono font-bold">{formatBRL(data.grossBalance)}</span>
                         </div>
                         <div className="flex justify-between items-center text-blue-400 font-medium">
@@ -138,12 +137,16 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary }) =
                           <span className="font-mono">{formatBRL(data.totalDeposited)}</span>
                         </div>
                         <div className="flex justify-between items-center text-amber-300 font-medium pt-1 border-t border-white/5">
-                          <span>Ganho em Juros:</span>
+                          <span>Juros brutos:</span>
                           <span className="font-mono font-bold">+{formatBRL(data.totalInterestGained)}</span>
                         </div>
-                        <div className="flex justify-between items-center text-slate-400 text-[10px] pt-1">
-                          <span>Poder de compra real:</span>
-                          <span className="font-mono">{formatBRL(data.realBalance)}</span>
+                        <div className="flex justify-between items-center text-slate-300 text-[10px] pt-1">
+                          <span>{taxExempt ? 'Líquido (isento):' : 'Líquido de IR:'}</span>
+                          <span className="font-mono">{formatBRL(data.netBalance)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-slate-400 text-[10px]">
+                          <span>Líquido em valores de hoje:</span>
+                          <span className="font-mono">{formatBRL(data.realNetBalance)}</span>
                         </div>
                       </div>
                     );
@@ -185,7 +188,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary }) =
             Composição do Patrimônio
           </h3>
           <p className="text-xs text-slate-400 mt-0.5">
-            Distribuição do montante acumulado ao final do período.
+            Distribuição do saldo bruto ao final do período, antes do IR.
           </p>
         </div>
 
@@ -226,7 +229,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary }) =
               Juros
             </span>
             <span className="text-2xl font-extrabold text-emerald-400 font-mono">
-              {interestPercentage}%
+              {formatPercent(interestPercentage, 1)}
             </span>
             <span className="text-[10px] text-slate-400">
               do total
@@ -239,7 +242,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary }) =
           <div className="flex items-center justify-between p-2 rounded-xl bg-[#161a25]">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-emerald-500" />
-              <span className="text-slate-300 font-medium">Juros Compostos</span>
+              <span className="text-slate-300 font-medium">Juros (brutos)</span>
             </div>
             <span className="font-mono font-bold text-emerald-400">
               {formatBRL(summary.totalInterestGained)}
