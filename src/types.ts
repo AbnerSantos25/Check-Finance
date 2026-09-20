@@ -67,3 +67,39 @@ export interface MarketRates {
   ipca: number;
   poupanca: number; // Annualized current savings-account yield (% a.a.)
 }
+
+// -----------------------------------------------------
+// REAL ESTATE FINANCING TYPES
+// -----------------------------------------------------
+
+export type AmortizationSystem = 'SAC' | 'PRICE';
+
+export interface RealEstateParams {
+  propertyValue: number;         // Valor total do imóvel
+  downPayment: number;           // Valor da entrada
+  annualInterestRate: number;    // Taxa de Juros Anual (%)
+  termMonths: number;            // Prazo em meses (ex: 360 = 30 anos)
+  amortizationSystem: AmortizationSystem; // SAC ou Price
+  extraMonthlyAmortization: number; // Amortização extraordinária recorrente por mês
+}
+
+export interface FinancingInstallment {
+  month: number;
+  payment: number;        // Parcela total do mês (Amortização + Juros)
+  amortization: number;   // Parcela abatida da dívida
+  interest: number;       // Juros pagos no mês
+  extraAmortization: number; // Abatimento extra opcional no mês
+  outstandingBalance: number; // Saldo Devedor após o pagamento
+}
+
+export interface FinancingSummary {
+  totalFinanced: number;      // Valor financiado (Imóvel - Entrada)
+  totalPaidOut: number;       // Custo efetivo total desembolsado (Total Parcelas)
+  totalInterestPaid: number;  // Custo do dinheiro (Apenas Juros)
+  firstInstallment: number;   // Valor da 1ª Parcela
+  lastInstallment: number;    // Valor da Última Parcela
+  monthsSaved: number;        // Quantos meses a dívida reduziu (devido a extras)
+  interestSaved: number;      // Quantos R$ economizou de juros (devido a extras)
+  actualTermMonths: number;   // Em quantos meses a dívida foi realmente quitada
+  schedule: FinancingInstallment[]; // Evolução mês a mês
+}

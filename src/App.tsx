@@ -5,11 +5,15 @@ import { SummaryCards } from './components/calculadora/SummaryCards';
 import { InvestmentForm } from './components/calculadora/InvestmentForm';
 import { ComparisonCharts } from './components/calculadora/ComparisonCharts';
 import { InvestmentTable } from './components/calculadora/InvestmentTable';
+import { RealEstateForm } from './components/financiamento/RealEstateForm';
+import { RealEstateSummaryCards } from './components/financiamento/RealEstateSummaryCards';
+import { RealEstateCharts } from './components/financiamento/RealEstateCharts';
+import { RealEstateTable } from './components/financiamento/RealEstateTable';
 import { PixModal } from './components/modals/PixModal';
 import { ComingSoonModal } from './components/modals/ComingSoonModal';
 import { MethodologyModal } from './components/modals/MethodologyModal';
-import { InvestmentParams } from './types';
-import { calculateInvestment, formatBRL, formatPercent, sanitizeParams } from './lib/calculations';
+import { InvestmentParams, RealEstateParams } from './types';
+import { calculateInvestment, calculateFinancing, formatBRL, formatPercent, sanitizeParams } from './lib/calculations';
 import { loadEconomicIndicators, buildReferenceData, EconomicData } from './lib/economicApi';
 import { 
   Sparkles, 
@@ -35,8 +39,19 @@ const DEFAULT_PARAMS: InvestmentParams = {
   taxExempt: false,
 };
 
+const DEFAULT_RE_PARAMS: RealEstateParams = {
+  propertyValue: 500000,
+  downPayment: 100000,
+  annualInterestRate: 9.5,
+  termMonths: 360,
+  amortizationSystem: 'SAC',
+  extraMonthlyAmortization: 0,
+};
+
 export default function App() {
   const [params, setParams] = useState<InvestmentParams>(DEFAULT_PARAMS);
+  const [reParams, setReParams] = useState<RealEstateParams>(DEFAULT_RE_PARAMS);
+  
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('calculadora');
@@ -79,6 +94,10 @@ export default function App() {
     return calculateInvestment(params);
   }, [params]);
 
+  const reSummary = useMemo(() => {
+    return calculateFinancing(reParams);
+  }, [reParams]);
+
   // Compares the user's deposit adjustment against a fixed deposit (or 5% a.a. when already fixed).
   const adjustmentEffect = useMemo(() => {
     const userAdjusts = params.annualAdjustmentRate > 0;
@@ -99,6 +118,14 @@ export default function App() {
 
   const handleResetParams = () => {
     setParams(DEFAULT_PARAMS);
+  };
+
+  const handleReParamChange = (newValues: Partial<RealEstateParams>) => {
+    setReParams((prev) => ({ ...prev, ...newValues }));
+  };
+
+  const handleResetReParams = () => {
+    setReParams(DEFAULT_RE_PARAMS);
   };
 
   const handleOpenComingSoon = (toolName: string, description: string) => {
@@ -171,135 +198,170 @@ export default function App() {
         />
 
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto w-full">
-          {/* Main Title & Status Section (Inspired by Live Crypto Updates in reference image) */}
-          <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Simulação Financeira Ativa
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                Calculadora de Investimento a Longo Prazo
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
-                Descubra como aportes constantes com reajustes anuais e juros compostos multiplicam seu patrimônio ao longo do tempo.
-              </p>
-            </div>
-
-            {/* Quick action: Methodology button */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setMethodologyModalOpen(true)}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#141824] hover:bg-[#1c2233] border border-[#212738] text-xs font-medium text-slate-300 hover:text-white transition-all cursor-pointer"
-              >
-                <HelpCircle className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Ver Fórmulas & Metodologia</span>
-              </button>
-            </div>
-          </div>
-
-          {/* 3. Summary Metric Cards */}
-          <SummaryCards summary={summary} years={params.years} taxExempt={params.taxExempt} />
-
-          {/* 4. Interactive Simulation Form */}
-          <InvestmentForm
-            params={params}
-            onChange={handleParamChange}
-            onReset={handleResetParams}
-            marketRates={economicData.rates}
-            ratesAreLive={hasFetchedRates && economicData.liveCount > 0}
-          />
-
-          {/* 5. Responsive Charts (Evolution Area + Donut Breakdown) */}
-          <ComparisonCharts summary={summary} taxExempt={params.taxExempt} />
-
-          {/* 6. Yearly Breakdown Table with CSV Export */}
-          <InvestmentTable summary={summary} years={params.years} taxExempt={params.taxExempt} />
-
-          {/* 7. Educational & SEO Insights Section */}
-          <section className="mt-12 pt-8 border-t border-[#1c2230]">
-            <div className="mb-6">
-              <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
-                Conceitos Fundamentais
-              </div>
-              <h2 className="text-xl font-extrabold text-white">
-                Como os Juros Compostos Constróem sua Independência
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-5 rounded-2xl bg-[#12151e] border border-[#1f2636]">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-3">
-                  <Zap className="w-5 h-5" />
+          {activeTab === 'calculadora' ? (
+            <>
+              {/* Main Title & Status Section (Inspired by Live Crypto Updates in reference image) */}
+              <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    Simulação Financeira Ativa
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                    Calculadora de Investimento a Longo Prazo
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+                    A ferramenta mais completa do mercado: descubra como aportes com <strong>reajustes anuais</strong>, <strong>juros compostos</strong> e o <strong>desconto da inflação</strong> afetam seu patrimônio real ao longo do tempo.
+                  </p>
                 </div>
-                <h3 className="text-sm font-bold text-white mb-1.5">
-                  1. O Tempo é o Maior Fator
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Na fórmula de juros compostos, o tempo está no expoente. No começo, quase todo o patrimônio vem dos seus aportes; com os anos, os juros passam a crescer mais rápido que eles.{' '}
-                  {summary.interestSurpassesDepositsYear
-                    ? `No seu cenário, os juros acumulados superam o total aportado no ano ${summary.interestSurpassesDepositsYear}.`
-                    : 'No seu cenário, os juros acumulados ainda não superam o total aportado dentro do período.'}
-                </p>
-              </div>
 
-              <div className="p-5 rounded-2xl bg-[#12151e] border border-[#1f2636]">
-                <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 mb-3">
-                  <TrendingUp className="w-5 h-5" />
+                {/* Quick action: Methodology button */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setMethodologyModalOpen(true)}
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#141824] hover:bg-[#1c2233] border border-[#212738] text-xs font-medium text-slate-300 hover:text-white transition-all cursor-pointer"
+                  >
+                    <HelpCircle className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Ver Fórmulas & Metodologia</span>
+                  </button>
                 </div>
-                <h3 className="text-sm font-bold text-white mb-1.5">
-                  2. Reajuste Anual dos Aportes
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Manter o mesmo valor de aporte por décadas reduz seu esforço real, porque a inflação corrói esse valor.{' '}
-                  {adjustmentEffect.userAdjusts
-                    ? `No seu cenário, reajustar o aporte em ${formatPercent(adjustmentEffect.rate, 1)} ao ano deixa o patrimônio final ${formatPercent(adjustmentEffect.increase, 1)} maior do que manter o aporte fixo.`
-                    : `No seu cenário, reajustar o aporte em ${formatPercent(adjustmentEffect.rate, 1)} ao ano deixaria o patrimônio final ${formatPercent(adjustmentEffect.increase, 1)} maior.`}
-                </p>
               </div>
 
-              <div className="p-5 rounded-2xl bg-[#12151e] border border-[#1f2636]">
-                <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3">
-                  <Coins className="w-5 h-5" />
+              {/* 3. Summary Metric Cards */}
+              <SummaryCards summary={summary} years={params.years} taxExempt={params.taxExempt} />
+
+              {/* 4. Interactive Simulation Form */}
+              <InvestmentForm
+                params={params}
+                onChange={handleParamChange}
+                onReset={handleResetParams}
+                marketRates={economicData.rates}
+                ratesAreLive={hasFetchedRates && economicData.liveCount > 0}
+              />
+
+              {/* 5. Responsive Charts (Evolution Area + Donut Breakdown) */}
+              <ComparisonCharts summary={summary} taxExempt={params.taxExempt} />
+
+              {/* 6. Yearly Breakdown Table with CSV Export */}
+              <InvestmentTable summary={summary} years={params.years} taxExempt={params.taxExempt} />
+
+              {/* 7. Educational & SEO Insights Section */}
+              <section className="mt-12 pt-8 border-t border-[#1c2230]">
+                <div className="mb-6">
+                  <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
+                    Conceitos Fundamentais
+                  </div>
+                  <h2 className="text-xl font-extrabold text-white">
+                    Como os Juros Compostos Constróem sua Independência
+                  </h2>
                 </div>
-                <h3 className="text-sm font-bold text-white mb-1.5">
-                  3. Viver de Renda Passiva
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Para viver de renda sem empobrecer, saque só o que sobra do rendimento depois do IR e de repor a inflação.{' '}
-                  {summary.sustainableMonthlyIncomeReal > 0
-                    ? `No seu cenário, isso dá ${formatBRL(summary.sustainableMonthlyIncomeReal)}/mês em valores de hoje. Sacar o rendimento inteiro (${formatBRL(summary.fullYieldMonthlyNetIncome)}/mês nominais) consumiria o poder de compra do patrimônio.`
-                    : 'No seu cenário, o rendimento líquido não cobre a inflação: qualquer saque reduz o poder de compra do patrimônio.'}
-                </p>
-              </div>
-            </div>
 
-            {/* Banner for Support & Roadmap */}
-            <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-[#141824] via-[#161d2e] to-[#121622] border border-[#232b3d] flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
-              <div className="space-y-1 text-center md:text-left">
-                <div className="flex items-center justify-center md:justify-start gap-2 text-emerald-400 text-xs font-semibold">
-                  <Heart className="w-4 h-4 fill-emerald-400" />
-                  Gostou da calculadora?
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="p-5 rounded-2xl bg-[#12151e] border border-[#1f2636]">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-3">
+                      <Zap className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white mb-1.5">
+                      1. O Tempo é o Maior Fator
+                    </h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      Na fórmula de juros compostos, o tempo está no expoente. No começo, quase todo o patrimônio vem dos seus aportes; com os anos, os juros passam a crescer mais rápido que eles.{' '}
+                      {summary.interestSurpassesDepositsYear
+                        ? `No seu cenário, os juros acumulados superam o total aportado no ano ${summary.interestSurpassesDepositsYear}.`
+                        : 'No seu cenário, os juros acumulados ainda não superam o total aportado dentro do período.'}
+                    </p>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-[#12151e] border border-[#1f2636]">
+                    <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 mb-3">
+                      <TrendingUp className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white mb-1.5">
+                      2. Reajuste Anual dos Aportes
+                    </h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      Manter o mesmo valor de aporte por décadas reduz seu esforço real, porque a inflação corrói esse valor.{' '}
+                      {adjustmentEffect.userAdjusts
+                        ? `No seu cenário, reajustar o aporte em ${formatPercent(adjustmentEffect.rate, 1)} ao ano deixa o patrimônio final ${formatPercent(adjustmentEffect.increase, 1)} maior do que manter o aporte fixo.`
+                        : `No seu cenário, reajustar o aporte em ${formatPercent(adjustmentEffect.rate, 1)} ao ano deixaria o patrimônio final ${formatPercent(adjustmentEffect.increase, 1)} maior.`}
+                    </p>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-[#12151e] border border-[#1f2636]">
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3">
+                      <Coins className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white mb-1.5">
+                      3. Viver de Renda Passiva
+                    </h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      Para viver de renda sem empobrecer, saque só o que sobra do rendimento depois do IR e de repor a inflação.{' '}
+                      {summary.sustainableMonthlyIncomeReal > 0
+                        ? `No seu cenário, isso dá ${formatBRL(summary.sustainableMonthlyIncomeReal)}/mês em valores de hoje. Sacar o rendimento inteiro (${formatBRL(summary.fullYieldMonthlyNetIncome)}/mês nominais) consumiria o poder de compra do patrimônio.`
+                        : 'No seu cenário, o rendimento líquido não cobre a inflação: qualquer saque reduz o poder de compra do patrimônio.'}
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold text-white">
-                  Ajude a manter este site no ar e gratuito
-                </h3>
-                <p className="text-xs text-slate-400 max-w-xl">
-                  Somos um hub de ferramentas financeiras independente. Sua contribuição via PIX financia novas ferramentas como a Calculadora FIRE e o Simulador de Financiamento.
-                </p>
+
+                {/* Banner for Support & Roadmap */}
+                <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-[#141824] via-[#161d2e] to-[#121622] border border-[#232b3d] flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+                  <div className="space-y-1 text-center md:text-left">
+                    <div className="flex items-center justify-center md:justify-start gap-2 text-emerald-400 text-xs font-semibold">
+                      <Heart className="w-4 h-4 fill-emerald-400" />
+                      Gostou da calculadora?
+                    </div>
+                    <h3 className="text-lg font-bold text-white">
+                      Ajude a manter este site no ar e gratuito
+                    </h3>
+                    <p className="text-xs text-slate-400 max-w-xl">
+                      Somos um hub de ferramentas financeiras independente. Sua contribuição via PIX financia novas ferramentas como a Calculadora FIRE e o Simulador de Financiamento.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <button
+                      onClick={() => setPixModalOpen(true)}
+                      className="px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/25 transition-all cursor-pointer flex items-center gap-2"
+                    >
+                      <Heart className="w-4 h-4 fill-slate-950" />
+                      <span>Fazer Doação PIX</span>
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </>
+          ) : activeTab === 'financiamento' ? (
+            <>
+              {/* REAL ESTATE FINANCING SECTION */}
+              <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold mb-2">
+                    <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
+                    Simulador Imobiliário
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                    Financiamento & Amortização Extra
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+                    Descubra o Custo Efetivo Total (CET) do seu imóvel, compare sistemas SAC vs PRICE e calcule o impacto fulminante de amortizações extraordinárias no abatimento de juros e prazo.
+                  </p>
+                </div>
               </div>
 
-              <div className="flex items-center gap-3 shrink-0">
-                <button
-                  onClick={() => setPixModalOpen(true)}
-                  className="px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/25 transition-all cursor-pointer flex items-center gap-2"
-                >
-                  <Heart className="w-4 h-4 fill-slate-950" />
-                  <span>Fazer Doação PIX</span>
-                </button>
-              </div>
-            </div>
-          </section>
+              <RealEstateSummaryCards summary={reSummary} params={reParams} />
+              
+              <RealEstateForm
+                params={reParams}
+                onChange={handleReParamChange}
+                onReset={handleResetReParams}
+                liveRates={economicData.rates}
+              />
+
+              <RealEstateCharts summary={reSummary} params={reParams} />
+
+              <RealEstateTable summary={reSummary} />
+            </>
+          ) : null}
         </main>
 
         {/* Global Footer */}
@@ -307,7 +369,7 @@ export default function App() {
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-slate-400">
               <TrendingUp className="w-4 h-4 text-emerald-400" />
-              <span className="font-semibold text-slate-300">Investimento ao Longo Prazo</span>
+              <span className="font-semibold text-slate-300">CheckFinance</span>
               <span>— Hub de Ferramentas Financeiras</span>
             </div>
             <div className="flex items-center gap-4 text-[11px]">
@@ -339,7 +401,7 @@ export default function App() {
           </div>
           <div className="max-w-7xl mx-auto mt-4 pt-4 border-t border-white/5 text-[10px] text-slate-400 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-2">
             <span>
-              © {new Date().getFullYear()} Investimento ao Longo Prazo. Ferramenta de fins educativos e de simulação. Não constitui recomendação de investimento.
+              © {new Date().getFullYear()} CheckFinance. Ferramenta de fins educativos e de simulação. Não constitui recomendação de investimento.
             </span>
             <span className="text-slate-400 font-mono">
               Português (Brasil) • v1.0 MVP
