@@ -9,6 +9,7 @@ import {
   DollarSign
 } from 'lucide-react';
 import { EconomicIndicator } from '../../types';
+import { EXPECTED_INDICATORS } from '../../lib/economicApi';
 
 interface HeaderProps {
   onOpenPix: () => void;
@@ -31,12 +32,12 @@ export const Header: React.FC<HeaderProps> = ({
 
   const liveCount = indicators.filter((ind) => ind.status === 'live').length;
   const sourceStatus = !hasFetchedRates
-    ? { text: 'Consultando o Banco Central…', dot: 'bg-slate-500', color: 'text-slate-400' }
-    : liveCount === indicators.length
-      ? { text: 'Dados do Banco Central atualizados', dot: 'bg-emerald-500', color: 'text-emerald-400' }
+    ? { text: 'Consultando as fontes oficiais…', dot: 'bg-slate-500', color: 'text-slate-400' }
+    : liveCount === EXPECTED_INDICATORS
+      ? { text: 'Indicadores atualizados', dot: 'bg-emerald-500', color: 'text-emerald-400' }
       : liveCount === 0
-        ? { text: 'Sem conexão com o BCB · valores de referência', dot: 'bg-amber-500', color: 'text-amber-400' }
-        : { text: `${liveCount} de ${indicators.length} fontes atualizadas · demais são referência`, dot: 'bg-amber-500', color: 'text-amber-400' };
+        ? { text: 'Sem conexão com as fontes · valores de referência', dot: 'bg-amber-500', color: 'text-amber-400' }
+        : { text: `${liveCount} de ${EXPECTED_INDICATORS} fontes atualizadas`, dot: 'bg-amber-500', color: 'text-amber-400' };
 
   const handleShare = async () => {
     if (navigator.clipboard) {
@@ -57,13 +58,17 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-6 overflow-x-auto py-0.5 scrollbar-none">
           <span className="flex items-center gap-1.5 text-slate-400 font-semibold text-[11px] shrink-0">
             <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-            Indicadores (BCB):
+            Indicadores:
           </span>
           {indicators.map((ind, i) => (
             <div
               key={ind.name}
               className="flex items-center gap-2 shrink-0"
-              title={ind.status === 'live' ? `Dado de ${ind.asOf}` : `Valor de referência de ${ind.asOf}: fonte indisponível`}
+              title={
+                ind.status === 'live'
+                  ? `${ind.source} · dado de ${ind.asOf}`
+                  : `${ind.source} · valor de ${ind.asOf}: fonte indisponível agora`
+              }
             >
               <span className="text-slate-400 font-medium text-[11px]">{ind.name}</span>
               <span className="text-slate-200 font-mono font-semibold text-[11px]">{ind.value}</span>

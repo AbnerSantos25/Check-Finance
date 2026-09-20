@@ -130,7 +130,12 @@ export const MethodologyModal: React.FC<MethodologyModalProps> = ({ isOpen, onCl
               <li>Dólar PTAX de venda: série 1</li>
             </ul>
             <p className="text-[11px] text-slate-400">
-              Quando uma fonte está indisponível, o valor aparece marcado como referência de {REFERENCE_DATE}. O atalho Tesouro Selic
+              O IBOVESPA vem da B3, via HG Brasil, consultado pelo nosso servidor a cada 10 minutos. A cotação pode ter atraso em
+              relação ao pregão, e o horário exibido é o da consulta. Quando não há cotação disponível, o indicador sai do painel
+              em vez de mostrar um valor antigo.
+            </p>
+            <p className="text-[11px] text-slate-400">
+              Quando uma fonte do Banco Central está indisponível, o valor aparece marcado como referência de {REFERENCE_DATE}. O atalho Tesouro Selic
               usa a Selic meta como aproximação e não inclui taxa de custódia.
             </p>
           </Block>

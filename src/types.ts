@@ -47,6 +47,18 @@ export interface EconomicIndicator {
   positive?: boolean;
   status: IndicatorStatus;
   asOf: string;
+  source: string;
+}
+
+/** Resposta de GET /api/ibovespa (Pages Function). */
+export interface IbovespaQuote {
+  points: number;
+  changePercent: number;
+  /** Quando o servidor consultou a fonte (ISO). O plano grátis da HG Brasil não informa a hora da cotação. */
+  fetchedAt: string;
+  /** true = a fonte falhou e este é o último valor bom conhecido. */
+  stale: boolean;
+  source: 'HG Brasil';
 }
 
 export interface MarketRates {

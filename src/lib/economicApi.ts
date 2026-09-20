@@ -1,4 +1,4 @@
-import { EconomicIndicator, IndicatorStatus, MarketRates } from '../types';
+import { EconomicIndicator, IbovespaQuote, IndicatorStatus, MarketRates } from '../types';
 import { formatNumber } from './calculations';
 
 const CACHE_KEY = 'hub_financeiro_economic_indicators_v2';
@@ -27,6 +27,10 @@ export interface EconomicData {
   rates: MarketRates;
   liveCount: number;
 }
+
+// 5 séries do BCB + IBOVESPA. O IBOVESPA só aparece quando há cotação real,
+// por isso a lista pode vir menor.
+export const EXPECTED_INDICATORS = 6;
 
 const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
@@ -101,8 +105,28 @@ function writeCache(data: EconomicData) {
   }
 }
 
+/**
+ * Busca a cotação do IBOVESPA na Pages Function, que guarda a chave da HG Brasil
+ * no servidor e mantém um cache global de 10 minutos.
+ */
+async function fetchIbovespa(): Promise<IbovespaQuote | null> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch('/api/ibovespa', { signal: controller.signal });
+    if (!res.ok) return null;
+    const quote = (await res.json()) as IbovespaQuote;
+    return Number.isFinite(quote?.points) ? quote : null;
+  } catch (err) {
+    console.warn('IBOVESPA indisponível', err);
+    return null;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export function buildReferenceData(): EconomicData {
-  return buildEconomicData({ selic: null, cdi: null, ipca: null, poupanca: null, ptax: null });
+  return buildEconomicData({ selic: null, cdi: null, ipca: null, poupanca: null, ptax: null }, null);
 }
 
 interface FetchedSeries {
@@ -113,7 +137,23 @@ interface FetchedSeries {
   ptax: SgsPoint[] | null;
 }
 
-function buildEconomicData(series: FetchedSeries): EconomicData {
+function ibovespaIndicator(quote: IbovespaQuote): EconomicIndicator {
+  const fetchedAt = new Date(quote.fetchedAt);
+  const isToday = fetchedAt.toDateString() === new Date().toDateString();
+  const time = `${String(fetchedAt.getHours()).padStart(2, '0')}h${String(fetchedAt.getMinutes()).padStart(2, '0')}`;
+
+  return {
+    name: 'IBOVESPA',
+    value: `${formatNumber(quote.points, 0)} pts`,
+    change: `${quote.changePercent >= 0 ? '+' : ''}${formatNumber(quote.changePercent)}%`,
+    positive: quote.changePercent >= 0,
+    status: quote.stale ? 'reference' : 'live',
+    asOf: isToday ? time : shortDate(fetchedAt),
+    source: 'B3, via HG Brasil',
+  };
+}
+
+function buildEconomicData(series: FetchedSeries, ibovespa: IbovespaQuote | null): EconomicData {
   const status = (point: unknown): IndicatorStatus => (point ? 'live' : 'reference');
 
   const selic = series.selic?.value ?? REFERENCE_RATES.selic;
@@ -137,6 +177,7 @@ function buildEconomicData(series: FetchedSeries): EconomicData {
       positive: true,
       status: status(series.selic),
       asOf: series.selic ? shortDate(series.selic.date) : REFERENCE_DATE,
+      source: 'BCB · série 432',
     },
     {
       name: 'CDI',
@@ -145,6 +186,7 @@ function buildEconomicData(series: FetchedSeries): EconomicData {
       positive: true,
       status: status(series.cdi),
       asOf: series.cdi ? shortDate(series.cdi.date) : REFERENCE_DATE,
+      source: 'BCB · série 4389',
     },
     {
       name: 'IPCA 12m',
@@ -153,6 +195,7 @@ function buildEconomicData(series: FetchedSeries): EconomicData {
       positive: true,
       status: status(series.ipca),
       asOf: series.ipca ? monthLabel(series.ipca.date) : REFERENCE_DATE,
+      source: 'IBGE, via BCB · série 13522',
     },
     {
       name: 'Poupança',
@@ -161,6 +204,7 @@ function buildEconomicData(series: FetchedSeries): EconomicData {
       positive: true,
       status: status(series.poupanca),
       asOf: series.poupanca ? shortDate(series.poupanca.date) : REFERENCE_DATE,
+      source: 'BCB · série 195',
     },
     {
       name: 'Dólar PTAX',
@@ -169,8 +213,11 @@ function buildEconomicData(series: FetchedSeries): EconomicData {
       positive: ptaxChange !== null ? ptaxChange <= 0 : true,
       status: status(ptaxLast),
       asOf: ptaxLast ? shortDate(ptaxLast.date) : REFERENCE_DATE,
+      source: 'BCB · série 1',
     },
   ];
+
+  if (ibovespa) indicators.push(ibovespaIndicator(ibovespa));
 
   return {
     indicators,
@@ -192,22 +239,28 @@ export async function loadEconomicIndicators(options: { force?: boolean } = {}):
   const today = new Date();
   const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  const [selic, cdi, ipca, poupanca, ptax] = await Promise.all([
+  const [selic, cdi, ipca, poupanca, ptax, ibovespa] = await Promise.all([
     fetchSgs(432, `?formato=json&dataInicial=${toBcbDate(monthAgo)}&dataFinal=${toBcbDate(today)}`),
     fetchSgs(4389, '/ultimos/1?formato=json'),
     fetchSgs(13522, '/ultimos/1?formato=json'),
     fetchSgs(195, '/ultimos/5?formato=json'),
     fetchSgs(1, '/ultimos/2?formato=json'),
+    fetchIbovespa(),
   ]);
 
-  const data = buildEconomicData({
-    selic: lastPoint(selic),
-    cdi: lastPoint(cdi),
-    ipca: lastPoint(ipca),
-    poupanca: lastPoint(poupanca),
-    ptax,
-  });
+  const data = buildEconomicData(
+    {
+      selic: lastPoint(selic),
+      cdi: lastPoint(cdi),
+      ipca: lastPoint(ipca),
+      poupanca: lastPoint(poupanca),
+      ptax,
+    },
+    ibovespa
+  );
 
-  if (data.liveCount === data.indicators.length) writeCache(data);
+  // Só guarda em cache o retrato completo, para que uma fonte com falha seja
+  // consultada de novo no próximo carregamento.
+  if (data.liveCount === EXPECTED_INDICATORS) writeCache(data);
   return data;
 }

@@ -1,0 +1,9 @@
+name = "check-finance"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-09-01"
+
+# Cache global da cotação do IBOVESPA, para não estourar a cota diária da HG Brasil.
+# O id é criado com: npx wrangler kv namespace create MARKET_CACHE
+[[kv_namespaces]]
+binding = "MARKET_CACHE"
+id = "local-dev-placeholder"

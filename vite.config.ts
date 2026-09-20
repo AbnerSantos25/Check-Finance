@@ -33,6 +33,10 @@ export default defineConfig(() => {
       hmr: process.env.DISABLE_HMR !== 'true',
       // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
+      // As Pages Functions rodam no wrangler (npm run dev:api) na porta 8788.
+      proxy: {
+        '/api': 'http://localhost:8788',
+      },
     },
   };
 });
