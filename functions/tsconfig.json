@@ -11,5 +11,7 @@
     "moduleDetection": "force",
     "noEmit": true
   },
-  "include": ["./**/*.ts", "../server/**/*.ts", "../src/types.ts"]
+  "include": ["./**/*.ts", "../server/**/*.ts", "../src/types.ts"],
+  // Roda no Node (npm run check), não no Worker.
+  "exclude": ["../server/**/*.check.ts"]
 }
