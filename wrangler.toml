@@ -6,4 +6,4 @@ compatibility_date = "2026-09-01"
 # O id é criado com: npx wrangler kv namespace create MARKET_CACHE
 [[kv_namespaces]]
 binding = "MARKET_CACHE"
-id = "local-dev-placeholder"
+id = "3f58bf3b39e6449292a864d4a5569fda"
