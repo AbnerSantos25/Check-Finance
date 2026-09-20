@@ -1,6 +1,6 @@
 {
   "name": "CheckFinance",
-  "description": "Hub financeiro público com calculadora de investimento a longo prazo, juros compostos, projeção de patrimônio e renda passiva.",
+  "description": "Hub financeiro público com Calculadora de Investimento a Longo Prazo e Simulador de Financiamento Imobiliário com amortização extraordinária.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -98,34 +98,6 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
       {/* Navigation Links */}
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-6">
-        {/* Visão Geral */}
-        <div>
-          {!isCollapsed && (
-            <div className="px-3 mb-2 text-[11px] font-semibold text-slate-300 tracking-wider">
-              VISÃO GERAL
-            </div>
-          )}
-          <nav className="space-y-1">
-            <button
-              id="nav-dashboard-btn"
-              onClick={() => setActiveTab('calculadora')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative ${
-                activeTab === 'calculadora'
-                  ? 'bg-gradient-to-r from-white/10 to-white/5 text-white shadow-sm border border-white/10'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
-              }`}
-            >
-              <Layers className={`w-4 h-4 ${activeTab === 'calculadora' ? 'text-emerald-400' : 'text-slate-400'}`} />
-              {!isCollapsed && (
-                <span className="truncate flex-1 text-left">Dashboard & Calculadora</span>
-              )}
-              {activeTab === 'calculadora' && !isCollapsed && (
-                <span className="w-1.5 h-5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-              )}
-            </button>
-          </nav>
-        </div>
-
         {/* Ferramentas */}
         <div>
           {!isCollapsed && (
@@ -140,18 +112,16 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               onClick={() => setActiveTab('calculadora')}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative ${
                 activeTab === 'calculadora'
-                  ? 'text-white'
+                  ? 'text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/10'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
               }`}
             >
-              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              <TrendingUp className={`w-4 h-4 ${activeTab === 'calculadora' ? 'text-emerald-400' : 'text-slate-400'}`} />
               {!isCollapsed && (
                 <span className="truncate flex-1 text-left">Investimento a Longo Prazo</span>
               )}
-              {!isCollapsed && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/20">
-                  ATIVO
-                </span>
+              {activeTab === 'calculadora' && !isCollapsed && (
+                <span className="w-1.5 h-5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] absolute left-0" />
               )}
             </button>
 
@@ -180,22 +150,19 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
             {/* Simulador de Financiamento */}
             <button
               id="nav-financiamento-btn"
-              onClick={() =>
-                onOpenComingSoon(
-                  'Simulador de Financiamento Imobiliário',
-                  'Compare sistemas SAC vs Price, simule amortizações extraordinárias e calcule o custo real das parcelas contra o investimento do valor à vista.'
-                )
-              }
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.03] transition-all group"
+              onClick={() => setActiveTab('financiamento')}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative ${
+                activeTab === 'financiamento'
+                  ? 'text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/10'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
+              }`}
             >
-              <Home className="w-4 h-4 text-sky-400/80 group-hover:text-sky-400" />
+              <Home className={`w-4 h-4 ${activeTab === 'financiamento' ? 'text-sky-400' : 'text-slate-400'}`} />
               {!isCollapsed && (
                 <span className="truncate flex-1 text-left">Financiamento Imobiliário</span>
               )}
-              {!isCollapsed && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-400 font-medium">
-                  Em breve
-                </span>
+              {activeTab === 'financiamento' && !isCollapsed && (
+                <span className="w-1.5 h-5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)] absolute left-0" />
               )}
             </button>
 
