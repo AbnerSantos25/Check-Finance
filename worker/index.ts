@@ -1,9 +1,10 @@
-import { HG_FINANCE_URL, parseIbovespa } from '../../server/hgBrasil';
-import type { IbovespaQuote } from '../../src/types';
+import { HG_FINANCE_URL, parseIbovespa } from '../server/hgBrasil';
+import type { IbovespaQuote } from '../src/types';
 
 interface Env {
   HG_BRASIL_KEY: string;
   MARKET_CACHE: KVNamespace;
+  ASSETS: Fetcher;
 }
 
 const CACHE_KEY = 'ibovespa:v1';
@@ -63,7 +64,7 @@ async function fetchFromHgBrasil(key: string): Promise<CachedQuote | null> {
   }
 }
 
-export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
+async function handleIbovespa(env: Env): Promise<Response> {
   const cached = await readCache(env);
   const ageMs = cached ? Date.now() - Date.parse(cached.fetchedAt) : Infinity;
 
@@ -94,4 +95,16 @@ export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
   }
 
   return jsonResponse({ error: 'unavailable' }, 503, 0);
+}
+
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+
+    if (url.pathname === '/api/ibovespa' && request.method === 'GET') {
+      return handleIbovespa(env);
+    }
+
+    return env.ASSETS.fetch(request);
+  },
 };

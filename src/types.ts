@@ -50,7 +50,7 @@ export interface EconomicIndicator {
   source: string;
 }
 
-/** Resposta de GET /api/ibovespa (Pages Function). */
+/** Resposta de GET /api/ibovespa (Worker). */
 export interface IbovespaQuote {
   points: number;
   changePercent: number;
