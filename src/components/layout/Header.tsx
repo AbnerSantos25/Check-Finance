@@ -8,30 +8,20 @@ import {
   Activity,
   DollarSign
 } from 'lucide-react';
-import { EconomicIndicator } from '../../types';
 import { EXPECTED_INDICATORS } from '../../shared/lib/economicApi';
+import { useEconomicData } from '../../app/providers/EconomicDataProvider';
+import { useModals } from '../../app/providers/ModalsProvider';
 
 interface HeaderProps {
-  onOpenPix: () => void;
   onOpenMobileMenu: () => void;
-  indicators: EconomicIndicator[];
-  hasFetchedRates: boolean;
-  isLoadingRates?: boolean;
-  onRefreshRates?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({
-  onOpenPix,
-  onOpenMobileMenu,
-  indicators,
-  hasFetchedRates,
-  isLoadingRates = false,
-  onRefreshRates,
-}) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
   const [copiedLink, setCopiedLink] = useState(false);
+  const { indicators, liveCount, hasFetched, isLoading, refresh } = useEconomicData();
+  const { openPix } = useModals();
 
-  const liveCount = indicators.filter((ind) => ind.status === 'live').length;
-  const sourceStatus = !hasFetchedRates
+  const sourceStatus = !hasFetched
     ? { text: 'Consultando as fontes oficiais…', dot: 'bg-slate-500', color: 'text-slate-400' }
     : liveCount === EXPECTED_INDICATORS
       ? { text: 'Indicadores atualizados', dot: 'bg-emerald-500', color: 'text-emerald-400' }
@@ -99,16 +89,14 @@ export const Header: React.FC<HeaderProps> = ({
             <span className={`inline-block w-1.5 h-1.5 rounded-full ${sourceStatus.dot}`} />
             <span>{sourceStatus.text}</span>
           </span>
-          {onRefreshRates && (
-            <button
-              onClick={onRefreshRates}
-              disabled={isLoadingRates}
-              title="Atualizar cotações do Banco Central"
-              className="text-slate-400 hover:text-slate-200 cursor-pointer disabled:opacity-50"
-            >
-              {isLoadingRates ? 'Atualizando...' : '↻ Atualizar'}
-            </button>
-          )}
+          <button
+            onClick={refresh}
+            disabled={isLoading}
+            title="Atualizar cotações do Banco Central"
+            className="text-slate-400 hover:text-slate-200 cursor-pointer disabled:opacity-50"
+          >
+            {isLoading ? 'Atualizando...' : '↻ Atualizar'}
+          </button>
         </div>
       </div>
 
@@ -161,7 +149,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* PIX Donation Button with subtle glow */}
           <button
             id="header-pix-btn"
-            onClick={onOpenPix}
+            onClick={openPix}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-slate-950 text-xs font-bold shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all cursor-pointer"
           >
             <Heart className="w-3.5 h-3.5 fill-slate-950 text-slate-950" />

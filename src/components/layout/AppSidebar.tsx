@@ -2,7 +2,6 @@ import React from 'react';
 import {
   TrendingUp,
   Heart,
-  HelpCircle,
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
@@ -11,15 +10,15 @@ import {
 } from 'lucide-react';
 import { TOOLS, getTool, type ToolId } from '../../config/tools.data';
 import { ACCENT_CLASSES, TOOL_ICONS } from '../../config/tools.tsx';
+import { useModals } from '../../app/providers/ModalsProvider';
 
 interface AppSidebarProps {
   activeTab: ToolId;
   setActiveTab: (tab: ToolId) => void;
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
-  onOpenPix: () => void;
-  onOpenComingSoon: (toolId: ToolId) => void;
-  onOpenMethodology: () => void;
+  /** No mobile a sidebar é um drawer, que precisa fechar depois de qualquer ação. */
+  onAfterAction?: () => void;
 }
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({
@@ -27,11 +26,15 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
   setActiveTab,
   isCollapsed,
   setIsCollapsed,
-  onOpenPix,
-  onOpenComingSoon,
-  onOpenMethodology,
+  onAfterAction,
 }) => {
   const activeTool = getTool(activeTab);
+  const { openPix, openComingSoon } = useModals();
+
+  const act = (action: () => void) => {
+    action();
+    onAfterAction?.();
+  };
 
   return (
     <aside
@@ -111,7 +114,9 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                 <button
                   key={tool.id}
                   id={`nav-${tool.id}-btn`}
-                  onClick={() => (isComingSoon ? onOpenComingSoon(tool.id) : setActiveTab(tool.id))}
+                  onClick={() =>
+                    act(() => (isComingSoon ? openComingSoon(tool.id) : setActiveTab(tool.id)))
+                  }
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative group ${
                     isActive
                       ? 'text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/10'
@@ -150,7 +155,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           <nav className="space-y-1">
             <button
               id="nav-pix-btn"
-              onClick={onOpenPix}
+              onClick={() => act(openPix)}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all group border border-emerald-500/20"
             >
               <Heart className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform fill-emerald-500/20" />
@@ -162,16 +167,6 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               )}
             </button>
 
-            <button
-              id="nav-methodology-btn"
-              onClick={onOpenMethodology}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.03] transition-all"
-            >
-              <HelpCircle className="w-4 h-4 text-slate-400" />
-              {!isCollapsed && (
-                <span className="truncate flex-1 text-left">Fórmulas & Metodologia</span>
-              )}
-            </button>
           </nav>
         </div>
       </div>
@@ -186,7 +181,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           <div className="mt-2 text-[10px] text-slate-400 flex justify-between items-center">
             <span>v1.0 MVP • pt-BR</span>
             <button 
-              onClick={onOpenPix}
+              onClick={() => act(openPix)}
               className="text-emerald-400 hover:underline cursor-pointer font-medium"
             >
               Doe via PIX
