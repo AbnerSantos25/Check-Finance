@@ -12,5 +12,6 @@
     "noEmit": true
   },
   "include": ["./**/*.ts", "../server/**/*.ts", "../src/types.ts"],
-  "exclude": ["../server/**/*.check.ts"]
+  // Roda no Node (npm run test), não no Worker.
+  "exclude": ["../server/**/*.spec.ts"]
 }
