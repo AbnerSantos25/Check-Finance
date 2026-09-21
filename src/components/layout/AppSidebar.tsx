@@ -1,18 +1,18 @@
 import React from 'react';
-import { 
-  TrendingUp, 
-  Flame, 
-  Home, 
-  Compass, 
-  Heart, 
-  HelpCircle, 
-  ChevronLeft, 
+import {
+  type LucideIcon,
+  TrendingUp,
+  Flame,
+  Home,
+  Compass,
+  Heart,
+  HelpCircle,
+  ChevronLeft,
   ChevronRight,
   ShieldCheck,
-  Sparkles,
-  Layers,
   ArrowUpRight
 } from 'lucide-react';
+import { BrandMark } from '../ui/BrandMark';
 
 interface AppSidebarProps {
   activeTab: string;
@@ -24,6 +24,60 @@ interface AppSidebarProps {
   onOpenMethodology: () => void;
   yearsPeriod: number;
 }
+
+const NAV_BASE =
+  'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all';
+
+const TabNavItem: React.FC<{
+  id: string;
+  icon: LucideIcon;
+  label: string;
+  accentIcon: string;
+  accentMarker: string;
+  isActive: boolean;
+  isCollapsed: boolean;
+  onClick: () => void;
+}> = ({ id, icon: Icon, label, accentIcon, accentMarker, isActive, isCollapsed, onClick }) => (
+  <button
+    id={id}
+    onClick={onClick}
+    className={`${NAV_BASE} relative ${isActive
+      ? 'text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/10'
+      : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
+      }`}
+  >
+    <Icon className={`w-4 h-4 ${isActive ? accentIcon : 'text-slate-400'}`} />
+    {!isCollapsed && <span className="truncate flex-1 text-left">{label}</span>}
+    {isActive && !isCollapsed && (
+      <span className={`w-1.5 h-5 rounded-full absolute left-0 ${accentMarker}`} />
+    )}
+  </button>
+);
+
+const ComingSoonNavItem: React.FC<{
+  id: string;
+  icon: LucideIcon;
+  iconClass: string;
+  label: string;
+  isCollapsed: boolean;
+  onClick: () => void;
+}> = ({ id, icon: Icon, iconClass, label, isCollapsed, onClick }) => (
+  <button
+    id={id}
+    onClick={onClick}
+    className={`${NAV_BASE} text-slate-400 hover:text-slate-200 hover:bg-white/[0.03] group`}
+  >
+    <Icon className={`w-4 h-4 ${iconClass}`} />
+    {!isCollapsed && (
+      <>
+        <span className="truncate flex-1 text-left">{label}</span>
+        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-400 font-medium">
+          Em breve
+        </span>
+      </>
+    )}
+  </button>
+);
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({
   activeTab,
@@ -38,16 +92,13 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
   return (
     <aside
       id="app-sidebar"
-      className={`relative z-30 flex flex-col border-r border-[#1c2230] bg-[#0c0e15]/95 backdrop-blur-xl transition-all duration-300 ${
-        isCollapsed ? 'w-20' : 'w-72'
-      } shrink-0 h-screen sticky top-0`}
+      className={`relative z-30 flex flex-col border-r border-line-soft bg-bg/95 backdrop-blur-xl transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-72'
+        } shrink-0 h-screen sticky top-0`}
     >
       {/* Top Header / Logo */}
-      <div className="flex items-center justify-between p-5 border-b border-[#1a1f2c]">
+      <div className="flex items-center justify-between p-5 border-b border-line-soft">
         <div className={`flex items-center gap-3 overflow-hidden ${isCollapsed ? 'justify-center w-full' : ''}`}>
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 text-slate-950 font-bold shadow-lg shadow-emerald-500/20 shrink-0">
-            <TrendingUp className="w-5 h-5 text-slate-950" />
-          </div>
+          <BrandMark icon={TrendingUp} />
           {!isCollapsed && (
             <div className="flex flex-col min-w-0">
               <span className="text-[15px] font-bold tracking-tight text-white truncate flex items-center gap-1.5">
@@ -76,10 +127,9 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       {/* Profile/Context Card (like "Welcome Back" in Quantix) */}
       {!isCollapsed && (
         <div className="px-5 pt-5 pb-3">
-          <div className="p-3.5 rounded-2xl bg-gradient-to-b from-[#161a26] to-[#121520] border border-[#212738] relative overflow-hidden shadow-inner">
+          <div className="p-3.5 rounded-2xl bg-gradient-to-b from-surface-2 to-surface border border-line relative overflow-hidden shadow-inner">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
               <span className="flex items-center gap-1.5 font-medium text-emerald-400">
-                <Sparkles className="w-3.5 h-3.5" />
                 Simulador Ativo
               </span>
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono">
@@ -106,87 +156,55 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
             </div>
           )}
           <nav className="space-y-1">
-            {/* Calculadora de Investimento (Active) */}
-            <button
+            <TabNavItem
               id="nav-investimento-btn"
+              icon={TrendingUp}
+              label="Investimento a Longo Prazo"
+              accentIcon="text-emerald-400"
+              accentMarker="bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"
+              isActive={activeTab === 'calculadora'}
+              isCollapsed={isCollapsed}
               onClick={() => setActiveTab('calculadora')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative ${
-                activeTab === 'calculadora'
-                  ? 'text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/10'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
-              }`}
-            >
-              <TrendingUp className={`w-4 h-4 ${activeTab === 'calculadora' ? 'text-emerald-400' : 'text-slate-400'}`} />
-              {!isCollapsed && (
-                <span className="truncate flex-1 text-left">Investimento a Longo Prazo</span>
-              )}
-              {activeTab === 'calculadora' && !isCollapsed && (
-                <span className="w-1.5 h-5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] absolute left-0" />
-              )}
-            </button>
+            />
 
-            {/* Calculadora FIRE */}
-            <button
+            <ComingSoonNavItem
               id="nav-fire-btn"
+              icon={Flame}
+              iconClass="text-amber-400/80 group-hover:text-amber-400"
+              label="Aposentadoria FIRE"
+              isCollapsed={isCollapsed}
               onClick={() =>
                 onOpenComingSoon(
                   'Calculadora de Aposentadoria (FIRE)',
                   'Descubra a sua taxa de poupança ideal, regra dos 4% e a data exata em que você alcançará sua independência financeira para viver de renda.'
                 )
               }
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.03] transition-all group"
-            >
-              <Flame className="w-4 h-4 text-amber-400/80 group-hover:text-amber-400" />
-              {!isCollapsed && (
-                <span className="truncate flex-1 text-left">Aposentadoria FIRE</span>
-              )}
-              {!isCollapsed && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-400 font-medium">
-                  Em breve
-                </span>
-              )}
-            </button>
+            />
 
-            {/* Simulador de Financiamento */}
-            <button
+            <TabNavItem
               id="nav-financiamento-btn"
+              icon={Home}
+              label="Financiamento Imobiliário"
+              accentIcon="text-sky-400"
+              accentMarker="bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]"
+              isActive={activeTab === 'financiamento'}
+              isCollapsed={isCollapsed}
               onClick={() => setActiveTab('financiamento')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative ${
-                activeTab === 'financiamento'
-                  ? 'text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/10'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
-              }`}
-            >
-              <Home className={`w-4 h-4 ${activeTab === 'financiamento' ? 'text-sky-400' : 'text-slate-400'}`} />
-              {!isCollapsed && (
-                <span className="truncate flex-1 text-left">Financiamento Imobiliário</span>
-              )}
-              {activeTab === 'financiamento' && !isCollapsed && (
-                <span className="w-1.5 h-5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)] absolute left-0" />
-              )}
-            </button>
+            />
 
-            {/* Independência Financeira */}
-            <button
+            <ComingSoonNavItem
               id="nav-independencia-btn"
+              icon={Compass}
+              iconClass="text-indigo-400/80 group-hover:text-indigo-400"
+              label="Independência Financeira"
+              isCollapsed={isCollapsed}
               onClick={() =>
                 onOpenComingSoon(
                   'Calculadora de Independência Financeira',
                   'Simulação completa por custo de vida mensal, reserva de emergência e patrimônio mínimo com alocação em renda fixa, FIIs e ações globais.'
                 )
               }
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.03] transition-all group"
-            >
-              <Compass className="w-4 h-4 text-indigo-400/80 group-hover:text-indigo-400" />
-              {!isCollapsed && (
-                <span className="truncate flex-1 text-left">Independência Financeira</span>
-              )}
-              {!isCollapsed && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-400 font-medium">
-                  Em breve
-                </span>
-              )}
-            </button>
+            />
           </nav>
         </div>
 
@@ -228,14 +246,14 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
       {/* Bottom Footer / Transparency Card */}
       {!isCollapsed && (
-        <div className="p-4 border-t border-[#1a1f2c] bg-[#090b10]/80">
+        <div className="p-4 border-t border-line-soft bg-bg-deep/80">
           <div className="flex items-center gap-2 text-[11px] text-slate-400">
             <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>100% Gratuito, Seguro & Sem Login</span>
           </div>
           <div className="mt-2 text-[10px] text-slate-400 flex justify-between items-center">
             <span>v1.0 MVP • pt-BR</span>
-            <button 
+            <button
               onClick={onOpenPix}
               className="text-emerald-400 hover:underline cursor-pointer font-medium"
             >
@@ -247,7 +265,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
       {/* Button to expand when collapsed */}
       {isCollapsed && (
-        <div className="p-3 border-t border-[#1a1f2c] flex justify-center">
+        <div className="p-3 border-t border-line-soft flex justify-center">
           <button
             id="expand-sidebar-btn"
             onClick={() => setIsCollapsed(false)}

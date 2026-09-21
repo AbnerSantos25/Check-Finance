@@ -52,9 +52,9 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-20 w-full border-b border-[#1c2230] bg-[#0c0e15]/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-20 w-full border-b border-line-soft bg-bg/85 backdrop-blur-xl">
       {/* Upper Economic Ticker Bar (inspired by Quantix ticker bar) */}
-      <div className="hidden lg:flex items-center justify-between px-6 py-1.5 bg-[#090b10] border-b border-[#181d28] text-xs">
+      <div className="hidden lg:flex items-center justify-between px-6 py-1.5 bg-bg-deep border-b border-surface-2 text-xs">
         <div className="flex items-center gap-6 overflow-x-auto py-0.5 scrollbar-none">
           <span className="flex items-center gap-1.5 text-slate-400 font-semibold text-[11px] shrink-0">
             <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
@@ -143,7 +143,7 @@ export const Header: React.FC<HeaderProps> = ({
             id="share-btn"
             onClick={handleShare}
             title="Compartilhar simulador"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#151924] hover:bg-[#1c2233] border border-[#232a3d] text-xs font-medium text-slate-300 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface hover:bg-line-soft border border-line text-xs font-medium text-slate-300 hover:text-white transition-colors"
           >
             {copiedLink ? (
               <>

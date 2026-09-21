@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, Wallet, Sparkles, Coins, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { CalculationSummary } from '../../types';
 import { formatBRL, formatNumber, formatPercent } from '../../lib/calculations';
 
@@ -39,15 +39,12 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
       {/* Card 1: Patrimônio Final */}
       <div
         id="card-patrimonio-final"
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#161a26] to-[#10131d] border border-emerald-500/30 p-5 shadow-xl hover:border-emerald-500/50 transition-all group"
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-surface-2 to-bg border border-emerald-500/30 p-5 shadow-xl hover:border-emerald-500/50 transition-all group"
       >
         <div className="absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
 
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <TrendingUp className="w-5 h-5" />
-            </div>
             <div>
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Patrimônio Final
@@ -94,13 +91,10 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
       {/* Card 2: Total Aportado */}
       <div
         id="card-total-aportado"
-        className="relative overflow-hidden rounded-2xl bg-[#131620] border border-[#202738] p-5 shadow-lg hover:border-[#2f384f] transition-all"
+        className="relative overflow-hidden rounded-2xl bg-surface border border-line p-5 shadow-lg hover:border-line-strong transition-all"
       >
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
-              <Wallet className="w-5 h-5" />
-            </div>
             <div>
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Total Aportado
@@ -141,13 +135,10 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
       {/* Card 3: Ganhos em Juros */}
       <div
         id="card-juros-compostos"
-        className="relative overflow-hidden rounded-2xl bg-[#131620] border border-[#202738] p-5 shadow-lg hover:border-[#2f384f] transition-all"
+        className="relative overflow-hidden rounded-2xl bg-surface border border-line p-5 shadow-lg hover:border-line-strong transition-all"
       >
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <Sparkles className="w-5 h-5" />
-            </div>
             <div>
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Ganhos em Juros
@@ -189,13 +180,10 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
       {/* Card 4: Renda Sustentável */}
       <div
         id="card-renda-passiva"
-        className="relative overflow-hidden rounded-2xl bg-[#131620] border border-[#202738] p-5 shadow-lg hover:border-emerald-500/40 transition-all"
+        className="relative overflow-hidden rounded-2xl bg-surface border border-line p-5 shadow-lg hover:border-emerald-500/40 transition-all"
       >
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-400">
-              <Coins className="w-5 h-5" />
-            </div>
             <div>
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Renda Sustentável

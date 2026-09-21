@@ -15,19 +15,7 @@ import { MethodologyModal } from './components/modals/MethodologyModal';
 import { InvestmentParams, RealEstateParams } from './types';
 import { calculateInvestment, calculateFinancing, formatBRL, formatPercent, sanitizeParams } from './lib/calculations';
 import { loadEconomicIndicators, buildReferenceData, EconomicData } from './lib/economicApi';
-import { 
-  Sparkles, 
-  TrendingUp, 
-  ShieldCheck, 
-  CheckCircle, 
-  HelpCircle,
-  Coins,
-  ArrowRight,
-  Zap,
-  Info,
-  Layers,
-  Heart
-} from 'lucide-react';
+import { TrendingUp, HelpCircle, Heart } from 'lucide-react';
 
 const DEFAULT_PARAMS: InvestmentParams = {
   initialDeposit: 5000,
@@ -51,7 +39,7 @@ const DEFAULT_RE_PARAMS: RealEstateParams = {
 export default function App() {
   const [params, setParams] = useState<InvestmentParams>(DEFAULT_PARAMS);
   const [reParams, setReParams] = useState<RealEstateParams>(DEFAULT_RE_PARAMS);
-  
+
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('calculadora');
@@ -137,7 +125,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0d12] text-slate-100 flex flex-row selection:bg-emerald-500/30 selection:text-emerald-300">
+    <div className="min-h-screen bg-bg text-slate-100 flex flex-row selection:bg-emerald-500/30 selection:text-emerald-300">
       {/* 1. Desktop & Mobile Sidebar */}
       <div className="hidden md:block">
         <AppSidebar
@@ -155,7 +143,7 @@ export default function App() {
       {/* Mobile Drawer Sidebar */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 flex md:hidden">
-          <div 
+          <div
             className="fixed inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setIsMobileMenuOpen(false)}
           />
@@ -219,7 +207,7 @@ export default function App() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setMethodologyModalOpen(true)}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#141824] hover:bg-[#1c2233] border border-[#212738] text-xs font-medium text-slate-300 hover:text-white transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-surface-2 hover:bg-line-soft border border-line text-xs font-medium text-slate-300 hover:text-white transition-all cursor-pointer"
                   >
                     <HelpCircle className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Ver Fórmulas & Metodologia</span>
@@ -246,7 +234,7 @@ export default function App() {
               <InvestmentTable summary={summary} years={params.years} taxExempt={params.taxExempt} />
 
               {/* 7. Educational & SEO Insights Section */}
-              <section className="mt-12 pt-8 border-t border-[#1c2230]">
+              <section className="mt-12 pt-8 border-t border-line-soft">
                 <div className="mb-6">
                   <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
                     Conceitos Fundamentais
@@ -257,10 +245,7 @@ export default function App() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="p-5 rounded-2xl bg-[#12151e] border border-[#1f2636]">
-                    <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-3">
-                      <Zap className="w-5 h-5" />
-                    </div>
+                  <div className="p-5 rounded-2xl bg-surface border border-line">
                     <h3 className="text-sm font-bold text-white mb-1.5">
                       1. O Tempo é o Maior Fator
                     </h3>
@@ -272,10 +257,7 @@ export default function App() {
                     </p>
                   </div>
 
-                  <div className="p-5 rounded-2xl bg-[#12151e] border border-[#1f2636]">
-                    <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 mb-3">
-                      <TrendingUp className="w-5 h-5" />
-                    </div>
+                  <div className="p-5 rounded-2xl bg-surface border border-line">
                     <h3 className="text-sm font-bold text-white mb-1.5">
                       2. Reajuste Anual dos Aportes
                     </h3>
@@ -287,10 +269,7 @@ export default function App() {
                     </p>
                   </div>
 
-                  <div className="p-5 rounded-2xl bg-[#12151e] border border-[#1f2636]">
-                    <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3">
-                      <Coins className="w-5 h-5" />
-                    </div>
+                  <div className="p-5 rounded-2xl bg-surface border border-line">
                     <h3 className="text-sm font-bold text-white mb-1.5">
                       3. Viver de Renda Passiva
                     </h3>
@@ -304,7 +283,7 @@ export default function App() {
                 </div>
 
                 {/* Banner for Support & Roadmap */}
-                <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-[#141824] via-[#161d2e] to-[#121622] border border-[#232b3d] flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+                <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-surface-2 via-surface-2 to-surface border border-line flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
                   <div className="space-y-1 text-center md:text-left">
                     <div className="flex items-center justify-center md:justify-start gap-2 text-emerald-400 text-xs font-semibold">
                       <Heart className="w-4 h-4 fill-emerald-400" />
@@ -349,7 +328,7 @@ export default function App() {
               </div>
 
               <RealEstateSummaryCards summary={reSummary} params={reParams} />
-              
+
               <RealEstateForm
                 params={reParams}
                 onChange={handleReParamChange}
@@ -365,7 +344,7 @@ export default function App() {
         </main>
 
         {/* Global Footer */}
-        <footer className="mt-16 border-t border-[#1a1f2c] bg-[#080a0f] py-8 px-4 sm:px-6 lg:px-8 text-xs text-slate-400">
+        <footer className="mt-16 border-t border-line-soft bg-bg-deep py-8 px-4 sm:px-6 lg:px-8 text-xs text-slate-400">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-slate-400">
               <TrendingUp className="w-4 h-4 text-emerald-400" />
@@ -373,25 +352,25 @@ export default function App() {
               <span>— Hub de Ferramentas Financeiras</span>
             </div>
             <div className="flex items-center gap-4 text-[11px]">
-              <button 
+              <button
                 onClick={() => setMethodologyModalOpen(true)}
                 className="hover:text-slate-200 transition-colors"
               >
                 Metodologia
               </button>
-              <button 
+              <button
                 onClick={() => handleOpenComingSoon('Calculadora FIRE', 'Descubra sua data de independência financeira.')}
                 className="hover:text-slate-200 transition-colors"
               >
                 Calculadora FIRE
               </button>
-              <button 
+              <button
                 onClick={() => handleOpenComingSoon('Simulador de Financiamento', 'Compare amortizações e custo de parcelas.')}
                 className="hover:text-slate-200 transition-colors"
               >
                 Financiamento Imobiliário
               </button>
-              <button 
+              <button
                 onClick={() => setPixModalOpen(true)}
                 className="text-emerald-400 hover:underline transition-colors font-medium"
               >
@@ -411,23 +390,22 @@ export default function App() {
       </div>
 
       {/* Modals */}
-      <PixModal 
-        isOpen={pixModalOpen} 
-        onClose={() => setPixModalOpen(false)} 
-      />
+      {pixModalOpen && <PixModal onClose={() => setPixModalOpen(false)} />}
 
-      <ComingSoonModal
-        isOpen={comingSoonModal.isOpen}
-        onClose={() => setComingSoonModal((prev) => ({ ...prev, isOpen: false }))}
-        toolName={comingSoonModal.toolName}
-        description={comingSoonModal.description}
-      />
+      {comingSoonModal.isOpen && (
+        <ComingSoonModal
+          onClose={() => setComingSoonModal((prev) => ({ ...prev, isOpen: false }))}
+          toolName={comingSoonModal.toolName}
+          description={comingSoonModal.description}
+        />
+      )}
 
-      <MethodologyModal
-        isOpen={methodologyModalOpen}
-        onClose={() => setMethodologyModalOpen(false)}
-        taxExempt={params.taxExempt}
-      />
+      {methodologyModalOpen && (
+        <MethodologyModal
+          onClose={() => setMethodologyModalOpen(false)}
+          taxExempt={params.taxExempt}
+        />
+      )}
     </div>
   );
 }

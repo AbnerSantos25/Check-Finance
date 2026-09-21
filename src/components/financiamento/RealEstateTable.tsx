@@ -46,8 +46,8 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
   };
 
   return (
-    <div className="rounded-2xl bg-[#12151e] border border-[#1f2636] shadow-xl overflow-hidden mb-8">
-      <div className="p-5 sm:p-6 border-b border-[#1c2230] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="rounded-2xl bg-surface border border-line shadow-xl overflow-hidden mb-8">
+      <div className="p-5 sm:p-6 border-b border-line-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-sm font-bold text-white flex items-center gap-2">
             <Table className="w-4 h-4 text-sky-400" />
@@ -70,15 +70,15 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-[#0b0d12]/50">
-              <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-[#1f2636]">Período</th>
-              <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-[#1f2636] text-right">Parcela Base</th>
-              <th className="px-4 py-3 text-[10px] font-bold text-emerald-400 uppercase tracking-wider border-b border-[#1f2636] text-right">Abatimento Extra</th>
-              <th className="px-4 py-3 text-[10px] font-bold text-rose-400 uppercase tracking-wider border-b border-[#1f2636] text-right">Juros (Custo)</th>
-              <th className="px-4 py-3 text-[10px] font-bold text-sky-400 uppercase tracking-wider border-b border-[#1f2636] text-right">Saldo Devedor</th>
+            <tr className="bg-bg/50">
+              <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-line">Período</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-line text-right">Parcela Base</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-emerald-400 uppercase tracking-wider border-b border-line text-right">Abatimento Extra</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-rose-400 uppercase tracking-wider border-b border-line text-right">Juros (Custo)</th>
+              <th className="px-4 py-3 text-[10px] font-bold text-sky-400 uppercase tracking-wider border-b border-line text-right">Saldo Devedor</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#1f2636]/50">
+          <tbody className="divide-y divide-line/50">
             {tableData.map((row, idx) => {
               const isLast = idx === tableData.length - 1;
               return (

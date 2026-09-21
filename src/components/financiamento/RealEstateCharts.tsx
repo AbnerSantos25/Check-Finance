@@ -46,7 +46,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
   const CustomTooltipArea = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-[#0b0d12]/95 border border-[#1f2636] p-3 rounded-xl shadow-xl backdrop-blur-md">
+        <div className="bg-bg/95 border border-line p-3 rounded-xl shadow-xl backdrop-blur-md">
           <p className="text-xs font-bold text-slate-200 mb-2">{payload[0].payload.label} (Mês {payload[0].payload.month})</p>
           <div className="space-y-1">
             <p className="text-xs flex items-center gap-2">
@@ -65,7 +65,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-[#0b0d12]/95 border border-[#1f2636] p-3 rounded-xl shadow-xl backdrop-blur-md max-w-[200px]">
+        <div className="bg-bg/95 border border-line p-3 rounded-xl shadow-xl backdrop-blur-md max-w-[200px]">
           <p className="text-xs font-medium text-slate-300 mb-1">{data.name}</p>
           <p className="text-sm font-mono font-bold" style={{ color: data.color }}>
             {formatBRL(data.value)}
@@ -83,7 +83,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
       
       {/* Gráfico 1: Composição do Custo (Donut) */}
-      <div className="rounded-2xl bg-[#12151e] border border-[#1f2636] p-5 shadow-xl lg:col-span-1 flex flex-col">
+      <div className="rounded-2xl bg-surface border border-line p-5 shadow-xl lg:col-span-1 flex flex-col">
         <div className="flex items-center gap-2 mb-4">
           <PieIcon className="w-4 h-4 text-slate-400" />
           <h3 className="text-sm font-bold text-white">Composição do Custo Total</h3>
@@ -133,7 +133,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
       </div>
 
       {/* Gráfico 2: Evolução do Saldo Devedor (Area) */}
-      <div className="rounded-2xl bg-[#12151e] border border-[#1f2636] p-5 shadow-xl lg:col-span-2 flex flex-col">
+      <div className="rounded-2xl bg-surface border border-line p-5 shadow-xl lg:col-span-2 flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <LineChart className="w-4 h-4 text-slate-400" />

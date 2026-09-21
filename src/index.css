@@ -1,9 +1,23 @@
 @import "tailwindcss";
 
+/* Paleta da interface. Cada token vira utilitário (bg-surface, border-line, from-surface-2…)
+   e também `var(--color-*)` em CSS puro. As cores de marca e de série de gráfico continuam
+   nas escalas do Tailwind (emerald, sky, amber) — aqui ficam só os neutros do tema escuro. */
+@theme {
+  --color-bg: #0b0d12;          /* fundo da aplicação */
+  --color-bg-deep: #090b10;     /* poços: campos, trilhos, blocos embutidos */
+  --color-panel: #0f121a;       /* base de painéis e modais (fim do gradiente) */
+  --color-surface: #12151e;     /* card padrão */
+  --color-surface-2: #161a25;   /* card elevado, topo de gradiente */
+  --color-line: #1f2636;        /* borda padrão */
+  --color-line-soft: #1c2230;   /* divisória, borda de baixo contraste */
+  --color-line-strong: #273044; /* borda/hover de destaque */
+}
+
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #0b0d12;
+    background-color: var(--color-bg);
     color: #f1f5f9;
   }
 }
@@ -15,16 +29,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0d1017;
+  background: var(--color-bg-deep);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e2433;
+  background: var(--color-line);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2a3347;
+  background: var(--color-line-strong);
 }
 
 /* Subtle glow utilities */
