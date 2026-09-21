@@ -57,7 +57,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
       className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8"
     >
       {/* 1. Main Evolution Chart (Takes 2 cols on lg) */}
-      <div className="lg:col-span-2 rounded-2xl bg-[#12151e] border border-[#1f2636] p-5 sm:p-6 shadow-xl flex flex-col justify-between">
+      <div className="lg:col-span-2 rounded-2xl bg-surface border border-line p-5 sm:p-6 shadow-xl flex flex-col justify-between">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
@@ -121,7 +121,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="p-3.5 rounded-xl bg-[#0f121a] border border-[#232a3d] shadow-2xl text-xs space-y-2 min-w-[210px]">
+                      <div className="p-3.5 rounded-xl bg-panel border border-line shadow-2xl text-xs space-y-2 min-w-[210px]">
                         <div className="font-bold text-white pb-1.5 border-b border-white/10 flex justify-between items-center">
                           <span>{label}</span>
                           <span className="text-[10px] text-slate-400 font-normal">
@@ -181,7 +181,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
       </div>
 
       {/* 2. Donut Composition Chart (Takes 1 col on lg) */}
-      <div className="rounded-2xl bg-[#12151e] border border-[#1f2636] p-5 sm:p-6 shadow-xl flex flex-col justify-between">
+      <div className="rounded-2xl bg-surface border border-line p-5 sm:p-6 shadow-xl flex flex-col justify-between">
         <div>
           <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
             <PieIcon className="w-5 h-5 text-emerald-400" />
@@ -238,8 +238,8 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
         </div>
 
         {/* Legend pills */}
-        <div className="space-y-2 pt-2 border-t border-[#1c2230] text-xs">
-          <div className="flex items-center justify-between p-2 rounded-xl bg-[#161a25]">
+        <div className="space-y-2 pt-2 border-t border-line-soft text-xs">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-surface-2">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-emerald-500" />
               <span className="text-slate-300 font-medium">Juros (brutos)</span>
@@ -249,7 +249,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
             </span>
           </div>
 
-          <div className="flex items-center justify-between p-2 rounded-xl bg-[#161a25]">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-surface-2">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-blue-500" />
               <span className="text-slate-300 font-medium">Total Aportado</span>

@@ -15,7 +15,7 @@ export const RootLayout: React.FC<RootLayoutProps> = ({ activeTab, onSelectTool,
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#0b0d12] text-slate-100 flex flex-row selection:bg-emerald-500/30 selection:text-emerald-300">
+    <div className="min-h-screen bg-bg text-slate-100 flex flex-row selection:bg-emerald-500/30 selection:text-emerald-300">
       <div className="hidden md:block">
         <AppSidebar
           activeTab={activeTab}

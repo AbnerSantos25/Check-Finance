@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Coins, Heart, HelpCircle, TrendingUp, Zap } from 'lucide-react';
+import { Heart, HelpCircle } from 'lucide-react';
 import type { InvestmentParams } from '../../types';
 import { formatBRL, formatPercent } from '../../shared/lib/format';
 import { useEconomicData } from '../../app/providers/EconomicDataProvider';
@@ -58,7 +58,7 @@ export const InvestmentPage: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsMethodologyOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#141824] hover:bg-[#1c2233] border border-[#212738] text-xs font-medium text-slate-300 hover:text-white transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-surface-2 hover:bg-line-soft border border-line text-xs font-medium text-slate-300 hover:text-white transition-all cursor-pointer"
           >
             <HelpCircle className="w-3.5 h-3.5 text-emerald-400" />
             <span>Ver Fórmulas & Metodologia</span>
@@ -80,7 +80,7 @@ export const InvestmentPage: React.FC = () => {
 
       <InvestmentTable summary={summary} years={params.years} taxExempt={params.taxExempt} />
 
-      <section className="mt-12 pt-8 border-t border-[#1c2230]">
+      <section className="mt-12 pt-8 border-t border-line-soft">
         <div className="mb-6">
           <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
             Conceitos Fundamentais
@@ -91,10 +91,7 @@ export const InvestmentPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-5 rounded-2xl bg-[#12151e] border border-[#1f2636]">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-3">
-              <Zap className="w-5 h-5" />
-            </div>
+          <div className="p-5 rounded-2xl bg-surface border border-line">
             <h3 className="text-sm font-bold text-white mb-1.5">
               1. O Tempo é o Maior Fator
             </h3>
@@ -106,10 +103,7 @@ export const InvestmentPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl bg-[#12151e] border border-[#1f2636]">
-            <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 mb-3">
-              <TrendingUp className="w-5 h-5" />
-            </div>
+          <div className="p-5 rounded-2xl bg-surface border border-line">
             <h3 className="text-sm font-bold text-white mb-1.5">
               2. Reajuste Anual dos Aportes
             </h3>
@@ -121,10 +115,7 @@ export const InvestmentPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl bg-[#12151e] border border-[#1f2636]">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3">
-              <Coins className="w-5 h-5" />
-            </div>
+          <div className="p-5 rounded-2xl bg-surface border border-line">
             <h3 className="text-sm font-bold text-white mb-1.5">
               3. Viver de Renda Passiva
             </h3>
@@ -140,11 +131,12 @@ export const InvestmentPage: React.FC = () => {
         <SupportBanner />
       </section>
 
-      <MethodologyModal
-        isOpen={isMethodologyOpen}
-        onClose={() => setIsMethodologyOpen(false)}
-        taxExempt={params.taxExempt}
-      />
+      {isMethodologyOpen && (
+        <MethodologyModal
+          onClose={() => setIsMethodologyOpen(false)}
+          taxExempt={params.taxExempt}
+        />
+      )}
     </>
   );
 };
@@ -153,7 +145,7 @@ const SupportBanner: React.FC = () => {
   const { openPix } = useModals();
 
   return (
-    <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-[#141824] via-[#161d2e] to-[#121622] border border-[#232b3d] flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+    <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-surface-2 via-surface-2 to-surface border border-line flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
       <div className="space-y-1 text-center md:text-left">
         <div className="flex items-center justify-center md:justify-start gap-2 text-emerald-400 text-xs font-semibold">
           <Heart className="w-4 h-4 fill-emerald-400" />

@@ -20,8 +20,8 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
   liveRates,
 }) => {
   return (
-    <div className="rounded-2xl bg-[#12151e] border border-[#1f2636] p-5 sm:p-7 shadow-xl mb-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#1c2230]">
+    <div className="rounded-2xl bg-surface border border-line p-5 sm:p-7 shadow-xl mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-line-soft">
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5">
             <Sliders className="w-5 h-5 text-sky-400" />
@@ -34,7 +34,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
 
         <button
           onClick={onReset}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#191e2b] hover:bg-[#22293b] border border-[#273044] text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-2 hover:bg-line border border-line-strong text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
         >
           <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
           Restaurar Padrões
@@ -58,7 +58,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 step="10000"
                 value={params.propertyValue}
                 onChange={(e) => onChange({ propertyValue: Number(e.target.value) })}
-                className="w-full pl-9 pr-4 py-2.5 bg-[#0b0e14] border border-[#22293b] rounded-xl text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-bg border border-line rounded-xl text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all"
               />
             </div>
           </div>
@@ -82,7 +82,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 step="10000"
                 value={params.downPayment}
                 onChange={(e) => onChange({ downPayment: Number(e.target.value) })}
-                className="w-full pl-9 pr-4 py-2.5 bg-[#0b0e14] border border-[#22293b] rounded-xl text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-bg border border-line rounded-xl text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-all"
               />
             </div>
             <div className="flex items-center gap-1.5 pt-1">
@@ -91,7 +91,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                   key={pct}
                   type="button"
                   onClick={() => onChange({ downPayment: params.propertyValue * (pct / 100) })}
-                  className="text-[11px] px-2 py-1 rounded-lg bg-[#161a25] border border-[#222938] text-slate-400 hover:text-slate-200 transition-all"
+                  className="text-[11px] px-2 py-1 rounded-lg bg-surface-2 border border-line text-slate-400 hover:text-slate-200 transition-all"
                 >
                   {pct}%
                 </button>
@@ -112,7 +112,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 step="0.1"
                 value={params.annualInterestRate}
                 onChange={(e) => onChange({ annualInterestRate: Number(e.target.value) })}
-                className="w-full accent-sky-400 h-1.5 bg-[#1f2638] rounded-lg cursor-pointer"
+                className="w-full accent-sky-400 h-1.5 bg-line rounded-lg cursor-pointer"
               />
               <div className="w-24 shrink-0 relative">
                 <input
@@ -122,7 +122,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                   step="0.1"
                   value={params.annualInterestRate}
                   onChange={(e) => onChange({ annualInterestRate: Number(e.target.value) })}
-                  className="w-full px-2.5 py-2 bg-[#0b0e14] border border-[#22293b] rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-sky-500"
+                  className="w-full px-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-sky-500"
                 />
                 <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">% a.a.</span>
               </div>
@@ -148,7 +148,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 step="12"
                 value={params.termMonths}
                 onChange={(e) => onChange({ termMonths: Number(e.target.value) })}
-                className="w-full accent-sky-400 h-1.5 bg-[#1f2638] rounded-lg cursor-pointer"
+                className="w-full accent-sky-400 h-1.5 bg-line rounded-lg cursor-pointer"
               />
             </div>
             <div className="flex items-center gap-1.5 pt-1">
@@ -160,7 +160,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                   className={`text-[11px] px-2 py-1 rounded-lg border transition-all ${
                     params.termMonths === months
                       ? 'bg-sky-500/15 border-sky-500/40 text-sky-300 font-semibold'
-                      : 'bg-[#161a25] border-[#222938] text-slate-400 hover:text-slate-200'
+                      : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
                   }`}
                 >
                   {months / 12} Anos
@@ -174,14 +174,14 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
             <label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
               Sistema de Amortização
             </label>
-            <div className="flex items-center bg-[#0b0e14] p-1 rounded-xl border border-[#22293b]">
+            <div className="flex items-center bg-bg p-1 rounded-xl border border-line">
               {(['SAC', 'PRICE'] as AmortizationSystem[]).map((sys) => (
                 <button
                   key={sys}
                   onClick={() => onChange({ amortizationSystem: sys })}
                   className={`flex-1 text-xs font-medium py-2 rounded-lg transition-all ${
                     params.amortizationSystem === sys
-                      ? 'bg-[#1f2636] text-white shadow-sm'
+                      ? 'bg-line text-white shadow-sm'
                       : 'text-slate-500 hover:text-slate-300'
                   }`}
                 >
@@ -192,7 +192,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
           </div>
 
           {/* Amortização Extraordinária */}
-          <div className="space-y-2 pt-2 border-t border-[#1c2230]">
+          <div className="space-y-2 pt-2 border-t border-line-soft">
             <label className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
               <DollarSign className="w-3.5 h-3.5" />
               Amortização Extraordinária Mensal
@@ -210,7 +210,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 step="100"
                 value={params.extraMonthlyAmortization}
                 onChange={(e) => onChange({ extraMonthlyAmortization: Number(e.target.value) })}
-                className="w-full pl-9 pr-4 py-2.5 bg-[#0b0e14] border border-emerald-500/20 rounded-xl text-sm font-medium text-emerald-400 placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-bg border border-emerald-500/20 rounded-xl text-sm font-medium text-emerald-400 placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
                 placeholder="Ex: 500 para R$ 500 todo mês"
               />
             </div>

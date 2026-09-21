@@ -29,14 +29,16 @@ export const ModalsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     >
       {children}
 
-      <PixModal isOpen={isPixOpen} onClose={() => setIsPixOpen(false)} />
+      {/* Os modais são montados sob demanda: o <dialog> nativo chama showModal() ao montar. */}
+      {isPixOpen && <PixModal onClose={() => setIsPixOpen(false)} />}
 
-      <ComingSoonModal
-        isOpen={comingSoonTool !== null}
-        onClose={() => setComingSoonTool(null)}
-        toolName={comingSoonTool ? getTool(comingSoonTool).label : ''}
-        description={comingSoonTool ? getTool(comingSoonTool).description : ''}
-      />
+      {comingSoonTool && (
+        <ComingSoonModal
+          onClose={() => setComingSoonTool(null)}
+          toolName={getTool(comingSoonTool).label}
+          description={getTool(comingSoonTool).description}
+        />
+      )}
     </ModalsContext.Provider>
   );
 };

@@ -70,9 +70,9 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
   return (
     <div 
       id="investment-table-container"
-      className="rounded-2xl bg-[#12151e] border border-[#1f2636] p-5 sm:p-6 shadow-xl"
+      className="rounded-2xl bg-surface border border-line p-5 sm:p-6 shadow-xl"
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#1c2230]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-line-soft">
         <div>
           <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2.5">
             <TableIcon className="w-5 h-5 text-emerald-400" />
@@ -86,13 +86,13 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
         <div className="flex items-center gap-2.5">
           {/* Milestones toggle */}
           {years > 7 && (
-            <div className="flex items-center rounded-xl bg-[#0d1017] p-1 border border-[#212738] text-xs">
+            <div className="flex items-center rounded-xl bg-bg-deep p-1 border border-line text-xs">
               <button
                 type="button"
                 onClick={() => setFilterMode('all')}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
                   filterMode === 'all'
-                    ? 'bg-[#1c2333] text-white font-medium'
+                    ? 'bg-line-soft text-white font-medium'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -103,7 +103,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                 onClick={() => setFilterMode('milestones')}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
                   filterMode === 'milestones'
-                    ? 'bg-[#1c2333] text-white font-medium'
+                    ? 'bg-line-soft text-white font-medium'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -116,7 +116,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
           <button
             id="export-csv-btn"
             onClick={handleExportCsv}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#171c28] hover:bg-[#202738] border border-[#263044] text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-2 hover:bg-line border border-line-strong text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
             title="Baixar planilha CSV"
           >
             {copiedCsv ? (
@@ -137,7 +137,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
       {/* Table responsive container */}
       <div className="overflow-x-auto mt-4 max-h-[500px] overflow-y-auto">
         <table className="w-full text-left text-xs border-collapse">
-          <thead className="sticky top-0 z-10 bg-[#0e111a] border-b border-[#21283a] text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+          <thead className="sticky top-0 z-10 bg-bg border-b border-line text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
             <tr>
               <th className="py-3 px-3.5 rounded-tl-lg">Ano</th>
               <th className="py-3 px-3.5">Total Aportado</th>
@@ -149,7 +149,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
               <th className="py-3 px-3.5 rounded-tr-lg">Líquido (valores de hoje)</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#191f2e]">
+          <tbody className="divide-y divide-surface-2">
             {displayData.map((row) => {
               const isLastYear = row.year === years;
               return (
@@ -200,7 +200,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
       </div>
 
       {/* Table footer note */}
-      <div className="mt-4 pt-3 border-t border-[#1c2230] flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2">
+      <div className="mt-4 pt-3 border-t border-line-soft flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
           <span>

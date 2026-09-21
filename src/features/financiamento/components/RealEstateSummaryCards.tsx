@@ -15,7 +15,7 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       
       {/* Total Financiado */}
-      <div className="bg-[#12151e] border border-[#1f2636] rounded-2xl p-5 relative overflow-hidden group">
+      <div className="bg-surface border border-line rounded-2xl p-5 relative overflow-hidden group">
         <div className="flex items-center gap-2 mb-3 relative z-10">
           <Landmark className="w-4 h-4 text-slate-400" />
           <h3 className="text-xs font-semibold text-slate-300">Valor Financiado</h3>
@@ -31,7 +31,7 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
       </div>
 
       {/* Custo Efetivo Total (O que saiu do bolso) */}
-      <div className="bg-[#12151e] border border-[#1f2636] rounded-2xl p-5 relative overflow-hidden group">
+      <div className="bg-surface border border-line rounded-2xl p-5 relative overflow-hidden group">
         <div className="flex items-center gap-2 mb-3 relative z-10">
           <TrendingDown className="w-4 h-4 text-rose-400" />
           <h3 className="text-xs font-semibold text-slate-300">Custo Total Desembolsado</h3>
@@ -47,7 +47,7 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
       </div>
 
       {/* Parcelas (Primeira e Última) */}
-      <div className="bg-[#12151e] border border-[#1f2636] rounded-2xl p-5 relative overflow-hidden group">
+      <div className="bg-surface border border-line rounded-2xl p-5 relative overflow-hidden group">
         <div className="flex items-center gap-2 mb-3 relative z-10">
           <Clock className="w-4 h-4 text-sky-400" />
           <h3 className="text-xs font-semibold text-slate-300">Valor das Parcelas (S/ Seguros)</h3>
@@ -70,7 +70,7 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
 
       {/* Economia de Juros e Tempo (Amortização Extra) */}
       <div className={`rounded-2xl p-5 relative overflow-hidden group border transition-all ${
-        isSaving ? 'bg-gradient-to-br from-emerald-900/40 to-[#12151e] border-emerald-500/30' : 'bg-[#12151e] border-[#1f2636]'
+        isSaving ? 'bg-gradient-to-br from-emerald-900/40 to-surface border-emerald-500/30' : 'bg-surface border-line'
       }`}>
         <div className="flex items-center gap-2 mb-3 relative z-10">
           {isSaving ? (
