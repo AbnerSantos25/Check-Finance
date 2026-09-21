@@ -1,6 +1,6 @@
 import React from 'react';
-import { FinancingSummary, RealEstateParams } from '../../types';
-import { formatBRL } from '../../lib/calculations';
+import { FinancingSummary, RealEstateParams } from '../../../types';
+import { formatBRL } from '../../../shared/lib/format';
 import { Clock, TrendingDown, Landmark, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 interface RealEstateSummaryCardsProps {

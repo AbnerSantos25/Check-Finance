@@ -1,5 +1,5 @@
-import { EconomicIndicator, IbovespaQuote, IndicatorStatus, MarketRates } from '../types';
-import { formatNumber } from './calculations';
+import { EconomicIndicator, IbovespaQuote, IndicatorStatus, MarketRates } from '../../types';
+import { formatNumber } from './format';
 
 const CACHE_KEY = 'hub_financeiro_economic_indicators_v2';
 const CACHE_TTL_MS = 60 * 60 * 1000;

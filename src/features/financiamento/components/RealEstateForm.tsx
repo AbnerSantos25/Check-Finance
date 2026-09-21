@@ -1,7 +1,7 @@
 import React from 'react';
 import { Home, Sliders, RotateCcw, AlertCircle, Percent, DollarSign } from 'lucide-react';
-import { RealEstateParams, AmortizationSystem } from '../../types';
-import { formatBRL } from '../../lib/calculations';
+import { RealEstateParams, AmortizationSystem } from '../../../types';
+import { formatBRL } from '../../../shared/lib/format';
 
 interface RealEstateFormProps {
   params: RealEstateParams;

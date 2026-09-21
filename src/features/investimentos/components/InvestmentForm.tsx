@@ -10,9 +10,9 @@ import {
   TrendingUp,
   ShieldCheck
 } from 'lucide-react';
-import { InvestmentParams, MarketRates } from '../../types';
-import { formatBRL, formatNumber, formatPercent, monthlyEquivalentRate } from '../../lib/calculations';
-import { REFERENCE_DATE } from '../../lib/economicApi';
+import { InvestmentParams, MarketRates } from '../../../types';
+import { formatBRL, formatNumber, formatPercent, monthlyEquivalentRate } from '../../../shared/lib/format';
+import { REFERENCE_DATE } from '../../../shared/lib/economicApi';
 
 interface InvestmentFormProps {
   params: InvestmentParams;

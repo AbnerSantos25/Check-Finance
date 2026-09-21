@@ -8,8 +8,8 @@ import {
   Filter,
   Check
 } from 'lucide-react';
-import { CalculationSummary, YearlyResult } from '../../types';
-import { formatBRL, formatPercent } from '../../lib/calculations';
+import { CalculationSummary, YearlyResult } from '../../../types';
+import { formatBRL, formatPercent } from '../../../shared/lib/format';
 
 interface InvestmentTableProps {
   summary: CalculationSummary;

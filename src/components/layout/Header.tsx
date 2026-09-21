@@ -9,7 +9,7 @@ import {
   DollarSign
 } from 'lucide-react';
 import { EconomicIndicator } from '../../types';
-import { EXPECTED_INDICATORS } from '../../lib/economicApi';
+import { EXPECTED_INDICATORS } from '../../shared/lib/economicApi';
 
 interface HeaderProps {
   onOpenPix: () => void;

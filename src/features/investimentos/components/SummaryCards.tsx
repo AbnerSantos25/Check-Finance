@@ -1,7 +1,7 @@
 import React from 'react';
 import { TrendingUp, Wallet, Sparkles, Coins, AlertTriangle } from 'lucide-react';
-import { CalculationSummary } from '../../types';
-import { formatBRL, formatNumber, formatPercent } from '../../lib/calculations';
+import { CalculationSummary } from '../../../types';
+import { formatBRL, formatNumber, formatPercent } from '../../../shared/lib/format';
 
 interface SummaryCardsProps {
   summary: CalculationSummary;

@@ -1,21 +1,26 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { AppSidebar } from './components/layout/AppSidebar';
 import { Header } from './components/layout/Header';
-import { SummaryCards } from './components/calculadora/SummaryCards';
-import { InvestmentForm } from './components/calculadora/InvestmentForm';
-import { ComparisonCharts } from './components/calculadora/ComparisonCharts';
-import { InvestmentTable } from './components/calculadora/InvestmentTable';
-import { RealEstateForm } from './components/financiamento/RealEstateForm';
-import { RealEstateSummaryCards } from './components/financiamento/RealEstateSummaryCards';
-import { RealEstateCharts } from './components/financiamento/RealEstateCharts';
-import { RealEstateTable } from './components/financiamento/RealEstateTable';
+import { SummaryCards } from './features/investimentos/components/SummaryCards';
+import { InvestmentForm } from './features/investimentos/components/InvestmentForm';
+import { ComparisonCharts } from './features/investimentos/components/ComparisonCharts';
+import { InvestmentTable } from './features/investimentos/components/InvestmentTable';
+import { MethodologyModal } from './features/investimentos/components/MethodologyModal';
+import { calculateInvestment } from './features/investimentos/lib/calculateInvestment';
+import { sanitizeParams } from './features/investimentos/lib/sanitizeParams';
+import { DEFAULT_PARAMS } from './features/investimentos/defaults';
+import { RealEstateForm } from './features/financiamento/components/RealEstateForm';
+import { RealEstateSummaryCards } from './features/financiamento/components/RealEstateSummaryCards';
+import { RealEstateCharts } from './features/financiamento/components/RealEstateCharts';
+import { RealEstateTable } from './features/financiamento/components/RealEstateTable';
+import { calculateFinancing } from './features/financiamento/lib/calculateFinancing';
+import { DEFAULT_RE_PARAMS } from './features/financiamento/defaults';
 import { PixModal } from './components/modals/PixModal';
 import { ComingSoonModal } from './components/modals/ComingSoonModal';
-import { MethodologyModal } from './components/modals/MethodologyModal';
 import { InvestmentParams, RealEstateParams } from './types';
 import { TOOLS, getTool, type ToolId } from './config/tools.data';
-import { calculateInvestment, calculateFinancing, formatBRL, formatPercent, sanitizeParams } from './lib/calculations';
-import { loadEconomicIndicators, buildReferenceData, EconomicData } from './lib/economicApi';
+import { formatBRL, formatPercent } from './shared/lib/format';
+import { loadEconomicIndicators, buildReferenceData, EconomicData } from './shared/lib/economicApi';
 import { 
   Sparkles, 
   TrendingUp, 
@@ -29,25 +34,6 @@ import {
   Layers,
   Heart
 } from 'lucide-react';
-
-const DEFAULT_PARAMS: InvestmentParams = {
-  initialDeposit: 5000,
-  monthlyDeposit: 1000,
-  annualAdjustmentRate: 5,
-  annualInterestRate: 12,
-  annualInflationRate: 4.5,
-  years: 30,
-  taxExempt: false,
-};
-
-const DEFAULT_RE_PARAMS: RealEstateParams = {
-  propertyValue: 500000,
-  downPayment: 100000,
-  annualInterestRate: 9.5,
-  termMonths: 360,
-  amortizationSystem: 'SAC',
-  extraMonthlyAmortization: 0,
-};
 
 export default function App() {
   const [params, setParams] = useState<InvestmentParams>(DEFAULT_PARAMS);
@@ -125,13 +111,20 @@ export default function App() {
     setComingSoonTool(toolId);
   };
 
+  // Sem o scroll, trocar de ferramenta pelo footer troca o <main> fora da tela
+  // e parece que o clique não fez nada.
+  const handleSelectTool = (toolId: ToolId) => {
+    setActiveTab(toolId);
+    window.scrollTo({ top: 0 });
+  };
+
   return (
     <div className="min-h-screen bg-[#0b0d12] text-slate-100 flex flex-row selection:bg-emerald-500/30 selection:text-emerald-300">
       {/* 1. Desktop & Mobile Sidebar */}
       <div className="hidden md:block">
         <AppSidebar
           activeTab={activeTab}
-          setActiveTab={setActiveTab}
+          setActiveTab={handleSelectTool}
           isCollapsed={isSidebarCollapsed}
           setIsCollapsed={setIsSidebarCollapsed}
           onOpenPix={() => setPixModalOpen(true)}
@@ -151,7 +144,7 @@ export default function App() {
             <AppSidebar
               activeTab={activeTab}
               setActiveTab={(tab) => {
-                setActiveTab(tab);
+                handleSelectTool(tab);
                 setIsMobileMenuOpen(false);
               }}
               isCollapsed={false}
@@ -372,7 +365,7 @@ export default function App() {
                   onClick={() =>
                     tool.status === 'em-breve'
                       ? handleOpenComingSoon(tool.id)
-                      : setActiveTab(tool.id)
+                      : handleSelectTool(tool.id)
                   }
                   className="hover:text-slate-200 transition-colors"
                 >

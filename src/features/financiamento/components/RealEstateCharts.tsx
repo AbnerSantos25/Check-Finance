@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
-import { FinancingSummary, RealEstateParams } from '../../types';
-import { formatBRL } from '../../lib/calculations';
+import { FinancingSummary, RealEstateParams } from '../../../types';
+import { formatBRL } from '../../../shared/lib/format';
 import { PieChart as PieIcon, LineChart } from 'lucide-react';
 
 interface RealEstateChartsProps {

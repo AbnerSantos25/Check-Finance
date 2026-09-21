@@ -12,8 +12,8 @@ import {
   Cell,
   Legend
 } from 'recharts';
-import { CalculationSummary } from '../../types';
-import { formatBRL, formatCompactBRL, formatPercent } from '../../lib/calculations';
+import { CalculationSummary } from '../../../types';
+import { formatBRL, formatCompactBRL, formatPercent } from '../../../shared/lib/format';
 import { BarChart3, PieChart as PieIcon, Sparkles } from 'lucide-react';
 
 interface ComparisonChartsProps {

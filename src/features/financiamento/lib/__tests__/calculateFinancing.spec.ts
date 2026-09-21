@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { calculateFinancing } from '../calculations';
-import type { RealEstateParams } from '../../types';
+import { calculateFinancing } from '../calculateFinancing';
+import type { RealEstateParams } from '../../../../types';
 
 // Cenário padrão exibido ao abrir o simulador.
 const BASE: RealEstateParams = {

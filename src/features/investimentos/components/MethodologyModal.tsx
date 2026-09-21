@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, BookOpen, Calculator, Sparkles, CheckCircle2, Landmark, Database, AlertTriangle } from 'lucide-react';
-import { REFERENCE_DATE } from '../../lib/economicApi';
+import { REFERENCE_DATE } from '../../../shared/lib/economicApi';
 
 interface MethodologyModalProps {
   isOpen: boolean;

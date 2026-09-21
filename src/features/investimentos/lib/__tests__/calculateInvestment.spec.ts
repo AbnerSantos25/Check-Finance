@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { calculateInvestment, regressiveTaxRate, sanitizeParams } from '../calculations';
-import type { InvestmentParams } from '../../types';
+import { calculateInvestment } from '../calculateInvestment';
+import { sanitizeParams } from '../sanitizeParams';
+import { regressiveTaxRate } from '../taxes';
+import type { InvestmentParams } from '../../../../types';
 
 // Cenário padrão exibido ao abrir a calculadora.
 const BASE: InvestmentParams = {

@@ -2,8 +2,8 @@
  * Fonte única das ferramentas do hub: alimenta sidebar, footer, a home de hub,
  * o ComingSoonModal e a geração do sitemap.
  *
- * Sem JSX e sem lucide de propósito — o vite.config.ts importa este arquivo
- * para gerar o sitemap, e lá não há pipeline de React.
+ * Mantido sem JSX e sem lucide: precisa ser importável por script de build em
+ * Node, onde não há pipeline de React. Ícones e classes moram em tools.tsx.
  */
 
 export type ToolId = 'investimentos' | 'financiamento' | 'fire' | 'independencia';

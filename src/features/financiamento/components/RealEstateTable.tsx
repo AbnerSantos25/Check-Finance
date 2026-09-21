@@ -1,6 +1,6 @@
 import React from 'react';
-import { FinancingSummary } from '../../types';
-import { formatBRL } from '../../lib/calculations';
+import { FinancingSummary } from '../../../types';
+import { formatBRL } from '../../../shared/lib/format';
 import { Table, Download } from 'lucide-react';
 
 interface RealEstateTableProps {
