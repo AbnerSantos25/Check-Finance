@@ -1,28 +1,25 @@
 import React from 'react';
-import { 
-  TrendingUp, 
-  Flame, 
-  Home, 
-  Compass, 
-  Heart, 
-  HelpCircle, 
-  ChevronLeft, 
+import {
+  TrendingUp,
+  Heart,
+  HelpCircle,
+  ChevronLeft,
   ChevronRight,
   ShieldCheck,
   Sparkles,
-  Layers,
   ArrowUpRight
 } from 'lucide-react';
+import { TOOLS, getTool, type ToolId } from '../../config/tools.data';
+import { ACCENT_CLASSES, TOOL_ICONS } from '../../config/tools.tsx';
 
 interface AppSidebarProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+  activeTab: ToolId;
+  setActiveTab: (tab: ToolId) => void;
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
   onOpenPix: () => void;
-  onOpenComingSoon: (toolName: string, description: string) => void;
+  onOpenComingSoon: (toolId: ToolId) => void;
   onOpenMethodology: () => void;
-  yearsPeriod: number;
 }
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({
@@ -33,8 +30,9 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
   onOpenPix,
   onOpenComingSoon,
   onOpenMethodology,
-  yearsPeriod,
 }) => {
+  const activeTool = getTool(activeTab);
+
   return (
     <aside
       id="app-sidebar"
@@ -82,15 +80,12 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                 <Sparkles className="w-3.5 h-3.5" />
                 Simulador Ativo
               </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono">
-                {yearsPeriod} ANOS
-              </span>
             </div>
             <div className="text-sm font-semibold text-white">
-              Efeito Juros Compostos
+              {activeTool.shortLabel}
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
-              Horizonte de longo prazo com aportes mensais e inflação corrigida.
+              {activeTool.description}
             </p>
           </div>
         </div>
@@ -106,87 +101,42 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
             </div>
           )}
           <nav className="space-y-1">
-            {/* Calculadora de Investimento (Active) */}
-            <button
-              id="nav-investimento-btn"
-              onClick={() => setActiveTab('calculadora')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative ${
-                activeTab === 'calculadora'
-                  ? 'text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/10'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
-              }`}
-            >
-              <TrendingUp className={`w-4 h-4 ${activeTab === 'calculadora' ? 'text-emerald-400' : 'text-slate-400'}`} />
-              {!isCollapsed && (
-                <span className="truncate flex-1 text-left">Investimento a Longo Prazo</span>
-              )}
-              {activeTab === 'calculadora' && !isCollapsed && (
-                <span className="w-1.5 h-5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] absolute left-0" />
-              )}
-            </button>
+            {TOOLS.map((tool) => {
+              const Icon = TOOL_ICONS[tool.id];
+              const accent = ACCENT_CLASSES[tool.accent];
+              const isComingSoon = tool.status === 'em-breve';
+              const isActive = !isComingSoon && activeTab === tool.id;
 
-            {/* Calculadora FIRE */}
-            <button
-              id="nav-fire-btn"
-              onClick={() =>
-                onOpenComingSoon(
-                  'Calculadora de Aposentadoria (FIRE)',
-                  'Descubra a sua taxa de poupança ideal, regra dos 4% e a data exata em que você alcançará sua independência financeira para viver de renda.'
-                )
-              }
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.03] transition-all group"
-            >
-              <Flame className="w-4 h-4 text-amber-400/80 group-hover:text-amber-400" />
-              {!isCollapsed && (
-                <span className="truncate flex-1 text-left">Aposentadoria FIRE</span>
-              )}
-              {!isCollapsed && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-400 font-medium">
-                  Em breve
-                </span>
-              )}
-            </button>
-
-            {/* Simulador de Financiamento */}
-            <button
-              id="nav-financiamento-btn"
-              onClick={() => setActiveTab('financiamento')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative ${
-                activeTab === 'financiamento'
-                  ? 'text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/10'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
-              }`}
-            >
-              <Home className={`w-4 h-4 ${activeTab === 'financiamento' ? 'text-sky-400' : 'text-slate-400'}`} />
-              {!isCollapsed && (
-                <span className="truncate flex-1 text-left">Financiamento Imobiliário</span>
-              )}
-              {activeTab === 'financiamento' && !isCollapsed && (
-                <span className="w-1.5 h-5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)] absolute left-0" />
-              )}
-            </button>
-
-            {/* Independência Financeira */}
-            <button
-              id="nav-independencia-btn"
-              onClick={() =>
-                onOpenComingSoon(
-                  'Calculadora de Independência Financeira',
-                  'Simulação completa por custo de vida mensal, reserva de emergência e patrimônio mínimo com alocação em renda fixa, FIIs e ações globais.'
-                )
-              }
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.03] transition-all group"
-            >
-              <Compass className="w-4 h-4 text-indigo-400/80 group-hover:text-indigo-400" />
-              {!isCollapsed && (
-                <span className="truncate flex-1 text-left">Independência Financeira</span>
-              )}
-              {!isCollapsed && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-400 font-medium">
-                  Em breve
-                </span>
-              )}
-            </button>
+              return (
+                <button
+                  key={tool.id}
+                  id={`nav-${tool.id}-btn`}
+                  onClick={() => (isComingSoon ? onOpenComingSoon(tool.id) : setActiveTab(tool.id))}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative group ${
+                    isActive
+                      ? 'text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/10'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
+                  }`}
+                >
+                  <Icon
+                    className={`w-4 h-4 ${
+                      isComingSoon ? accent.idleIcon : isActive ? accent.activeIcon : 'text-slate-400'
+                    }`}
+                  />
+                  {!isCollapsed && (
+                    <span className="truncate flex-1 text-left">{tool.shortLabel}</span>
+                  )}
+                  {!isCollapsed && isComingSoon && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-400 font-medium">
+                      Em breve
+                    </span>
+                  )}
+                  {isActive && !isCollapsed && (
+                    <span className={`w-1.5 h-5 rounded-full absolute left-0 ${accent.indicator}`} />
+                  )}
+                </button>
+              );
+            })}
           </nav>
         </div>
 

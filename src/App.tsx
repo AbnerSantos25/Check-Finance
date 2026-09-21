@@ -13,6 +13,7 @@ import { PixModal } from './components/modals/PixModal';
 import { ComingSoonModal } from './components/modals/ComingSoonModal';
 import { MethodologyModal } from './components/modals/MethodologyModal';
 import { InvestmentParams, RealEstateParams } from './types';
+import { TOOLS, getTool, type ToolId } from './config/tools.data';
 import { calculateInvestment, calculateFinancing, formatBRL, formatPercent, sanitizeParams } from './lib/calculations';
 import { loadEconomicIndicators, buildReferenceData, EconomicData } from './lib/economicApi';
 import { 
@@ -54,7 +55,7 @@ export default function App() {
   
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('calculadora');
+  const [activeTab, setActiveTab] = useState<ToolId>('investimentos');
 
   const [economicData, setEconomicData] = useState<EconomicData>(buildReferenceData);
   const [hasFetchedRates, setHasFetchedRates] = useState(false);
@@ -79,15 +80,7 @@ export default function App() {
   // Modals state
   const [pixModalOpen, setPixModalOpen] = useState(false);
   const [methodologyModalOpen, setMethodologyModalOpen] = useState(false);
-  const [comingSoonModal, setComingSoonModal] = useState<{
-    isOpen: boolean;
-    toolName: string;
-    description: string;
-  }>({
-    isOpen: false,
-    toolName: '',
-    description: '',
-  });
+  const [comingSoonTool, setComingSoonTool] = useState<ToolId | null>(null);
 
   // Calculate results reactively with useMemo
   const summary = useMemo(() => {
@@ -128,12 +121,8 @@ export default function App() {
     setReParams(DEFAULT_RE_PARAMS);
   };
 
-  const handleOpenComingSoon = (toolName: string, description: string) => {
-    setComingSoonModal({
-      isOpen: true,
-      toolName,
-      description,
-    });
+  const handleOpenComingSoon = (toolId: ToolId) => {
+    setComingSoonTool(toolId);
   };
 
   return (
@@ -148,7 +137,6 @@ export default function App() {
           onOpenPix={() => setPixModalOpen(true)}
           onOpenComingSoon={handleOpenComingSoon}
           onOpenMethodology={() => setMethodologyModalOpen(true)}
-          yearsPeriod={params.years}
         />
       </div>
 
@@ -172,15 +160,14 @@ export default function App() {
                 setIsMobileMenuOpen(false);
                 setPixModalOpen(true);
               }}
-              onOpenComingSoon={(tool, desc) => {
+              onOpenComingSoon={(toolId) => {
                 setIsMobileMenuOpen(false);
-                handleOpenComingSoon(tool, desc);
+                handleOpenComingSoon(toolId);
               }}
               onOpenMethodology={() => {
                 setIsMobileMenuOpen(false);
                 setMethodologyModalOpen(true);
               }}
-              yearsPeriod={params.years}
             />
           </div>
         </div>
@@ -198,7 +185,7 @@ export default function App() {
         />
 
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto w-full">
-          {activeTab === 'calculadora' ? (
+          {activeTab === 'investimentos' ? (
             <>
               {/* Main Title & Status Section (Inspired by Live Crypto Updates in reference image) */}
               <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -379,19 +366,20 @@ export default function App() {
               >
                 Metodologia
               </button>
-              <button 
-                onClick={() => handleOpenComingSoon('Calculadora FIRE', 'Descubra sua data de independência financeira.')}
-                className="hover:text-slate-200 transition-colors"
-              >
-                Calculadora FIRE
-              </button>
-              <button 
-                onClick={() => handleOpenComingSoon('Simulador de Financiamento', 'Compare amortizações e custo de parcelas.')}
-                className="hover:text-slate-200 transition-colors"
-              >
-                Financiamento Imobiliário
-              </button>
-              <button 
+              {TOOLS.map((tool) => (
+                <button
+                  key={tool.id}
+                  onClick={() =>
+                    tool.status === 'em-breve'
+                      ? handleOpenComingSoon(tool.id)
+                      : setActiveTab(tool.id)
+                  }
+                  className="hover:text-slate-200 transition-colors"
+                >
+                  {tool.shortLabel}
+                </button>
+              ))}
+              <button
                 onClick={() => setPixModalOpen(true)}
                 className="text-emerald-400 hover:underline transition-colors font-medium"
               >
@@ -417,10 +405,10 @@ export default function App() {
       />
 
       <ComingSoonModal
-        isOpen={comingSoonModal.isOpen}
-        onClose={() => setComingSoonModal((prev) => ({ ...prev, isOpen: false }))}
-        toolName={comingSoonModal.toolName}
-        description={comingSoonModal.description}
+        isOpen={comingSoonTool !== null}
+        onClose={() => setComingSoonTool(null)}
+        toolName={comingSoonTool ? getTool(comingSoonTool).label : ''}
+        description={comingSoonTool ? getTool(comingSoonTool).description : ''}
       />
 
       <MethodologyModal
