@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Heart, Copy, Check, ShieldCheck } from 'lucide-react';
 import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogIcon, DialogTitle } from '../ui/Dialog';
+import { BrandMark } from '../ui/BrandMark';
 
 interface PixModalProps {
   onClose: () => void;
@@ -24,13 +25,7 @@ export const PixModal: React.FC<PixModalProps> = ({ onClose }) => {
   return (
     <Dialog id="pix-modal-content" onClose={onClose}>
       <DialogHeader
-        mark={
-          <DialogIcon
-            icon={Heart}
-            frameClass="bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
-            iconClass="w-6 h-6 fill-emerald-500 text-emerald-400"
-          />
-        }
+        mark={<BrandMark icon={Heart} />}
       >
         <DialogTitle>Apoie o Projeto via PIX</DialogTitle>
         <DialogDescription>Mantenha o Hub 100% gratuito e sem anúncios invasivos.</DialogDescription>

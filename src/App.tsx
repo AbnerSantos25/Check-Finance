@@ -12,6 +12,7 @@ import { RealEstateTable } from './components/financiamento/RealEstateTable';
 import { PixModal } from './components/modals/PixModal';
 import { ComingSoonModal } from './components/modals/ComingSoonModal';
 import { MethodologyModal } from './components/modals/MethodologyModal';
+import { StatusBadge } from './components/ui/StatusBadge';
 import { InvestmentParams, RealEstateParams } from './types';
 import { calculateInvestment, calculateFinancing, formatBRL, formatPercent, sanitizeParams } from './lib/calculations';
 import { loadEconomicIndicators, buildReferenceData, EconomicData } from './lib/economicApi';
@@ -191,10 +192,7 @@ export default function App() {
               {/* Main Title & Status Section (Inspired by Live Crypto Updates in reference image) */}
               <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    Simulação Financeira Ativa
-                  </div>
+                  <StatusBadge color="emerald">Simulação Financeira Ativa</StatusBadge>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                     Calculadora de Investimento a Longo Prazo
                   </h1>
@@ -314,10 +312,7 @@ export default function App() {
               {/* REAL ESTATE FINANCING SECTION */}
               <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold mb-2">
-                    <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
-                    Simulador Imobiliário
-                  </div>
+                  <StatusBadge color="sky">Simulador Imobiliário</StatusBadge>
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                     Financiamento & Amortização Extra
                   </h1>
@@ -389,8 +384,8 @@ export default function App() {
               className="flex items-center gap-2 hover:text-slate-200 transition-colors"
             >
               <span>Desenvolvido por</span>
-              <span className="flex items-center justify-center rounded bg-white p-0.5">
-                <img src="/ABSTecnologiaDev.svg" alt="" className="h-4 w-4" />
+              <span className="flex items-center justify-center rounded p-0.5">
+                <img src="/ABS_Tecnologia_Branca.svg" alt="" className="h-4 w-4" />
               </span>
               <span className="font-semibold text-slate-300">ABS Tecnologia</span>
             </a>
