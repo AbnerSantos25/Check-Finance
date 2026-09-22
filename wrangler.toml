@@ -5,6 +5,15 @@ compatibility_date = "2026-09-01"
 [assets]
 directory = "./dist"
 binding = "ASSETS"
+# /calculadora-juros-compostos serve dist/calculadora-juros-compostos.html, escrito
+# pelo plugin staticRouteHtml do vite.config.ts. Deep link responde 200 de verdade.
+html_handling = "auto-trailing-slash"
+# O que não casar com arquivo nenhum recebe 404 com o dist/404.html — que é a mesma
+# casca do SPA e renderiza a NotFoundPage. Status honesto e conteúdo útil.
+not_found_handling = "404-page"
+# Sem isto, /api/* sem correspondência em disco cairia no 404.html em vez de chegar
+# ao Worker.
+run_worker_first = ["/api/*"]
 
 # Cache global da cotação do IBOVESPA, para não estourar a cota diária da HG Brasil.
 # O id é criado com: npx wrangler kv namespace create MARKET_CACHE

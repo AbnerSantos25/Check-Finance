@@ -1,31 +1,11 @@
-import { useState } from 'react';
-import { RootLayout } from './app/RootLayout';
-import { EconomicDataProvider } from './app/providers/EconomicDataProvider';
-import { ModalsProvider } from './app/providers/ModalsProvider';
-import { FormStateProvider } from './app/providers/FormStateProvider';
-import { InvestmentPage } from './features/investimentos/InvestmentPage';
-import { FinancingPage } from './features/financiamento/FinancingPage';
-import type { ToolId } from './config/tools.data';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { routes } from './app/routes';
+import { RouteFallback } from './app/RouteFallback';
+
+const router = createBrowserRouter(routes);
 
 export default function App() {
-  const [activeTool, setActiveTool] = useState<ToolId>('investimentos');
-
-  // Sem o scroll, trocar de ferramenta pelo footer troca o conteúdo fora da tela
-  // e parece que o clique não fez nada.
-  const handleSelectTool = (toolId: ToolId) => {
-    setActiveTool(toolId);
-    window.scrollTo({ top: 0 });
-  };
-
-  return (
-    <EconomicDataProvider>
-      <FormStateProvider>
-        <ModalsProvider>
-          <RootLayout activeTab={activeTool} onSelectTool={handleSelectTool}>
-            {activeTool === 'financiamento' ? <FinancingPage /> : <InvestmentPage />}
-          </RootLayout>
-        </ModalsProvider>
-      </FormStateProvider>
-    </EconomicDataProvider>
-  );
+  // O `fallbackElement` cobre o primeiro carregamento: até o `lazy` da rota
+  // resolver, o RouterProvider não tem o que renderizar.
+  return <RouterProvider router={router} fallbackElement={<RouteFallback />} />;
 }

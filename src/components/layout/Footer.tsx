@@ -1,35 +1,40 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { TrendingUp } from 'lucide-react';
-import { TOOLS, type ToolId } from '../../config/tools.data';
+import { TOOLS } from '../../config/tools.data';
 import { useModals } from '../../app/providers/ModalsProvider';
 
-interface FooterProps {
-  onSelectTool: (toolId: ToolId) => void;
-}
-
-export const Footer: React.FC<FooterProps> = ({ onSelectTool }) => {
+export const Footer: React.FC = () => {
   const { openPix, openComingSoon } = useModals();
 
   return (
     <footer className="mt-16 border-t border-line-soft bg-bg-deep py-8 px-4 sm:px-6 lg:px-8 text-xs text-slate-400">
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-slate-400">
+        <Link to="/" className="flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors">
           <TrendingUp className="w-4 h-4 text-emerald-400" />
           <span className="font-semibold text-slate-300">CheckFinance</span>
           <span>— Hub de Ferramentas Financeiras</span>
-        </div>
+        </Link>
         <div className="flex items-center gap-4 text-[11px]">
-          {TOOLS.map((tool) => (
-            <button
-              key={tool.id}
-              onClick={() =>
-                tool.status === 'em-breve' ? openComingSoon(tool.id) : onSelectTool(tool.id)
-              }
-              className="hover:text-slate-200 transition-colors"
-            >
-              {tool.shortLabel}
-            </button>
-          ))}
+          {TOOLS.map((tool) =>
+            tool.status === 'em-breve' ? (
+              <button
+                key={tool.id}
+                onClick={() => openComingSoon(tool.id)}
+                className="hover:text-slate-200 transition-colors"
+              >
+                {tool.shortLabel}
+              </button>
+            ) : (
+              <Link
+                key={tool.id}
+                to={tool.path}
+                className="hover:text-slate-200 transition-colors"
+              >
+                {tool.shortLabel}
+              </Link>
+            )
+          )}
           <button
             onClick={openPix}
             className="text-emerald-400 hover:underline transition-colors font-medium"

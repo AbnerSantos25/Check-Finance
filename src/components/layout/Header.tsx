@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { 
-  Heart, 
-  Share2, 
-  Check, 
-  Menu, 
-  TrendingUp, 
+import { Link } from 'react-router-dom';
+import {
+  Heart,
+  Share2,
+  Check,
+  Menu,
+  TrendingUp,
   Activity,
   DollarSign
 } from 'lucide-react';
 import { EXPECTED_INDICATORS } from '../../shared/lib/economicApi';
 import { useEconomicData } from '../../app/providers/EconomicDataProvider';
 import { useModals } from '../../app/providers/ModalsProvider';
+import { useActiveTool } from '../../app/useActiveTool';
 
 interface HeaderProps {
   onOpenMobileMenu: () => void;
@@ -20,6 +22,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
   const [copiedLink, setCopiedLink] = useState(false);
   const { indicators, liveCount, hasFetched, isLoading, refresh } = useEconomicData();
   const { openPix } = useModals();
+  const activeTool = useActiveTool();
 
   const sourceStatus = !hasFetched
     ? { text: 'Consultando as fontes oficiais…', dot: 'bg-slate-500', color: 'text-slate-400' }
@@ -112,15 +115,22 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
             <Menu className="w-5 h-5" />
           </button>
 
-          <nav className="flex items-center gap-2 text-xs sm:text-sm font-medium">
-            <span className="text-slate-400 flex items-center gap-1.5">
+          <nav aria-label="Trilha de navegação" className="flex items-center gap-2 text-xs sm:text-sm font-medium">
+            <Link
+              to="/"
+              className="text-slate-400 hover:text-slate-200 transition-colors flex items-center gap-1.5"
+            >
               <TrendingUp className="w-4 h-4 text-emerald-400" />
               Início
-            </span>
-            <span className="text-slate-600">/</span>
-            <span className="text-slate-200 font-semibold truncate max-w-[200px] sm:max-w-none">
-              Calculadora de Investimento a Longo Prazo
-            </span>
+            </Link>
+            {activeTool && (
+              <>
+                <span className="text-slate-600">/</span>
+                <span className="text-slate-200 font-semibold truncate max-w-[200px] sm:max-w-none">
+                  {activeTool.label}
+                </span>
+              </>
+            )}
           </nav>
         </div>
 

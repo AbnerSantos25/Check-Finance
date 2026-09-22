@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   type LucideIcon,
   TrendingUp,
@@ -9,13 +10,13 @@ import {
   ArrowUpRight
 } from 'lucide-react';
 import { BrandMark } from '../ui/BrandMark';
-import { TOOLS, getTool, type ToolId } from '../../config/tools.data';
+import { TOOLS, type ToolMeta } from '../../config/tools.data';
 import { ACCENT_CLASSES, TOOL_ICONS } from '../../config/tools.tsx';
 import { useModals } from '../../app/providers/ModalsProvider';
 
 interface AppSidebarProps {
-  activeTab: ToolId;
-  setActiveTab: (tab: ToolId) => void;
+  /** Ferramenta correspondente à URL atual; `null` no hub e no 404. */
+  activeTool: ToolMeta | null;
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
   /** No mobile a sidebar é um drawer, que precisa fechar depois de qualquer ação. */
@@ -25,8 +26,13 @@ interface AppSidebarProps {
 const NAV_BASE =
   'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all';
 
+/**
+ * Ferramenta publicada: é um link de verdade, não um botão. Crawlers seguem o
+ * href, e o usuário pode abrir em nova aba ou copiar o endereço.
+ */
 const TabNavItem: React.FC<{
   id: string;
+  to: string;
   icon: LucideIcon;
   label: string;
   accentIcon: string;
@@ -34,10 +40,12 @@ const TabNavItem: React.FC<{
   isActive: boolean;
   isCollapsed: boolean;
   onClick: () => void;
-}> = ({ id, icon: Icon, label, accentIcon, accentMarker, isActive, isCollapsed, onClick }) => (
-  <button
+}> = ({ id, to, icon: Icon, label, accentIcon, accentMarker, isActive, isCollapsed, onClick }) => (
+  <Link
     id={id}
+    to={to}
     onClick={onClick}
+    aria-current={isActive ? 'page' : undefined}
     className={`${NAV_BASE} relative ${isActive
       ? 'text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/10'
       : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
@@ -48,7 +56,7 @@ const TabNavItem: React.FC<{
     {isActive && !isCollapsed && (
       <span className={`w-1.5 h-5 rounded-full absolute left-0 ${accentMarker}`} />
     )}
-  </button>
+  </Link>
 );
 
 const ComingSoonNavItem: React.FC<{
@@ -77,13 +85,11 @@ const ComingSoonNavItem: React.FC<{
 );
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({
-  activeTab,
-  setActiveTab,
+  activeTool,
   isCollapsed,
   setIsCollapsed,
   onAfterAction,
 }) => {
-  const activeTool = getTool(activeTab);
   const { openPix, openComingSoon } = useModals();
 
   const act = (action: () => void) => {
@@ -99,7 +105,12 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
     >
       {/* Top Header / Logo */}
       <div className="flex items-center justify-between p-5 border-b border-line-soft">
-        <div className={`flex items-center gap-3 overflow-hidden ${isCollapsed ? 'justify-center w-full' : ''}`}>
+        <Link
+          to="/"
+          onClick={() => onAfterAction?.()}
+          aria-label="Ir para o início"
+          className={`flex items-center gap-3 overflow-hidden ${isCollapsed ? 'justify-center w-full' : ''}`}
+        >
           <BrandMark icon={TrendingUp} />
           {!isCollapsed && (
             <div className="flex flex-col min-w-0">
@@ -112,7 +123,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               </span>
             </div>
           )}
-        </div>
+        </Link>
 
         {!isCollapsed && (
           <button
@@ -132,14 +143,16 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           <div className="p-3.5 rounded-2xl bg-gradient-to-b from-surface-2 to-surface border border-line relative overflow-hidden shadow-inner">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
               <span className="flex items-center gap-1.5 font-medium text-emerald-400">
-                Simulador Ativo
+                {activeTool ? 'Simulador Ativo' : 'Nenhuma ferramenta aberta'}
               </span>
             </div>
             <div className="text-sm font-semibold text-white">
-              {activeTool.shortLabel}
+              {activeTool ? activeTool.shortLabel : 'Todas as ferramentas'}
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
-              {activeTool.description}
+              {activeTool
+                ? activeTool.description
+                : 'Selecione uma calculadora na lista abaixo para começar a simular.'}
             </p>
           </div>
         </div>
@@ -173,13 +186,14 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                 <TabNavItem
                   key={tool.id}
                   id={`nav-${tool.id}-btn`}
+                  to={tool.path}
                   icon={Icon}
                   label={tool.shortLabel}
                   accentIcon={accent.activeIcon}
                   accentMarker={accent.indicator}
-                  isActive={activeTab === tool.id}
+                  isActive={activeTool?.id === tool.id}
                   isCollapsed={isCollapsed}
-                  onClick={() => act(() => setActiveTab(tool.id))}
+                  onClick={() => onAfterAction?.()}
                 />
               );
             })}

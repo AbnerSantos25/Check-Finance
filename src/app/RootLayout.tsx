@@ -1,25 +1,23 @@
 import React, { useState } from 'react';
+import { Outlet, ScrollRestoration } from 'react-router-dom';
 import { AppSidebar } from '../components/layout/AppSidebar';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
-import type { ToolId } from '../config/tools.data';
+import { useActiveTool } from './useActiveTool';
 
-interface RootLayoutProps {
-  activeTab: ToolId;
-  onSelectTool: (toolId: ToolId) => void;
-  children: React.ReactNode;
-}
-
-export const RootLayout: React.FC<RootLayoutProps> = ({ activeTab, onSelectTool, children }) => {
+export const RootLayout: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const activeTool = useActiveTool();
 
   return (
     <div className="min-h-screen bg-bg text-slate-100 flex flex-row selection:bg-emerald-500/30 selection:text-emerald-300">
+      {/* Sobe ao topo a cada navegação e devolve a posição ao voltar pelo histórico. */}
+      <ScrollRestoration />
+
       <div className="hidden md:block">
         <AppSidebar
-          activeTab={activeTab}
-          setActiveTab={onSelectTool}
+          activeTool={activeTool}
           isCollapsed={isSidebarCollapsed}
           setIsCollapsed={setIsSidebarCollapsed}
         />
@@ -33,8 +31,7 @@ export const RootLayout: React.FC<RootLayoutProps> = ({ activeTab, onSelectTool,
           />
           <div className="relative z-10 w-72 h-full">
             <AppSidebar
-              activeTab={activeTab}
-              setActiveTab={onSelectTool}
+              activeTool={activeTool}
               isCollapsed={false}
               setIsCollapsed={() => setIsMobileMenuOpen(false)}
               onAfterAction={() => setIsMobileMenuOpen(false)}
@@ -47,10 +44,10 @@ export const RootLayout: React.FC<RootLayoutProps> = ({ activeTab, onSelectTool,
         <Header onOpenMobileMenu={() => setIsMobileMenuOpen(true)} />
 
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto w-full">
-          {children}
+          <Outlet />
         </main>
 
-        <Footer onSelectTool={onSelectTool} />
+        <Footer />
       </div>
     </div>
   );
