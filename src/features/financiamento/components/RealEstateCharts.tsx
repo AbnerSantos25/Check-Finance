@@ -3,6 +3,8 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { FinancingSummary, RealEstateParams } from '../../../types';
 import { formatBRL } from '../../../shared/lib/format';
 import { PieChart as PieIcon, LineChart } from 'lucide-react';
+import { ClientOnly } from 'vite-react-ssg';
+import { ChartFallback } from '../../../shared/components/ChartFallback';
 
 interface RealEstateChartsProps {
   summary: FinancingSummary;
@@ -91,6 +93,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
         
         <div className="flex-1 min-h-[250px] relative">
           {summary.totalPaidOut > 0 ? (
+            <ClientOnly fallback={<ChartFallback />}>{() => (
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -116,6 +119,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
                 />
               </PieChart>
             </ResponsiveContainer>
+            )}</ClientOnly>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-500">
               Sem financiamento (Pago à vista)
@@ -148,6 +152,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
 
         <div className="flex-1 min-h-[250px]">
           {summary.totalFinanced > 0 ? (
+            <ClientOnly fallback={<ChartFallback />}>{() => (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={areaData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
@@ -185,6 +190,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
                 />
               </AreaChart>
             </ResponsiveContainer>
+            )}</ClientOnly>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-xs text-slate-500">
               Nenhuma dívida projetada.

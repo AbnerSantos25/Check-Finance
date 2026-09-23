@@ -25,15 +25,12 @@ const Shell = () => (
 );
 
 /**
- * Os caminhos saem do registry (`tools.data.ts`), nunca de string literal: é o
- * mesmo dado que alimenta sidebar, footer e — na Fase 6 — o sitemap gerado.
+ * Carrega o módulo de uma rota sob demanda — e NUNCA rejeita.
  *
- * O code splitting usa o `lazy` do próprio React Router em vez de `React.lazy`:
- * o roteador resolve o módulo antes de renderizar a rota, o que dispensa
- * `<Suspense>` e é o formato que o `vite-react-ssg` consegue pré-renderizar.
- */
-/**
- * O `lazy` de uma rota NÃO pode rejeitar.
+ * Usa o `lazy` do próprio React Router, não `React.lazy`: o roteador resolve o
+ * módulo antes de renderizar a rota, o que dispensa `<Suspense>` e é o formato que
+ * o `vite-react-ssg` consegue pré-renderizar.
+ *
  *
  * O `vite-react-ssg` resolve o `lazy` da rota inicial num `await Promise.all` fora
  * do roteador, antes de chamar `render`. Uma rejeição ali — o caso real é o
@@ -55,6 +52,11 @@ const lazyRoute = (load: () => Promise<{ default?: unknown } & Record<string, un
     }
   };
 
+/**
+ * Os caminhos saem do registry (`tools.data.ts`), nunca de string literal: é o mesmo
+ * dado que alimenta sidebar, footer, o sitemap gerado e a lista de rotas que o
+ * pré-render percorre.
+ */
 export const routes: RouteRecord[] = [
   {
     path: '/',
@@ -70,6 +72,10 @@ export const routes: RouteRecord[] = [
         path: getTool('financiamento').path.slice(1),
         lazy: lazyRoute(() => import('../features/financiamento/FinancingPage'), 'FinancingPage'),
       },
+      // Rota concreta só para o pré-render gerar dist/404.html, que é o arquivo
+      // que o Cloudflare serve (com status 404) em qualquer caminho sem
+      // correspondência. O '*' abaixo continua cobrindo a navegação client-side.
+      { path: '404', element: <NotFoundPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

@@ -45,7 +45,7 @@ export const Footer: React.FC = () => {
       </div>
       <div className="max-w-7xl mx-auto mt-4 pt-4 border-t border-white/5 text-[10px] text-slate-400 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-2">
         <span>
-          © {new Date().getFullYear()} CheckFinance. Ferramenta de fins educativos e de simulação. Não constitui recomendação de investimento.
+          © {__BUILD_YEAR__} CheckFinance. Ferramenta de fins educativos e de simulação. Não constitui recomendação de investimento.
         </span>
         <span className="text-slate-400 font-mono">
           Português (Brasil) • v1.0 MVP

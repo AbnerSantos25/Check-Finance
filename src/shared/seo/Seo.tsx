@@ -20,7 +20,7 @@ interface SeoProps {
  * Metadados de uma rota.
  *
  * Usa o `<Head>` do `vite-react-ssg` e não as tags nativas do React 19: sob
- * `renderToString` — que é como a Fase 6 pré-renderiza — o React 19 deixa
+ * `renderToString` — que é como o pré-render funciona — o React 19 deixa
  * `<title>` e `<meta>` no corpo do documento em vez de içar para o `<head>`.
  *
  * O `<Head>` aceita apenas elementos simples como filhos: componente ou fragmento

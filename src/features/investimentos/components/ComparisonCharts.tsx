@@ -15,6 +15,8 @@ import {
 import { CalculationSummary } from '../../../types';
 import { formatBRL, formatCompactBRL, formatPercent } from '../../../shared/lib/format';
 import { BarChart3, PieChart as PieIcon, Sparkles } from 'lucide-react';
+import { ClientOnly } from 'vite-react-ssg';
+import { ChartFallback } from '../../../shared/components/ChartFallback';
 
 interface ComparisonChartsProps {
   summary: CalculationSummary;
@@ -83,6 +85,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
 
         {/* Chart container */}
         <div className="w-full h-72 sm:h-80">
+          <ClientOnly fallback={<ChartFallback />}>{() => (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={areaData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
               <defs>
@@ -177,6 +180,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
               />
             </AreaChart>
           </ResponsiveContainer>
+          )}</ClientOnly>
         </div>
       </div>
 
@@ -194,6 +198,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
 
         {/* Donut Chart with centered multiplier */}
         <div className="relative w-full h-56 flex items-center justify-center my-2">
+          <ClientOnly fallback={<ChartFallback />}>{() => (
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -222,6 +227,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
               />
             </PieChart>
           </ResponsiveContainer>
+          )}</ClientOnly>
 
           {/* Centered label */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">

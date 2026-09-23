@@ -5,14 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build",
+    "dev:ssr": "vite-react-ssg dev --host",
+    "dev:api": "npm run build && wrangler dev",
+    "build": "vite-react-ssg build",
     "preview": "vite preview",
-    "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit && tsc --noEmit -p worker",
     "test": "vitest",
     "test:run": "vitest run",
-    "dev:api": "vite build && wrangler dev",
-    "deploy": "vite build && wrangler deploy"
+    "clean": "rm -rf dist server.js",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

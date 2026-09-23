@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0b0d12" />
 
-    <!-- Só o <title> fica aqui, porque o helmet o SUBSTITUI (mexe em document.title).
-         Nenhuma outra tag de SEO — description, canonical, robots, OpenGraph, Twitter —
-         pode morar neste arquivo: o react-helmet-async acrescenta as suas sem remover
-         as estáticas, e a duplicata que sobra aparece ANTES da tag correta no DOM.
-         Cada rota define as suas pelo componente <Seo>. -->
-    <title>CheckFinance | Calculadoras Financeiras Gratuitas em Português</title>
+    <!-- Nenhuma tag de SEO mora aqui: título, description, canonical, robots,
+         OpenGraph e Twitter são escritos por rota pelo componente <Seo> e chegam
+         ao HTML pelo pré-render. Repetir qualquer uma neste arquivo produziria
+         duas cópias na página servida, porque o helmet acrescenta as dele sem
+         remover as estáticas. -->
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -60,7 +59,8 @@
            começa antes de qualquer código React rodar, enquanto o navegador ainda
            baixa e compila o bundle. Um fallback só apareceria depois disso.
            Estilo inline de propósito — não depende do CSS ter carregado.
-           Na Fase 6 o pré-render substitui este bloco pelo HTML da rota. -->
+           No build, o pré-render substitui este bloco pelo HTML da rota; ele só
+           aparece no dev server, sem pré-renderização. -->
       <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#0b0d12">
         <div style="width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:linear-gradient(45deg,#059669,#10b981 55%,#99f6e4);animation:cf-pulse 1.6s ease-in-out infinite">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#020617" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
