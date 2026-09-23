@@ -13,6 +13,8 @@ import { MethodologyModal } from './components/MethodologyModal';
 import { calculateInvestment } from './lib/calculateInvestment';
 import { sanitizeParams } from './lib/sanitizeParams';
 import { DEFAULT_PARAMS } from './defaults';
+import { Seo } from '../../shared/seo/Seo';
+import { INVESTMENT_TOOL, investmentJsonLd } from './seo';
 
 export const InvestmentPage: React.FC = () => {
   const [params, setParams] = usePersistentState<InvestmentParams>('investimentos', DEFAULT_PARAMS);
@@ -41,6 +43,13 @@ export const InvestmentPage: React.FC = () => {
 
   return (
     <>
+      <Seo
+        title={INVESTMENT_TOOL.seo.title}
+        description={INVESTMENT_TOOL.seo.description}
+        path={INVESTMENT_TOOL.path}
+        jsonLd={investmentJsonLd}
+      />
+
       <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">

@@ -1,4 +1,5 @@
-import type { RouteObject } from 'react-router-dom';
+import type React from 'react';
+import type { RouteRecord } from 'vite-react-ssg';
 import { RootLayout } from './RootLayout';
 import { EconomicDataProvider } from './providers/EconomicDataProvider';
 import { FormStateProvider } from './providers/FormStateProvider';
@@ -31,7 +32,30 @@ const Shell = () => (
  * o roteador resolve o módulo antes de renderizar a rota, o que dispensa
  * `<Suspense>` e é o formato que o `vite-react-ssg` consegue pré-renderizar.
  */
-export const routes: RouteObject[] = [
+/**
+ * O `lazy` de uma rota NÃO pode rejeitar.
+ *
+ * O `vite-react-ssg` resolve o `lazy` da rota inicial num `await Promise.all` fora
+ * do roteador, antes de chamar `render`. Uma rejeição ali — o caso real é o
+ * navegador com um index.html em cache pedindo um chunk cujo hash sumiu no deploy —
+ * aborta a montagem inteira: o `errorElement` nunca chega a existir e o visitante
+ * fica preso no splash do index.html, sem nada na tela que explique o que houve.
+ *
+ * Absorver a falha aqui devolve um componente normal, a aplicação monta, e o
+ * visitante recebe a tela de erro com o botão de recarregar.
+ */
+const lazyRoute = (load: () => Promise<{ default?: unknown } & Record<string, unknown>>, exportName: string) =>
+  async () => {
+    try {
+      const mod = await load();
+      return { Component: mod[exportName] as React.ComponentType };
+    } catch (error) {
+      console.error('[rota] falha ao carregar o chunk', error);
+      return { Component: RouteError };
+    }
+  };
+
+export const routes: RouteRecord[] = [
   {
     path: '/',
     element: <Shell />,
@@ -40,15 +64,11 @@ export const routes: RouteObject[] = [
       { index: true, element: <HubPage /> },
       {
         path: getTool('investimentos').path.slice(1),
-        lazy: async () => ({
-          Component: (await import('../features/investimentos/InvestmentPage')).InvestmentPage,
-        }),
+        lazy: lazyRoute(() => import('../features/investimentos/InvestmentPage'), 'InvestmentPage'),
       },
       {
         path: getTool('financiamento').path.slice(1),
-        lazy: async () => ({
-          Component: (await import('../features/financiamento/FinancingPage')).FinancingPage,
-        }),
+        lazy: lazyRoute(() => import('../features/financiamento/FinancingPage'), 'FinancingPage'),
       },
       { path: '*', element: <NotFoundPage /> },
     ],

@@ -4,6 +4,8 @@ import { ArrowRight, Lock, type LucideIcon } from 'lucide-react';
 import { TOOLS, type ToolMeta } from '../../config/tools.data';
 import { ACCENT_CLASSES, TOOL_ICONS } from '../../config/tools.tsx';
 import { useModals } from '../../app/providers/ModalsProvider';
+import { Seo } from '../../shared/seo/Seo';
+import { HOME_SEO, homeJsonLd } from './seo';
 
 const CARD_BASE =
   'group h-full text-left p-5 rounded-2xl bg-surface border border-line shadow-lg transition-all';
@@ -40,6 +42,13 @@ export const HubPage: React.FC = () => {
 
   return (
     <>
+      <Seo
+        title={HOME_SEO.title}
+        description={HOME_SEO.description}
+        path="/"
+        jsonLd={homeJsonLd}
+      />
+
       <div className="mb-8 max-w-3xl">
         <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-3">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />

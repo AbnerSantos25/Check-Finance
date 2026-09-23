@@ -8,6 +8,8 @@ import { RealEstateCharts } from './components/RealEstateCharts';
 import { RealEstateTable } from './components/RealEstateTable';
 import { calculateFinancing } from './lib/calculateFinancing';
 import { DEFAULT_RE_PARAMS } from './defaults';
+import { Seo } from '../../shared/seo/Seo';
+import { FINANCING_TOOL, financingJsonLd } from './seo';
 
 export const FinancingPage: React.FC = () => {
   const [params, setParams] = usePersistentState<RealEstateParams>('financiamento', DEFAULT_RE_PARAMS);
@@ -17,6 +19,13 @@ export const FinancingPage: React.FC = () => {
 
   return (
     <>
+      <Seo
+        title={FINANCING_TOOL.seo.title}
+        description={FINANCING_TOOL.seo.description}
+        path={FINANCING_TOOL.path}
+        jsonLd={financingJsonLd}
+      />
+
       <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold mb-2">

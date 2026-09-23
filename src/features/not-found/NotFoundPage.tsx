@@ -1,11 +1,21 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, Compass } from 'lucide-react';
 import { ACTIVE_TOOLS } from '../../config/tools.data';
 import { TOOL_ICONS } from '../../config/tools.tsx';
+import { Seo } from '../../shared/seo/Seo';
 
-export const NotFoundPage: React.FC = () => (
+export const NotFoundPage: React.FC = () => {
+  const { pathname } = useLocation();
+
+  return (
   <div className="max-w-2xl mx-auto py-12 text-center">
+    <Seo
+      title="Página não encontrada | CheckFinance"
+      description="O endereço acessado não existe no CheckFinance. Veja as calculadoras financeiras disponíveis."
+      path={pathname}
+      noIndex
+    />
     <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-surface-2 border border-line mb-5">
       <Compass className="w-6 h-6 text-slate-400" />
     </div>
@@ -44,4 +54,5 @@ export const NotFoundPage: React.FC = () => (
       Voltar para o início
     </Link>
   </div>
-);
+  );
+};

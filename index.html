@@ -3,73 +3,73 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CheckFinance | Hub Completo: Calculadora de Juros e Simulador Imobiliário</title>
-    <meta name="description" content="Acesse o hub de calculadoras mais avançado. Simule Juros Compostos com inflação ou descubra o custo real e as vantagens da Amortização Extra no seu Financiamento Imobiliário." />
-    <meta name="keywords" content="calculadora juros compostos, investimento longo prazo, simulador financeiro, simulador financiamento imobiliario, calculadora SAC e Price, amortização extraordinária de imóvel, calculadora com inflação, rentabilidade real, renda passiva, CheckFinance" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
-    <!-- Sem canonical global: com uma URL por ferramenta, apontar tudo para "/" faria
-         o Google tratar as calculadoras como duplicatas da home e não indexá-las.
-         Sem a tag, cada URL é sua própria canônica até a Fase 5 definir uma por rota. -->
+    <meta name="theme-color" content="#0b0d12" />
+
+    <!-- Só o <title> fica aqui, porque o helmet o SUBSTITUI (mexe em document.title).
+         Nenhuma outra tag de SEO — description, canonical, robots, OpenGraph, Twitter —
+         pode morar neste arquivo: o react-helmet-async acrescenta as suas sem remover
+         as estáticas, e a duplicata que sobra aparece ANTES da tag correta no DOM.
+         Cada rota define as suas pelo componente <Seo>. -->
+    <title>CheckFinance | Calculadoras Financeiras Gratuitas em Português</title>
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 
-    <!-- OpenGraph Social Cards -->
-    <meta property="og:title" content="CheckFinance | Hub Completo: Calculadora de Juros e Simulador Imobiliário" />
-    <meta property="og:description" content="Acesse o hub de calculadoras mais avançado. Simule Juros Compostos com inflação ou descubra o custo real e as vantagens da Amortização Extra no seu Financiamento Imobiliário." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://checkfinance.com.br/" />
-    <meta property="og:site_name" content="CheckFinance" />
-    <meta property="og:locale" content="pt_BR" />
-
-    <!-- Twitter / X Cards -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="CheckFinance | Hub Completo: Calculadora de Juros e Simulador Imobiliário" />
-    <meta name="twitter:description" content="Acesse o hub de calculadoras mais avançado. Simule Juros Compostos com inflação ou descubra o custo real e as vantagens da Amortização Extra no seu Financiamento Imobiliário." />
-
-    <!-- Schema.org JSON-LD Structured Data -->
+    <!-- Identidade do site, igual em todas as rotas. O grafo de cada página
+         referencia o #organization daqui em vez de repetir os dados do publisher. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
         {
-          "@type": "WebApplication",
-          "@id": "https://checkfinance.com.br/#investment-calculator",
-          "name": "Calculadora de Investimento a Longo Prazo",
-          "applicationCategory": "FinanceApplication",
-          "operatingSystem": "All",
+          "@type": "WebSite",
+          "@id": "https://checkfinance.com.br/#website",
           "url": "https://checkfinance.com.br/",
-          "description": "Simulador financeiro completo que se destaca no mercado por permitir cálculos de juros compostos com reajuste anual progressivo de aportes e simulação de inflação (IPCA) para cálculo exato do poder de compra e rentabilidade real.",
+          "name": "CheckFinance",
+          "description": "Hub de ferramentas financeiras gratuitas em português.",
           "inLanguage": "pt-BR",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "BRL"
-          }
+          "publisher": { "@id": "https://checkfinance.com.br/#organization" }
         },
         {
-          "@type": "WebApplication",
-          "@id": "https://checkfinance.com.br/#real-estate-simulator",
-          "name": "Simulador de Financiamento Imobiliário e Amortização",
-          "applicationCategory": "FinanceApplication",
-          "operatingSystem": "All",
-          "url": "https://checkfinance.com.br/#simulador-financiamento",
-          "description": "Simule o Custo Efetivo Total (CET) do seu imóvel, compare sistemas SAC vs PRICE e calcule a redução de tempo e juros ao realizar amortizações extras recorrentes ou pontuais no seu financiamento.",
-          "inLanguage": "pt-BR",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "BRL"
+          "@type": "Organization",
+          "@id": "https://checkfinance.com.br/#organization",
+          "name": "CheckFinance",
+          "url": "https://checkfinance.com.br/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://checkfinance.com.br/og-image.png"
           }
         }
       ]
     }
     </script>
+
+    <style>
+      @keyframes cf-pulse { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }
+    </style>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   </head>
   <body class="bg-[#0b0d12] text-slate-100 antialiased selection:bg-emerald-500/30 selection:text-emerald-300">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Splash de partida, substituído pelo React na primeira renderização.
+           Precisa morar no HTML, e não num fallback do roteador: a tela em branco
+           começa antes de qualquer código React rodar, enquanto o navegador ainda
+           baixa e compila o bundle. Um fallback só apareceria depois disso.
+           Estilo inline de propósito — não depende do CSS ter carregado.
+           Na Fase 6 o pré-render substitui este bloco pelo HTML da rota. -->
+      <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#0b0d12">
+        <div style="width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:linear-gradient(45deg,#059669,#10b981 55%,#99f6e4);animation:cf-pulse 1.6s ease-in-out infinite">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#020617" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M16 7h6v6" /><path d="m22 7-8.5 8.5-5-5L2 17" />
+          </svg>
+        </div>
+        <p style="margin:0;font:500 12px/1.4 system-ui,sans-serif;color:#94a3b8">Carregando o CheckFinance…</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
