@@ -30,6 +30,18 @@ const preloadClientChunk = (dist: string) => {
   }
 };
 
+/**
+ * Apaga o `dist/.vite/`, que o build deixa para trás.
+ *
+ * São metadados de compilação: nenhum bundle os busca em runtime, mas o Cloudflare
+ * serve tudo que está no diretório de assets — então iam ao ar como 200 públicos.
+ * Além dos 248 kB inúteis, o `ssr-manifest.json` lista o grafo completo de módulos
+ * com os caminhos absolutos da máquina que gerou o build.
+ */
+const removeBuildMetadata = (dist: string) => {
+  fs.rmSync(path.join(dist, '.vite'), { recursive: true, force: true });
+};
+
 interface SitemapEntry {
   path: string;
   priority: number;
@@ -102,6 +114,7 @@ export default defineConfig(({ isSsrBuild }) => {
         const dist = path.resolve(__dirname, 'dist');
         preloadClientChunk(dist);
         writeSitemap(dist);
+        removeBuildMetadata(dist);
       },
     },
     build: {

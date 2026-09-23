@@ -10,7 +10,15 @@ interface SeoProps {
   path: string;
   /** Caminho da imagem do cartão social; o padrão do site cobre a maioria dos casos. */
   ogImage?: string;
-  /** Nós Schema.org da página. Saem num único `@graph`. */
+  /**
+   * Nós Schema.org da página. Saem num único `@graph`.
+   *
+   * ATENÇÃO: este é o único ponto do componente que NÃO é escapado. O helmet
+   * injeta corpo de `<script>` via innerHTML, então uma string contendo
+   * `</script>` fecharia a tag e o que viesse depois seria executado. Hoje tudo
+   * aqui vem de constantes do registry; se algum dia entrar dado vindo da URL ou
+   * digitado pelo visitante, escape `<` antes de serializar.
+   */
   jsonLd?: JsonLdNode[];
   /** Páginas que não devem entrar no índice, como o 404. */
   noIndex?: boolean;
