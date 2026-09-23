@@ -3,6 +3,7 @@ import { Outlet, ScrollRestoration } from 'react-router-dom';
 import { AppSidebar } from '../components/layout/AppSidebar';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
+import { LegacyHashRedirect } from './LegacyHashRedirect';
 import { useActiveTool } from './useActiveTool';
 
 export const RootLayout: React.FC = () => {
@@ -14,6 +15,9 @@ export const RootLayout: React.FC = () => {
     <div className="min-h-screen bg-bg text-slate-100 flex flex-row selection:bg-emerald-500/30 selection:text-emerald-300">
       {/* Sobe ao topo a cada navegação e devolve a posição ao voltar pelo histórico. */}
       <ScrollRestoration />
+
+      {/* Desvia os endereços com fragmento da versão anterior do site. */}
+      <LegacyHashRedirect />
 
       <div className="hidden md:block">
         <AppSidebar
