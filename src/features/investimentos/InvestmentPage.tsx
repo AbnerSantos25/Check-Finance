@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { StatusBadge } from '../../components/ui/StatusBadge';
 import { Heart, HelpCircle } from 'lucide-react';
 import type { InvestmentParams } from '../../types';
 import { formatBRL, formatPercent } from '../../shared/lib/format';
@@ -52,10 +53,7 @@ export const InvestmentPage: React.FC = () => {
 
       <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            Simulação Financeira Ativa
-          </div>
+          <StatusBadge color="emerald">Simulação Financeira Ativa</StatusBadge>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
             Calculadora de Investimento a Longo Prazo
           </h1>
@@ -75,8 +73,6 @@ export const InvestmentPage: React.FC = () => {
         </div>
       </div>
 
-      <SummaryCards summary={summary} years={params.years} taxExempt={params.taxExempt} />
-
       <InvestmentForm
         params={params}
         onChange={handleParamChange}
@@ -84,6 +80,8 @@ export const InvestmentPage: React.FC = () => {
         marketRates={rates}
         ratesAreLive={hasFetched && liveCount > 0}
       />
+      
+      <SummaryCards summary={summary} years={params.years} taxExempt={params.taxExempt} />
 
       <ComparisonCharts summary={summary} taxExempt={params.taxExempt} />
 

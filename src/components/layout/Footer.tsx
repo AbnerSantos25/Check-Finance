@@ -47,6 +47,19 @@ export const Footer: React.FC = () => {
         <span>
           © {__BUILD_YEAR__} CheckFinance. Ferramenta de fins educativos e de simulação. Não constitui recomendação de investimento.
         </span>
+        <a
+          href="https://www.abstecnologiadev.com.br"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 hover:text-slate-200 transition-colors"
+        >
+          <span>Desenvolvido por</span>
+          <span className="flex items-center justify-center rounded p-0.5">
+            <img src="/ABS_Tecnologia_Branca.svg" alt="" className="h-4 w-4" />
+          </span>
+          <span className="font-semibold text-slate-300">ABS Tecnologia</span>
+        </a>
+
         <span className="text-slate-400 font-mono">
           Português (Brasil) • v1.0 MVP
         </span>

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { StatusBadge } from '../../components/ui/StatusBadge';
 import type { RealEstateParams } from '../../types';
 import { useEconomicData } from '../../app/providers/EconomicDataProvider';
 import { usePersistentState } from '../../app/providers/FormStateProvider';
@@ -28,10 +29,7 @@ export const FinancingPage: React.FC = () => {
 
       <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold mb-2">
-            <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
-            Simulador Imobiliário
-          </div>
+          <StatusBadge color="sky">Simulador Imobiliário</StatusBadge>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
             Financiamento &amp; Amortização Extra
           </h1>
