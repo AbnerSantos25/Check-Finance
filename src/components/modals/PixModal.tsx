@@ -41,7 +41,7 @@ export const PixModal: React.FC<PixModalProps> = ({ onClose }) => {
         <div className="relative p-3 bg-white rounded-xl shadow-inner mb-3">
           <QRCodeSVG value={pixCode} size={160} level="M" includeMargin={false} />
         </div>
-        <span className="text-[11px] font-mono text-slate-400">
+        <span className="text-[12px] sm:text-[11px] font-mono text-slate-400">
           Aponte a câmera do seu banco
         </span>
       </div>
@@ -78,7 +78,7 @@ export const PixModal: React.FC<PixModalProps> = ({ onClose }) => {
         </div>
       </div>
 
-      <DialogFooter className="mt-5 items-center justify-between text-[11px] text-slate-400">
+      <DialogFooter className="mt-5 items-center justify-between text-[12px] sm:text-[11px] text-slate-400">
         <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
           <ShieldCheck className="w-4 h-4" />
           Pagamento Direto & Seguro

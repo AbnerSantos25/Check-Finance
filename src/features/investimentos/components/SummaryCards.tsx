@@ -15,7 +15,7 @@ const Row: React.FC<{ label: string; value: string; valueClass?: string; title?:
   valueClass = 'text-slate-300',
   title,
 }) => (
-  <div className="flex items-center justify-between gap-3 text-[11px]">
+  <div className="flex items-center justify-between gap-3 text-[12px] sm:text-[11px]">
     <span className="text-slate-400">{label}</span>
     <span className={`font-semibold font-mono text-right ${valueClass}`} title={title}>
       {value}
@@ -49,13 +49,13 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Patrimônio Final
               </div>
-              <div className="text-[11px] text-slate-300">
+              <div className="text-[12px] sm:text-[11px] text-slate-300">
                 Após {yearsLabel} · bruto
               </div>
             </div>
           </div>
           <span
-            className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-mono"
+            className="text-[12px] sm:text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-mono"
             title="Patrimônio líquido em valores de hoje dividido pelos aportes em valores de hoje"
           >
             {formatNumber(summary.realMultiplier, 1)}x real
@@ -80,7 +80,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
           </div>
         </div>
 
-        <div className="mt-3 pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
+        <div className="mt-3 pt-2 border-t border-white/5 flex items-center justify-between text-[12px] sm:text-[11px] text-slate-400">
           <span>Multiplicador real:</span>
           <span className="text-emerald-400 font-semibold font-mono">
             {formatNumber(summary.realMultiplier, 2)}x seu esforço
@@ -99,12 +99,12 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Total Aportado
               </div>
-              <div className="text-[11px] text-slate-300">
+              <div className="text-[12px] sm:text-[11px] text-slate-300">
                 Saído do seu bolso
               </div>
             </div>
           </div>
-          <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">
+          <span className="text-[12px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">
             {formatPercent(investedShare, 1)} do total
           </span>
         </div>
@@ -143,12 +143,12 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Ganhos em Juros
               </div>
-              <div className="text-[11px] text-slate-300">
+              <div className="text-[12px] sm:text-[11px] text-slate-300">
                 Bruto, antes do IR
               </div>
             </div>
           </div>
-          <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">
+          <span className="text-[12px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">
             {formatPercent(interestShare, 1)} do total
           </span>
         </div>
@@ -188,12 +188,12 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Renda Sustentável
               </div>
-              <div className="text-[11px] text-slate-300">
+              <div className="text-[12px] sm:text-[11px] text-slate-300">
                 Em valores de hoje
               </div>
             </div>
           </div>
-          <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-teal-500/10 text-teal-300 border border-teal-500/20">
+          <span className="text-[12px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-md bg-teal-500/10 text-teal-300 border border-teal-500/20">
             Viver de Renda
           </span>
         </div>
@@ -210,7 +210,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
             {incomeCoversInflation ? (
               <Row label={`No ano ${years} (nominal):`} value={`${formatBRL(summary.sustainableMonthlyIncome)}/mês`} />
             ) : (
-              <div className="flex items-center gap-1.5 text-[11px] text-amber-400">
+              <div className="flex items-center gap-1.5 text-[12px] sm:text-[11px] text-amber-400">
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                 <span>O rendimento líquido não cobre a inflação</span>
               </div>
@@ -220,7 +220,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
         </div>
 
         <div
-          className="mt-3 pt-2 border-t border-white/5 flex items-center justify-between gap-3 text-[11px] text-slate-400"
+          className="mt-3 pt-2 border-t border-white/5 flex items-center justify-between gap-3 text-[12px] sm:text-[11px] text-slate-400"
           title="Sacar todo o rendimento líquido todo mês faz o patrimônio perder poder de compra"
         >
           <span>Sacando todo o rendimento:</span>
@@ -228,7 +228,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
             {formatBRL(summary.fullYieldMonthlyNetIncome)}/mês*
           </span>
         </div>
-        <div className="text-[10px] text-slate-400 mt-1 text-right">
+        <div className="text-[12px] sm:text-[10px] text-slate-400 mt-1 text-right">
           *nominal; consome o poder de compra
         </div>
       </div>

@@ -49,3 +49,164 @@
 .glow-card {
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05);
 }
+/* ---------------------------------------------------------------------------
+   Alvos de toque
+
+   A WCAG 2.5.5 pede 44×44px para controles acionados por toque. O layout foi
+   desenhado para ponteiro preciso, então o piso vale só no celular: acima de
+   `sm` cada componente volta exatamente ao tamanho original.
+   --------------------------------------------------------------------------- */
+
+@layer components {
+  /* Botões e links de texto. O inline-flex centraliza o conteúdo quando a caixa
+     cresce — sem ele o rótulo ficaria colado no topo. */
+  .tap-target {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+
+  /* Campos de formulário já centralizam o próprio texto; só a altura importa. */
+  .tap-field {
+    min-height: 2.75rem;
+  }
+
+  /* Range: o alvo tem a altura do trilho, 6px, e no celular é quase impossível
+     pegar o controle. A caixa vai a 44px e o trilho segue fino, desenhado pelo
+     pseudo-elemento — a aparência não muda. */
+  .range-touch {
+    height: 2.75rem;
+  }
+
+  /* Só altura e raio: pintar `background` aqui sobrescreve o `accent-color`, e o
+     trecho preenchido à esquerda do polegar deixa de aparecer. */
+  .range-touch::-webkit-slider-runnable-track {
+    height: 0.375rem;
+    border-radius: 0.5rem;
+  }
+
+  .range-touch::-moz-range-track {
+    height: 0.375rem;
+    border-radius: 0.5rem;
+  }
+
+  /* 768px, e não 640px: o drawer do mobile é `md:hidden`, então a interface de
+     toque vai até aí. Reverter antes deixaria um tablet de 700px com a navegação
+     de celular e os alvos de ponteiro. */
+  @media (min-width: 768px) {
+    .tap-target,
+    .tap-field {
+      min-height: 0;
+      min-width: 0;
+    }
+
+    .range-touch {
+      height: 0.375rem;
+    }
+  }
+}
+
+/* 16px é o limiar do Safari no iOS: abaixo disso ele dá zoom ao focar o campo e não
+   desfaz depois, deixando a página deslocada e rolando de lado — justamente o que
+   esta auditoria veio eliminar.
+
+   Fica FORA de `@layer` de propósito: regra sem camada vence qualquer uma dentro de
+   camada, e é o único jeito de passar à frente do `text-sm`/`text-xs` que os campos
+   já carregam. Vale só para `input`, porque `.tap-field` também marca botões. */
+@media (max-width: 767px) {
+  input.tap-field {
+    font-size: 1rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Tabela que vira cards no celular
+
+   As tabelas têm 8 e 5 colunas, e no celular ficavam dentro de um scroller
+   horizontal: para ler uma linha inteira era preciso arrastar de lado, o oposto
+   de uma leitura mobile-first.
+
+   A marcação NÃO é duplicada. É a mesma <table>, com o rótulo de cada célula
+   vindo do atributo `data-label` — assim o HTML pré-renderizado continua com as
+   mesmas linhas e o mesmo conteúdo indexável, sem peso extra.
+
+   Trocar o `display` de elementos de tabela apaga a semântica que o leitor de
+   tela usa, por isso os componentes declaram `role` explícito em table, tr, th
+   e td, que repõe exatamente essa semântica.
+   --------------------------------------------------------------------------- */
+
+@layer components {
+  @media (max-width: 639px) {
+    .table-cards {
+      display: block;
+      border-collapse: separate;
+    }
+
+    /* O cabeçalho some da tela, mas continua no documento: é dele que sai o texto
+       dos rótulos, e some só visualmente. */
+    .table-cards thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .table-cards tbody {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+    }
+
+    .table-cards tr {
+      display: block;
+      border-radius: 0.875rem;
+      overflow: hidden;
+    }
+
+    /* Borda e fundo dentro de `:where()`, que não soma especificidade: assim as
+       classes que destacam uma linha — o ano final da projeção, o mês da quitação —
+       continuam vencendo, em vez de sumirem atrás da cor padrão do card. */
+    :where(.table-cards) tr {
+      border: 1px solid var(--color-line);
+      background: var(--color-surface);
+    }
+
+    .table-cards td {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0.875rem;
+      text-align: right;
+    }
+
+    .table-cards td::before {
+      content: attr(data-label);
+      flex-shrink: 0;
+      text-align: left;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    /* A primeira célula é o título do card: ocupa a linha toda, sem rótulo. */
+    .table-cards td:first-child {
+      justify-content: flex-start;
+      text-align: left;
+      padding: 0.625rem 0.875rem;
+      background: var(--color-surface-2);
+      border-bottom: 1px solid var(--color-line-soft);
+    }
+
+    .table-cards td:first-child::before {
+      content: none;
+    }
+  }
+}

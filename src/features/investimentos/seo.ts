@@ -1,5 +1,6 @@
 import { getTool } from '../../config/tools.data';
-import { breadcrumbNode, toolApplicationNode, type JsonLdNode } from '../../shared/seo/jsonLd';
+import { breadcrumbNode, faqNode, toolApplicationNode, type JsonLdNode } from '../../shared/seo/jsonLd';
+import { INVESTMENT_FAQ } from './faq';
 
 export const INVESTMENT_TOOL = getTool('investimentos');
 
@@ -13,4 +14,5 @@ export const investmentJsonLd: JsonLdNode[] = [
     'Taxas de referência do Banco Central (SELIC, CDI, IPCA e poupança)',
   ]),
   breadcrumbNode(INVESTMENT_TOOL),
+  faqNode(INVESTMENT_TOOL, INVESTMENT_FAQ),
 ];

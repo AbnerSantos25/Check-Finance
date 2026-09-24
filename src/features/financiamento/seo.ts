@@ -1,5 +1,6 @@
 import { getTool } from '../../config/tools.data';
-import { breadcrumbNode, toolApplicationNode, type JsonLdNode } from '../../shared/seo/jsonLd';
+import { breadcrumbNode, faqNode, toolApplicationNode, type JsonLdNode } from '../../shared/seo/jsonLd';
+import { FINANCING_FAQ } from './faq';
 
 export const FINANCING_TOOL = getTool('financiamento');
 
@@ -12,4 +13,5 @@ export const financingJsonLd: JsonLdNode[] = [
     'Economia de juros e redução de prazo com amortização extra',
   ]),
   breadcrumbNode(FINANCING_TOOL),
+  faqNode(FINANCING_TOOL, FINANCING_FAQ),
 ];

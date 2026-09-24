@@ -18,11 +18,11 @@ const Lead: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 const Note: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <p className="text-[11px] text-slate-400">{children}</p>
+  <p className="text-[12px] sm:text-[11px] text-slate-400">{children}</p>
 );
 
 const Bullets: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ul className="text-[11px] text-slate-400 space-y-1 list-disc pl-4">{children}</ul>
+  <ul className="text-[12px] sm:text-[11px] text-slate-400 space-y-1 list-disc pl-4">{children}</ul>
 );
 
 const Block: React.FC<{

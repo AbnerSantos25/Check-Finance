@@ -85,7 +85,7 @@ const ComingSoonNavItem: React.FC<{
     {!isCollapsed && (
       <>
         <span className="truncate flex-1 text-left">{label}</span>
-        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-400 font-medium">
+        <span className="text-[12px] sm:text-[10px] px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-400 font-medium">
           Em breve
         </span>
       </>
@@ -128,7 +128,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                 CheckFinance
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               </span>
-              <span className="text-[11px] font-medium text-slate-400 tracking-wide">
+              <span className="text-[12px] sm:text-[11px] font-medium text-slate-400 tracking-wide">
                 Hub Financeiro Público
               </span>
             </div>
@@ -159,7 +159,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
             <div className="text-sm font-semibold text-white">
               {activeTool ? activeTool.shortLabel : 'Todas as ferramentas'}
             </div>
-            <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+            <p className="text-[12px] sm:text-[11px] text-slate-400 mt-0.5 leading-relaxed">
               {activeTool
                 ? activeTool.description
                 : 'Selecione uma calculadora na lista abaixo para começar a simular.'}
@@ -173,7 +173,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         {/* Ferramentas */}
         <div>
           {!isCollapsed && (
-            <div className="px-3 mb-2 text-[11px] font-semibold text-slate-300 tracking-wider">
+            <div className="px-3 mb-2 text-[12px] sm:text-[11px] font-semibold text-slate-300 tracking-wider">
               FERRAMENTAS
             </div>
           )}
@@ -213,7 +213,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         {/* Informações & Apoio */}
         <div>
           {!isCollapsed && (
-            <div className="px-3 mb-2 text-[11px] font-semibold text-slate-300 tracking-wider">
+            <div className="px-3 mb-2 text-[12px] sm:text-[11px] font-semibold text-slate-300 tracking-wider">
               APOIO & SOBRE
             </div>
           )}
@@ -239,11 +239,11 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       {/* Bottom Footer / Transparency Card */}
       {!isCollapsed && (
         <div className="p-4 border-t border-line-soft bg-bg-deep/80">
-          <div className="flex items-center gap-2 text-[11px] text-slate-400">
+          <div className="flex items-center gap-2 text-[12px] sm:text-[11px] text-slate-400">
             <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>100% Gratuito, Seguro & Sem Login</span>
           </div>
-          <div className="mt-2 text-[10px] text-slate-400 flex justify-between items-center">
+          <div className="mt-2 text-[12px] sm:text-[10px] text-slate-400 flex justify-between items-center">
             <span>v1.0 MVP • pt-BR</span>
             <button
               onClick={() => act(openPix)}

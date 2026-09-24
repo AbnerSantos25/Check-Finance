@@ -10,7 +10,9 @@ import { RealEstateTable } from './components/RealEstateTable';
 import { calculateFinancing } from './lib/calculateFinancing';
 import { DEFAULT_RE_PARAMS } from './defaults';
 import { Seo } from '../../shared/seo/Seo';
+import { Faq } from '../../shared/components/Faq';
 import { FINANCING_TOOL, financingJsonLd } from './seo';
+import { FINANCING_FAQ } from './faq';
 
 export const FinancingPage: React.FC = () => {
   const [params, setParams] = usePersistentState<RealEstateParams>('financiamento', DEFAULT_RE_PARAMS);
@@ -51,6 +53,11 @@ export const FinancingPage: React.FC = () => {
       <RealEstateCharts summary={summary} params={params} />
 
       <RealEstateTable summary={summary} />
+
+      <Faq
+        items={FINANCING_FAQ}
+        title="Dúvidas sobre SAC, PRICE e amortização extraordinária"
+      />
     </>
   );
 };

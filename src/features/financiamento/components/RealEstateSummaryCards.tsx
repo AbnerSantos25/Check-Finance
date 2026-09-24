@@ -45,7 +45,7 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
             {formatBRL(summary.totalFinanced)}
           </span>
         </div>
-        <div className="mt-2 text-[10px] text-slate-500 relative z-10">
+        <div className="mt-2 text-[12px] sm:text-[10px] text-slate-500 relative z-10">
           Imóvel: {formatBRL(params.propertyValue)} | Entrada: {formatBRL(params.downPayment)}
         </div>
       </div>
@@ -61,7 +61,7 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
             {formatBRL(summary.totalPaidOut)}
           </span>
         </div>
-        <div className="mt-2 text-[10px] text-slate-500 relative z-10">
+        <div className="mt-2 text-[12px] sm:text-[10px] text-slate-500 relative z-10">
           Você pagará quase {((summary.totalPaidOut / (summary.totalFinanced || 1)) * 100).toFixed(0)}% do valor pego emprestado.
         </div>
       </div>
@@ -74,13 +74,13 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
         </div>
         <div className="relative z-10 flex items-end justify-between">
           <div>
-            <div className="text-[10px] text-slate-400 mb-0.5">Primeira:</div>
+            <div className="text-[12px] sm:text-[10px] text-slate-400 mb-0.5">Primeira:</div>
             <span className="text-lg font-bold text-white tracking-tight">
               {formatBRL(summary.firstInstallment)}
             </span>
           </div>
           <div className="text-right">
-            <div className="text-[10px] text-slate-400 mb-0.5">Última:</div>
+            <div className="text-[12px] sm:text-[10px] text-slate-400 mb-0.5">Última:</div>
             <span className="text-lg font-bold text-sky-400 tracking-tight">
               {formatBRL(summary.lastInstallment)}
             </span>
@@ -110,7 +110,7 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
                   ? `-${formatBRL(summary.interestSaved)}`
                   : `${yearsSaved} anos e ${monthsSavedRest} meses`}
               </span>
-              <div className="mt-1 text-[11px] font-medium text-emerald-400/80">
+              <div className="mt-1 text-[12px] sm:text-[11px] font-medium text-emerald-400/80">
                 {hasMoneySaved
                   ? `Você reduziu a dívida em ${yearsSaved} anos e ${monthsSavedRest} meses!`
                   : 'Sem juros no financiamento, toda a economia da amortização extra está no prazo.'}
@@ -121,7 +121,7 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
               <span className="text-lg font-medium text-slate-500 tracking-tight">
                 Nenhuma amortização
               </span>
-              <div className="mt-1 text-[10px] text-slate-500">
+              <div className="mt-1 text-[12px] sm:text-[10px] text-slate-500">
                 Adicione um valor mensal extra no painel abaixo para ver a mágica acontecer.
               </div>
             </>
