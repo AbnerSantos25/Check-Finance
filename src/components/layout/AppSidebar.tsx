@@ -21,6 +21,15 @@ interface AppSidebarProps {
   setIsCollapsed: (collapsed: boolean) => void;
   /** No mobile a sidebar é um drawer, que precisa fechar depois de qualquer ação. */
   onAfterAction?: () => void;
+  /**
+   * Prefixo dos `id` deste painel.
+   *
+   * O layout monta a sidebar duas vezes — a fixa do desktop, escondida por CSS, e o
+   * drawer do mobile. Com o drawer aberto as duas coexistem no DOM, e sem prefixo os
+   * sete `id` apareceriam em dobro: HTML inválido, e leitor de tela e automação
+   * passam a resolver o alvo errado.
+   */
+  idPrefix?: string;
 }
 
 const NAV_BASE =
@@ -89,6 +98,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
   isCollapsed,
   setIsCollapsed,
   onAfterAction,
+  idPrefix = '',
 }) => {
   const { openPix, openComingSoon } = useModals();
 
@@ -99,7 +109,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
   return (
     <aside
-      id="app-sidebar"
+      id={`${idPrefix}app-sidebar`}
       className={`relative z-30 flex flex-col border-r border-line-soft bg-bg/95 backdrop-blur-xl transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-72'
         } shrink-0 h-screen sticky top-0`}
     >
@@ -127,7 +137,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
         {!isCollapsed && (
           <button
-            id="toggle-sidebar-btn"
+            id={`${idPrefix}toggle-sidebar-btn`}
             onClick={() => setIsCollapsed(true)}
             aria-label="Recolher menu lateral"
             className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
@@ -175,7 +185,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               return tool.status === 'em-breve' ? (
                 <ComingSoonNavItem
                   key={tool.id}
-                  id={`nav-${tool.id}-btn`}
+                  id={`${idPrefix}nav-${tool.id}-btn`}
                   icon={Icon}
                   iconClass={accent.idleIcon}
                   label={tool.shortLabel}
@@ -185,7 +195,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               ) : (
                 <TabNavItem
                   key={tool.id}
-                  id={`nav-${tool.id}-btn`}
+                  id={`${idPrefix}nav-${tool.id}-btn`}
                   to={tool.path}
                   icon={Icon}
                   label={tool.shortLabel}
@@ -209,7 +219,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           )}
           <nav className="space-y-1">
             <button
-              id="nav-pix-btn"
+              id={`${idPrefix}nav-pix-btn`}
               onClick={() => act(openPix)}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all group border border-emerald-500/20"
             >
@@ -249,7 +259,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       {isCollapsed && (
         <div className="p-3 border-t border-line-soft flex justify-center">
           <button
-            id="expand-sidebar-btn"
+            id={`${idPrefix}expand-sidebar-btn`}
             onClick={() => setIsCollapsed(false)}
             aria-label="Expandir menu lateral"
             className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/5 transition-colors"

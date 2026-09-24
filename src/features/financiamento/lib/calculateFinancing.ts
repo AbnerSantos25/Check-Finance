@@ -48,10 +48,21 @@ export function calculateFinancing(params: RealEstateParams): FinancingSummary {
   const schedule: FinancingInstallment[] = [];
   let monthCount = 0;
 
-  // Para Price, a parcela constante (sem seguros)
-  const pricePmt = (totalFinanced > 0 && monthlyRate > 0)
-    ? (totalFinanced * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -termMonths))
-    : 0;
+  // Para Price, a parcela constante (sem seguros).
+  //
+  // Com juros zero a fórmula da PRICE não serve: o denominador 1-(1+i)^-n zera junto
+  // com o numerador. O limite quando i tende a zero é P/n — sem juros, a parcela é o
+  // valor financiado dividido pelo prazo, que é o mesmo da SAC.
+  //
+  // Devolver 0 aqui, como era feito antes, produzia uma parcela que não amortizava
+  // nada: o saldo devedor nunca caía e o laço abaixo só parava no limite de
+  // segurança, entregando o dobro do prazo em linhas zeradas.
+  const pricePmt =
+    totalFinanced > 0 && termMonths > 0
+      ? monthlyRate > 0
+        ? (totalFinanced * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -termMonths))
+        : totalFinanced / termMonths
+      : 0;
 
   // Para SAC, a amortização teórica fixa inicial
   const sacFixedAmortization = totalFinanced > 0 ? totalFinanced / termMonths : 0;

@@ -68,7 +68,14 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-slate-300">Valor da Entrada</label>
               <span className="text-xs font-mono font-medium text-sky-400">
-                {((params.downPayment / params.propertyValue) * 100 || 0).toFixed(1)}% do imóvel
+                {/* Guardar o divisor, e não filtrar o resultado com `|| 0`: dividir por
+                    zero dá Infinity, que é um número verdadeiro e passava pelo `||`,
+                    escrevendo "Infinity% do imóvel" ao limpar o valor do imóvel. */}
+                {(params.propertyValue > 0
+                  ? (params.downPayment / params.propertyValue) * 100
+                  : 0
+                ).toFixed(1)}
+                % do imóvel
               </span>
             </div>
             <div className="relative">
