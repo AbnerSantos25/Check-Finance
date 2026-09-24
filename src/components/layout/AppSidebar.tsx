@@ -1,35 +1,38 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   type LucideIcon,
   TrendingUp,
-  Flame,
-  Home,
-  Compass,
   Heart,
-  HelpCircle,
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
   ArrowUpRight
 } from 'lucide-react';
 import { BrandMark } from '../ui/BrandMark';
+import { TOOLS, type ToolMeta } from '../../config/tools.data';
+import { ACCENT_CLASSES, TOOL_ICONS } from '../../config/tools.tsx';
+import { useModals } from '../../app/providers/ModalsProvider';
 
 interface AppSidebarProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+  /** Ferramenta correspondente à URL atual; `null` no hub e no 404. */
+  activeTool: ToolMeta | null;
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
-  onOpenPix: () => void;
-  onOpenComingSoon: (toolName: string, description: string) => void;
-  onOpenMethodology: () => void;
-  yearsPeriod: number;
+  /** No mobile a sidebar é um drawer, que precisa fechar depois de qualquer ação. */
+  onAfterAction?: () => void;
 }
 
 const NAV_BASE =
   'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all';
 
+/**
+ * Ferramenta publicada: é um link de verdade, não um botão. Crawlers seguem o
+ * href, e o usuário pode abrir em nova aba ou copiar o endereço.
+ */
 const TabNavItem: React.FC<{
   id: string;
+  to: string;
   icon: LucideIcon;
   label: string;
   accentIcon: string;
@@ -37,10 +40,12 @@ const TabNavItem: React.FC<{
   isActive: boolean;
   isCollapsed: boolean;
   onClick: () => void;
-}> = ({ id, icon: Icon, label, accentIcon, accentMarker, isActive, isCollapsed, onClick }) => (
-  <button
+}> = ({ id, to, icon: Icon, label, accentIcon, accentMarker, isActive, isCollapsed, onClick }) => (
+  <Link
     id={id}
+    to={to}
     onClick={onClick}
+    aria-current={isActive ? 'page' : undefined}
     className={`${NAV_BASE} relative ${isActive
       ? 'text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/10'
       : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
@@ -51,7 +56,7 @@ const TabNavItem: React.FC<{
     {isActive && !isCollapsed && (
       <span className={`w-1.5 h-5 rounded-full absolute left-0 ${accentMarker}`} />
     )}
-  </button>
+  </Link>
 );
 
 const ComingSoonNavItem: React.FC<{
@@ -80,15 +85,18 @@ const ComingSoonNavItem: React.FC<{
 );
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({
-  activeTab,
-  setActiveTab,
+  activeTool,
   isCollapsed,
   setIsCollapsed,
-  onOpenPix,
-  onOpenComingSoon,
-  onOpenMethodology,
-  yearsPeriod,
+  onAfterAction,
 }) => {
+  const { openPix, openComingSoon } = useModals();
+
+  const act = (action: () => void) => {
+    action();
+    onAfterAction?.();
+  };
+
   return (
     <aside
       id="app-sidebar"
@@ -97,7 +105,12 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
     >
       {/* Top Header / Logo */}
       <div className="flex items-center justify-between p-5 border-b border-line-soft">
-        <div className={`flex items-center gap-3 overflow-hidden ${isCollapsed ? 'justify-center w-full' : ''}`}>
+        <Link
+          to="/"
+          onClick={() => onAfterAction?.()}
+          aria-label="Ir para o início"
+          className={`flex items-center gap-3 overflow-hidden ${isCollapsed ? 'justify-center w-full' : ''}`}
+        >
           <BrandMark icon={TrendingUp} />
           {!isCollapsed && (
             <div className="flex flex-col min-w-0">
@@ -110,7 +123,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               </span>
             </div>
           )}
-        </div>
+        </Link>
 
         {!isCollapsed && (
           <button
@@ -130,17 +143,16 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           <div className="p-3.5 rounded-2xl bg-gradient-to-b from-surface-2 to-surface border border-line relative overflow-hidden shadow-inner">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
               <span className="flex items-center gap-1.5 font-medium text-emerald-400">
-                Simulador Ativo
-              </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono">
-                {yearsPeriod} ANOS
+                {activeTool ? 'Simulador Ativo' : 'Nenhuma ferramenta aberta'}
               </span>
             </div>
             <div className="text-sm font-semibold text-white">
-              Efeito Juros Compostos
+              {activeTool ? activeTool.shortLabel : 'Todas as ferramentas'}
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
-              Horizonte de longo prazo com aportes mensais e inflação corrigida.
+              {activeTool
+                ? activeTool.description
+                : 'Selecione uma calculadora na lista abaixo para começar a simular.'}
             </p>
           </div>
         </div>
@@ -156,55 +168,35 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
             </div>
           )}
           <nav className="space-y-1">
-            <TabNavItem
-              id="nav-investimento-btn"
-              icon={TrendingUp}
-              label="Investimento a Longo Prazo"
-              accentIcon="text-emerald-400"
-              accentMarker="bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"
-              isActive={activeTab === 'calculadora'}
-              isCollapsed={isCollapsed}
-              onClick={() => setActiveTab('calculadora')}
-            />
+            {TOOLS.map((tool) => {
+              const Icon = TOOL_ICONS[tool.id];
+              const accent = ACCENT_CLASSES[tool.accent];
 
-            <ComingSoonNavItem
-              id="nav-fire-btn"
-              icon={Flame}
-              iconClass="text-amber-400/80 group-hover:text-amber-400"
-              label="Aposentadoria FIRE"
-              isCollapsed={isCollapsed}
-              onClick={() =>
-                onOpenComingSoon(
-                  'Calculadora de Aposentadoria (FIRE)',
-                  'Descubra a sua taxa de poupança ideal, regra dos 4% e a data exata em que você alcançará sua independência financeira para viver de renda.'
-                )
-              }
-            />
-
-            <TabNavItem
-              id="nav-financiamento-btn"
-              icon={Home}
-              label="Financiamento Imobiliário"
-              accentIcon="text-sky-400"
-              accentMarker="bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]"
-              isActive={activeTab === 'financiamento'}
-              isCollapsed={isCollapsed}
-              onClick={() => setActiveTab('financiamento')}
-            />
-
-            <ComingSoonNavItem
-              id="nav-independencia-btn"
-              icon={Compass}
-              iconClass="text-indigo-400/80 group-hover:text-indigo-400"
-              label="Independência Financeira"
-              isCollapsed={isCollapsed}
-              onClick={() =>
-                onOpenComingSoon(
-                  'Calculadora de Independência Financeira',
-                  'Simulação completa por custo de vida mensal, reserva de emergência e patrimônio mínimo com alocação em renda fixa, FIIs e ações globais.'
-                )
-              }
-            />
+              return tool.status === 'em-breve' ? (
+                <ComingSoonNavItem
+                  key={tool.id}
+                  id={`nav-${tool.id}-btn`}
+                  icon={Icon}
+                  iconClass={accent.idleIcon}
+                  label={tool.shortLabel}
+                  isCollapsed={isCollapsed}
+                  onClick={() => act(() => openComingSoon(tool.id))}
+                />
+              ) : (
+                <TabNavItem
+                  key={tool.id}
+                  id={`nav-${tool.id}-btn`}
+                  to={tool.path}
+                  icon={Icon}
+                  label={tool.shortLabel}
+                  accentIcon={accent.activeIcon}
+                  accentMarker={accent.indicator}
+                  isActive={activeTool?.id === tool.id}
+                  isCollapsed={isCollapsed}
+                  onClick={() => onAfterAction?.()}
+                />
+              );
+            })}
           </nav>
         </div>
 
@@ -218,7 +210,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           <nav className="space-y-1">
             <button
               id="nav-pix-btn"
-              onClick={onOpenPix}
+              onClick={() => act(openPix)}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all group border border-emerald-500/20"
             >
               <Heart className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform fill-emerald-500/20" />
@@ -230,16 +222,6 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               )}
             </button>
 
-            <button
-              id="nav-methodology-btn"
-              onClick={onOpenMethodology}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.03] transition-all"
-            >
-              <HelpCircle className="w-4 h-4 text-slate-400" />
-              {!isCollapsed && (
-                <span className="truncate flex-1 text-left">Fórmulas & Metodologia</span>
-              )}
-            </button>
           </nav>
         </div>
       </div>
@@ -254,7 +236,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           <div className="mt-2 text-[10px] text-slate-400 flex justify-between items-center">
             <span>v1.0 MVP • pt-BR</span>
             <button
-              onClick={onOpenPix}
+              onClick={() => act(openPix)}
               className="text-emerald-400 hover:underline cursor-pointer font-medium"
             >
               Doe via PIX

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Bell, Check, ArrowRight, CodeXml } from 'lucide-react';
 import { Dialog, DialogFooter, DialogHeader, DialogIcon, DialogTitle } from '../ui/Dialog';
 
@@ -15,17 +15,24 @@ export const ComingSoonModal: React.FC<ComingSoonModalProps> = ({
 }) => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // O modal é montado sob demanda: sem a limpeza, quem se cadastra e fecha antes
+  // dos 2,5s leva o timer pendurado, que fecha sozinho o próximo modal aberto.
+  useEffect(() => () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  }, []);
 
   const handleNotify = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setSubscribed(true);
-      setTimeout(() => {
-        setSubscribed(false);
-        setEmail('');
-        onClose();
-      }, 2500);
-    }
+    if (!email) return;
+
+    setSubscribed(true);
+    closeTimer.current = setTimeout(() => {
+      setSubscribed(false);
+      setEmail('');
+      onClose();
+    }, 2500);
   };
 
   return (

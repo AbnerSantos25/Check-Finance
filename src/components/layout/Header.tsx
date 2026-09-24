@@ -1,37 +1,30 @@
 import React, { useState } from 'react';
-import { 
-  Heart, 
-  Share2, 
-  Check, 
-  Menu, 
-  TrendingUp, 
+import { Link } from 'react-router-dom';
+import {
+  Heart,
+  Share2,
+  Check,
+  Menu,
+  TrendingUp,
   Activity,
   DollarSign
 } from 'lucide-react';
-import { EconomicIndicator } from '../../types';
-import { EXPECTED_INDICATORS } from '../../lib/economicApi';
+import { EXPECTED_INDICATORS } from '../../shared/lib/economicApi';
+import { useEconomicData } from '../../app/providers/EconomicDataProvider';
+import { useModals } from '../../app/providers/ModalsProvider';
+import { useActiveTool } from '../../app/useActiveTool';
 
 interface HeaderProps {
-  onOpenPix: () => void;
   onOpenMobileMenu: () => void;
-  indicators: EconomicIndicator[];
-  hasFetchedRates: boolean;
-  isLoadingRates?: boolean;
-  onRefreshRates?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({
-  onOpenPix,
-  onOpenMobileMenu,
-  indicators,
-  hasFetchedRates,
-  isLoadingRates = false,
-  onRefreshRates,
-}) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
   const [copiedLink, setCopiedLink] = useState(false);
+  const { indicators, liveCount, hasFetched, isLoading, refresh } = useEconomicData();
+  const { openPix } = useModals();
+  const activeTool = useActiveTool();
 
-  const liveCount = indicators.filter((ind) => ind.status === 'live').length;
-  const sourceStatus = !hasFetchedRates
+  const sourceStatus = !hasFetched
     ? { text: 'Consultando as fontes oficiais…', dot: 'bg-slate-500', color: 'text-slate-400' }
     : liveCount === EXPECTED_INDICATORS
       ? { text: 'Indicadores atualizados', dot: 'bg-emerald-500', color: 'text-emerald-400' }
@@ -99,16 +92,14 @@ export const Header: React.FC<HeaderProps> = ({
             <span className={`inline-block w-1.5 h-1.5 rounded-full ${sourceStatus.dot}`} />
             <span>{sourceStatus.text}</span>
           </span>
-          {onRefreshRates && (
-            <button
-              onClick={onRefreshRates}
-              disabled={isLoadingRates}
-              title="Atualizar cotações do Banco Central"
-              className="text-slate-400 hover:text-slate-200 cursor-pointer disabled:opacity-50"
-            >
-              {isLoadingRates ? 'Atualizando...' : '↻ Atualizar'}
-            </button>
-          )}
+          <button
+            onClick={refresh}
+            disabled={isLoading}
+            title="Atualizar cotações do Banco Central"
+            className="text-slate-400 hover:text-slate-200 cursor-pointer disabled:opacity-50"
+          >
+            {isLoading ? 'Atualizando...' : '↻ Atualizar'}
+          </button>
         </div>
       </div>
 
@@ -116,23 +107,33 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
         {/* Left: Mobile Toggle & Breadcrumbs */}
         <div className="flex items-center gap-3">
+          {/* `md:hidden` acompanha o drawer que este botão abre, que também é
+              `md:hidden`. Com `lg:hidden` o botão aparecia entre 768px e 1023px
+              e o clique não fazia nada. */}
           <button
             onClick={onOpenMobileMenu}
             aria-label="Abrir menu mobile"
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 lg:hidden"
+            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 md:hidden"
           >
             <Menu className="w-5 h-5" />
           </button>
 
-          <nav className="flex items-center gap-2 text-xs sm:text-sm font-medium">
-            <span className="text-slate-400 flex items-center gap-1.5">
+          <nav aria-label="Trilha de navegação" className="flex items-center gap-2 text-xs sm:text-sm font-medium">
+            <Link
+              to="/"
+              className="text-slate-400 hover:text-slate-200 transition-colors flex items-center gap-1.5"
+            >
               <TrendingUp className="w-4 h-4 text-emerald-400" />
               Início
-            </span>
-            <span className="text-slate-600">/</span>
-            <span className="text-slate-200 font-semibold truncate max-w-[200px] sm:max-w-none">
-              Calculadora de Investimento a Longo Prazo
-            </span>
+            </Link>
+            {activeTool && (
+              <>
+                <span className="text-slate-600">/</span>
+                <span className="text-slate-200 font-semibold truncate max-w-[200px] sm:max-w-none">
+                  {activeTool.label}
+                </span>
+              </>
+            )}
           </nav>
         </div>
 
@@ -161,7 +162,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* PIX Donation Button with subtle glow */}
           <button
             id="header-pix-btn"
-            onClick={onOpenPix}
+            onClick={openPix}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-slate-950 text-xs font-bold shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all cursor-pointer"
           >
             <Heart className="w-3.5 h-3.5 fill-slate-950 text-slate-950" />

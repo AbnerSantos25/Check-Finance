@@ -1,0 +1,136 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Lock, type LucideIcon } from 'lucide-react';
+import { TOOLS, type ToolMeta } from '../../config/tools.data';
+import { ACCENT_CLASSES, TOOL_ICONS } from '../../config/tools.tsx';
+import { useModals } from '../../app/providers/ModalsProvider';
+import { Seo } from '../../shared/seo/Seo';
+import { HOME_SEO, homeJsonLd } from './seo';
+
+const CARD_BASE =
+  'group h-full text-left p-5 rounded-2xl bg-surface border border-line shadow-lg transition-all';
+
+/** Miolo compartilhado pelos cards: só o invólucro (link ou botão) muda. */
+const CardBody: React.FC<{ tool: ToolMeta; icon: LucideIcon }> = ({ tool, icon: Icon }) => {
+  const accent = ACCENT_CLASSES[tool.accent];
+
+  return (
+    <>
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div
+          className={`flex items-center justify-center w-10 h-10 rounded-xl border ${accent.iconSurface}`}
+        >
+          <Icon className="w-5 h-5" />
+        </div>
+        {tool.status === 'em-breve' ? (
+          <span className="text-[10px] px-2 py-1 rounded-md bg-slate-800 text-slate-400 font-medium shrink-0">
+            Em breve
+          </span>
+        ) : (
+          <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all shrink-0" />
+        )}
+      </div>
+
+      <h2 className="text-sm font-bold text-white mb-1.5 leading-snug">{tool.label}</h2>
+      <p className="text-xs text-slate-400 leading-relaxed">{tool.description}</p>
+    </>
+  );
+};
+
+export const HubPage: React.FC = () => {
+  const { openComingSoon } = useModals();
+
+  return (
+    <>
+      <Seo
+        title={HOME_SEO.title}
+        description={HOME_SEO.description}
+        path="/"
+        jsonLd={homeJsonLd}
+      />
+
+      <div className="mb-8 max-w-3xl">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-3">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          Hub de Ferramentas Financeiras
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          Calculadoras financeiras gratuitas, em português e sem cadastro
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
+          Simule <strong>juros compostos com inflação e Imposto de Renda</strong>, compare{' '}
+          <strong>SAC e PRICE</strong> no financiamento do seu imóvel e descubra o impacto real da
+          amortização extra. Todas as ferramentas usam indicadores oficiais do Banco Central e
+          funcionam direto no navegador, sem login.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {TOOLS.map((tool) => {
+          const Icon = TOOL_ICONS[tool.id];
+          const accent = ACCENT_CLASSES[tool.accent];
+
+          return tool.status === 'em-breve' ? (
+            <button
+              key={tool.id}
+              id={`hub-${tool.id}-card`}
+              onClick={() => openComingSoon(tool.id)}
+              className={`${CARD_BASE} ${accent.cardHover} cursor-pointer opacity-80 hover:opacity-100`}
+            >
+              <CardBody tool={tool} icon={Icon} />
+            </button>
+          ) : (
+            <Link
+              key={tool.id}
+              id={`hub-${tool.id}-card`}
+              to={tool.path}
+              className={`${CARD_BASE} ${accent.cardHover} block`}
+            >
+              <CardBody tool={tool} icon={Icon} />
+            </Link>
+          );
+        })}
+      </div>
+
+      <section className="mt-12 pt-8 border-t border-line-soft">
+        <div className="mb-6">
+          <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
+            Por que o CheckFinance
+          </div>
+          <h2 className="text-xl font-extrabold text-white">
+            Simulações que consideram o que o mercado costuma esconder
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-5 rounded-2xl bg-surface border border-line">
+            <h3 className="text-sm font-bold text-white mb-1.5">Inflação e IR incluídos</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Rentabilidade nominal engana. Aqui você vê o patrimônio em poder de compra de hoje,
+              já com a tabela regressiva do Imposto de Renda aplicada.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-surface border border-line">
+            <h3 className="text-sm font-bold text-white mb-1.5">Indicadores oficiais</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              SELIC, CDI, IPCA e poupança vêm das APIs do Banco Central a cada visita, com data da
+              referência sempre visível — nada de número chumbado no código.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-surface border border-line">
+            <h3 className="text-sm font-bold text-white mb-1.5 flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-emerald-400" />
+              Sem login, sem rastreio
+            </h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Nenhum dado seu sai do navegador: o cálculo roda na sua máquina e nada é enviado
+              para servidor nenhum.
+            </p>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+};

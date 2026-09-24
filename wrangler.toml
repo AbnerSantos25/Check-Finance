@@ -5,6 +5,16 @@ compatibility_date = "2026-09-01"
 [assets]
 directory = "./dist"
 binding = "ASSETS"
+# /calculadora-juros-compostos serve dist/calculadora-juros-compostos.html, gerado
+# pelo pré-render (`vite-react-ssg build`). Deep link responde 200 de verdade, com o
+# conteúdo da página já no HTML.
+html_handling = "auto-trailing-slash"
+# O que não casar com arquivo nenhum recebe 404 com o dist/404.html, que é a
+# NotFoundPage pré-renderizada. Status honesto e conteúdo útil na mesma resposta.
+not_found_handling = "404-page"
+# Sem isto, /api/* sem correspondência em disco cairia no 404.html em vez de chegar
+# ao Worker.
+run_worker_first = ["/api/*"]
 
 # Cache global da cotação do IBOVESPA, para não estourar a cota diária da HG Brasil.
 # O id é criado com: npx wrangler kv namespace create MARKET_CACHE

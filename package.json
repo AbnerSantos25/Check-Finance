@@ -1,45 +1,43 @@
-{
+﻿{
   "name": "react-example",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build",
+    "dev:ssr": "vite-react-ssg dev --host",
+    "dev:api": "npm run build && wrangler dev",
+    "build": "vite-react-ssg build",
     "preview": "vite preview",
-    "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit && tsc --noEmit -p worker",
-    "check": "tsx server/hgBrasil.check.ts",
-    "dev:api": "vite build && wrangler dev",
-    "deploy": "vite build && wrangler deploy"
+    "test": "vitest",
+    "test:run": "vitest run",
+    "clean": "rm -rf dist server.js",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "@google/genai": "^2.4.0",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
-    "dotenv": "^17.2.3",
-    "express": "^4.21.2",
     "lucide-react": "^0.546.0",
-    "motion": "^12.23.24",
     "qrcode.react": "^4.2.0",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
     "react-is": "^19.3.0",
+    "react-router-dom": "^6.30.6",
     "recharts": "^3.10.1",
-    "vite": "^6.2.3"
+    "vite": "^6.2.3",
+    "vite-react-ssg": "^0.9.2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260920.1",
-    "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "autoprefixer": "^10.4.21",
-    "esbuild": "^0.25.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.3",
+    "vitest": "^5.0.1",
     "wrangler": "^4.135.0"
   }
 }
