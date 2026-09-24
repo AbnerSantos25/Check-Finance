@@ -65,7 +65,7 @@ export const InvestmentPage: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsMethodologyOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-surface-2 hover:bg-line-soft border border-line text-xs font-medium text-slate-300 hover:text-white transition-all cursor-pointer"
+            className="flex items-center gap-1.5 tap-target px-3.5 py-2 rounded-xl bg-surface-2 hover:bg-line-soft border border-line text-xs font-medium text-slate-300 hover:text-white transition-all cursor-pointer"
           >
             <HelpCircle className="w-3.5 h-3.5 text-emerald-400" />
             <span>Ver Fórmulas & Metodologia</span>
@@ -169,7 +169,7 @@ const SupportBanner: React.FC = () => {
       <div className="flex items-center gap-3 shrink-0">
         <button
           onClick={openPix}
-          className="px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/25 transition-all cursor-pointer flex items-center gap-2"
+          className="tap-target px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/25 transition-all cursor-pointer flex items-center gap-2"
         >
           <Heart className="w-4 h-4 fill-slate-950" />
           <span>Fazer Doação PIX</span>

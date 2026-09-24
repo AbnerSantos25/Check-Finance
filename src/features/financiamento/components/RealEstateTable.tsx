@@ -60,7 +60,7 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
         
         <button
           onClick={exportCSV}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 text-xs font-medium text-sky-400 transition-colors"
+          className="flex items-center gap-1.5 tap-target px-3 py-1.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 text-xs font-medium text-sky-400 transition-colors"
         >
           <Download className="w-3.5 h-3.5" />
           Baixar Cronograma Completo (CSV)
@@ -71,11 +71,11 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-bg/50">
-              <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-line">Período</th>
-              <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-line text-right">Parcela Base</th>
-              <th className="px-4 py-3 text-[10px] font-bold text-emerald-400 uppercase tracking-wider border-b border-line text-right">Abatimento Extra</th>
-              <th className="px-4 py-3 text-[10px] font-bold text-rose-400 uppercase tracking-wider border-b border-line text-right">Juros (Custo)</th>
-              <th className="px-4 py-3 text-[10px] font-bold text-sky-400 uppercase tracking-wider border-b border-line text-right">Saldo Devedor</th>
+              <th className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-line">Período</th>
+              <th className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-line text-right">Parcela Base</th>
+              <th className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-emerald-400 uppercase tracking-wider border-b border-line text-right">Abatimento Extra</th>
+              <th className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-rose-400 uppercase tracking-wider border-b border-line text-right">Juros (Custo)</th>
+              <th className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-sky-400 uppercase tracking-wider border-b border-line text-right">Saldo Devedor</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line/50">
@@ -92,7 +92,7 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
                     <div className="text-xs font-medium text-slate-300">
                       Mês {row.month}
                     </div>
-                    <div className="text-[10px] text-slate-500">
+                    <div className="text-[12px] sm:text-[10px] text-slate-500">
                       Ano {Math.ceil(row.month / 12)}
                     </div>
                   </td>
@@ -116,7 +116,7 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
                       {formatBRL(row.outstandingBalance)}
                     </span>
                     {isLast && (
-                      <div className="text-[10px] text-sky-400/70 mt-0.5">Quitação</div>
+                      <div className="text-[12px] sm:text-[10px] text-sky-400/70 mt-0.5">Quitação</div>
                     )}
                   </td>
                 </tr>

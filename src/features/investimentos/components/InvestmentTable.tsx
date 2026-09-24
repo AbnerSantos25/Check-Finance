@@ -90,7 +90,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
               <button
                 type="button"
                 onClick={() => setFilterMode('all')}
-                className={`px-2.5 py-1 rounded-lg transition-all ${
+                className={`tap-target px-2.5 py-1 rounded-lg transition-all ${
                   filterMode === 'all'
                     ? 'bg-line-soft text-white font-medium'
                     : 'text-slate-400 hover:text-slate-200'
@@ -101,7 +101,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
               <button
                 type="button"
                 onClick={() => setFilterMode('milestones')}
-                className={`px-2.5 py-1 rounded-lg transition-all ${
+                className={`tap-target px-2.5 py-1 rounded-lg transition-all ${
                   filterMode === 'milestones'
                     ? 'bg-line-soft text-white font-medium'
                     : 'text-slate-400 hover:text-slate-200'
@@ -137,7 +137,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
       {/* Table responsive container */}
       <div className="overflow-x-auto mt-4 max-h-[500px] overflow-y-auto">
         <table className="w-full text-left text-xs border-collapse">
-          <thead className="sticky top-0 z-10 bg-bg border-b border-line text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+          <thead className="sticky top-0 z-10 bg-bg border-b border-line text-[12px] sm:text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
             <tr>
               <th className="py-3 px-3.5 rounded-tl-lg">Ano</th>
               <th className="py-3 px-3.5">Total Aportado</th>
@@ -164,7 +164,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                   <td className="py-3 px-3.5 font-sans font-semibold text-white flex items-center gap-1.5">
                     Ano {row.year}
                     {isLastYear && (
-                      <span className="px-1.5 py-0.5 rounded text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-sans">
+                      <span className="px-1.5 py-0.5 rounded text-[12px] sm:text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-sans">
                         Final
                       </span>
                     )}
@@ -179,7 +179,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                     +{formatBRL(row.yearlyInterestGained)}
                   </td>
                   <td className="py-3 px-3.5">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 font-semibold border border-emerald-500/20 text-[11px]">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 font-semibold border border-emerald-500/20 text-[12px] sm:text-[11px]">
                       +{formatBRL(row.totalInterestGained)}
                     </span>
                   </td>
@@ -200,7 +200,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
       </div>
 
       {/* Table footer note */}
-      <div className="mt-4 pt-3 border-t border-line-soft flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-2">
+      <div className="mt-4 pt-3 border-t border-line-soft flex flex-col sm:flex-row items-center justify-between text-[12px] sm:text-[11px] text-slate-400 gap-2">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
           <span>

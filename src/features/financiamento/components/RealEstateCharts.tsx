@@ -72,7 +72,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
           <p className="text-sm font-mono font-bold" style={{ color: data.color }}>
             {formatBRL(data.value)}
           </p>
-          <p className="text-[10px] text-slate-500 mt-1">
+          <p className="text-[12px] sm:text-[10px] text-slate-500 mt-1">
             {((data.value / summary.totalPaidOut) * 100).toFixed(1)}% do Custo Efetivo Total
           </p>
         </div>
@@ -115,7 +115,13 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
                   verticalAlign="bottom" 
                   height={36}
                   iconType="circle"
-                  wrapperStyle={{ fontSize: '11px', color: '#94a3b8' }}
+                  wrapperStyle={{
+                    // 12px é o piso de legibilidade que a auditoria fixou para o
+                    // celular; a legenda do recharts vem por estilo inline, fora do
+                    // alcance das classes do Tailwind.
+                    fontSize: '12px',
+                    color: '#94a3b8',
+                  }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -127,7 +133,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
           )}
           {summary.totalPaidOut > 0 && (
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-8">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider">Custo Total</span>
+              <span className="text-[12px] sm:text-[10px] text-slate-400 uppercase tracking-wider">Custo Total</span>
               <span className="text-sm font-bold text-white tracking-tight">
                 {formatBRL(summary.totalPaidOut)}
               </span>
@@ -144,7 +150,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
             <h3 className="text-sm font-bold text-white">Evolução do Saldo Devedor</h3>
           </div>
           {summary.monthsSaved > 0 && (
-            <div className="text-[10px] font-semibold text-emerald-400 px-2 py-1 rounded bg-emerald-500/10 border border-emerald-500/20">
+            <div className="text-[12px] sm:text-[10px] font-semibold text-emerald-400 px-2 py-1 rounded bg-emerald-500/10 border border-emerald-500/20">
               Dívida encurtada em {summary.monthsSaved} meses
             </div>
           )}

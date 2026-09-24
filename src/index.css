@@ -49,3 +49,74 @@
 .glow-card {
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05);
 }
+/* ---------------------------------------------------------------------------
+   Alvos de toque
+
+   A WCAG 2.5.5 pede 44×44px para controles acionados por toque. O layout foi
+   desenhado para ponteiro preciso, então o piso vale só no celular: acima de
+   `sm` cada componente volta exatamente ao tamanho original.
+   --------------------------------------------------------------------------- */
+
+@layer components {
+  /* Botões e links de texto. O inline-flex centraliza o conteúdo quando a caixa
+     cresce — sem ele o rótulo ficaria colado no topo. */
+  .tap-target {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+
+  /* Campos de formulário já centralizam o próprio texto; só a altura importa. */
+  .tap-field {
+    min-height: 2.75rem;
+  }
+
+  /* Range: o alvo tem a altura do trilho, 6px, e no celular é quase impossível
+     pegar o controle. A caixa vai a 44px e o trilho segue fino, desenhado pelo
+     pseudo-elemento — a aparência não muda. */
+  .range-touch {
+    height: 2.75rem;
+  }
+
+  /* Só altura e raio: pintar `background` aqui sobrescreve o `accent-color`, e o
+     trecho preenchido à esquerda do polegar deixa de aparecer. */
+  .range-touch::-webkit-slider-runnable-track {
+    height: 0.375rem;
+    border-radius: 0.5rem;
+  }
+
+  .range-touch::-moz-range-track {
+    height: 0.375rem;
+    border-radius: 0.5rem;
+  }
+
+  /* 768px, e não 640px: o drawer do mobile é `md:hidden`, então a interface de
+     toque vai até aí. Reverter antes deixaria um tablet de 700px com a navegação
+     de celular e os alvos de ponteiro. */
+  @media (min-width: 768px) {
+    .tap-target,
+    .tap-field {
+      min-height: 0;
+      min-width: 0;
+    }
+
+    .range-touch {
+      height: 0.375rem;
+    }
+  }
+}
+
+/* 16px é o limiar do Safari no iOS: abaixo disso ele dá zoom ao focar o campo e não
+   desfaz depois, deixando a página deslocada e rolando de lado — justamente o que
+   esta auditoria veio eliminar.
+
+   Fica FORA de `@layer` de propósito: regra sem camada vence qualquer uma dentro de
+   camada, e é o único jeito de passar à frente do `text-sm`/`text-xs` que os campos
+   já carregam. Vale só para `input`, porque `.tap-field` também marca botões. */
+@media (max-width: 767px) {
+  input.tap-field {
+    font-size: 1rem;
+  }
+}

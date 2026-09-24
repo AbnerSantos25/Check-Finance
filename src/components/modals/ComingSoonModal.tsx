@@ -41,7 +41,7 @@ export const ComingSoonModal: React.FC<ComingSoonModalProps> = ({
         mark={<DialogIcon icon={CodeXml} frameClass="bg-amber-500/15 border-amber-500/30 text-amber-400" />}
         className="mb-3"
       >
-        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/25">
+        <span className="text-[12px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/25">
           EM DESENVOLVIMENTO
         </span>
         <DialogTitle className="text-base mt-1">{toolName}</DialogTitle>
@@ -83,7 +83,7 @@ export const ComingSoonModal: React.FC<ComingSoonModalProps> = ({
             )}
           </button>
         </div>
-        <p className="text-[10px] text-slate-400">
+        <p className="text-[12px] sm:text-[10px] text-slate-400">
           Sem spam. Apenas uma notificação quando a ferramenta for ao ar.
         </p>
       </form>

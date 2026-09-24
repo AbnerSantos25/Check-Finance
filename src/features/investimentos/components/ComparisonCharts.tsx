@@ -127,7 +127,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
                       <div className="p-3.5 rounded-xl bg-panel border border-line shadow-2xl text-xs space-y-2 min-w-[210px]">
                         <div className="font-bold text-white pb-1.5 border-b border-white/10 flex justify-between items-center">
                           <span>{label}</span>
-                          <span className="text-[10px] text-slate-400 font-normal">
+                          <span className="text-[12px] sm:text-[10px] text-slate-400 font-normal">
                             Ano {data.year}
                           </span>
                         </div>
@@ -143,11 +143,11 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
                           <span>Juros brutos:</span>
                           <span className="font-mono font-bold">+{formatBRL(data.totalInterestGained)}</span>
                         </div>
-                        <div className="flex justify-between items-center text-slate-300 text-[10px] pt-1">
+                        <div className="flex justify-between items-center text-slate-300 text-[12px] sm:text-[10px] pt-1">
                           <span>{taxExempt ? 'Líquido (isento):' : 'Líquido de IR:'}</span>
                           <span className="font-mono">{formatBRL(data.netBalance)}</span>
                         </div>
-                        <div className="flex justify-between items-center text-slate-400 text-[10px]">
+                        <div className="flex justify-between items-center text-slate-400 text-[12px] sm:text-[10px]">
                           <span>Líquido em valores de hoje:</span>
                           <span className="font-mono">{formatBRL(data.realNetBalance)}</span>
                         </div>
@@ -231,13 +231,13 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
 
           {/* Centered label */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            <span className="text-[12px] sm:text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
               Juros
             </span>
             <span className="text-2xl font-extrabold text-emerald-400 font-mono">
               {formatPercent(interestPercentage, 1)}
             </span>
-            <span className="text-[10px] text-slate-400">
+            <span className="text-[12px] sm:text-[10px] text-slate-400">
               do total
             </span>
           </div>

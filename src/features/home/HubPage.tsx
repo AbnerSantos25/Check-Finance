@@ -23,7 +23,7 @@ const CardBody: React.FC<{ tool: ToolMeta; icon: LucideIcon }> = ({ tool, icon: 
           <Icon className="w-5 h-5" />
         </div>
         {tool.status === 'em-breve' ? (
-          <span className="text-[10px] px-2 py-1 rounded-md bg-slate-800 text-slate-400 font-medium shrink-0">
+          <span className="text-[12px] sm:text-[10px] px-2 py-1 rounded-md bg-slate-800 text-slate-400 font-medium shrink-0">
             Em breve
           </span>
         ) : (

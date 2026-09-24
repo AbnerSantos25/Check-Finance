@@ -36,7 +36,7 @@ export const RouteError: React.FC = () => {
           Recarregar a página
         </button>
 
-        <p className="mt-6 text-[10px] font-mono text-slate-400 break-words">{detail}</p>
+        <p className="mt-6 text-[12px] sm:text-[10px] font-mono text-slate-400 break-words">{detail}</p>
       </div>
     </div>
   );

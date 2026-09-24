@@ -34,7 +34,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
 
         <button
           onClick={onReset}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-2 hover:bg-line border border-line-strong text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 tap-target px-3 py-1.5 rounded-xl bg-surface-2 hover:bg-line border border-line-strong text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
         >
           <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
           Restaurar Padrões
@@ -58,7 +58,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 step="10000"
                 value={params.propertyValue}
                 onChange={(e) => onChange({ propertyValue: Number(e.target.value) })}
-                className="w-full pl-9 pr-4 py-2.5 bg-bg border border-line rounded-xl text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all"
+                className="w-full tap-field pl-9 pr-4 py-2.5 bg-bg border border-line rounded-xl text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all"
               />
             </div>
           </div>
@@ -89,7 +89,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 step="10000"
                 value={params.downPayment}
                 onChange={(e) => onChange({ downPayment: Number(e.target.value) })}
-                className="w-full pl-9 pr-4 py-2.5 bg-bg border border-line rounded-xl text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-all"
+                className="w-full tap-field pl-9 pr-4 py-2.5 bg-bg border border-line rounded-xl text-sm font-medium text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-all"
               />
             </div>
             <div className="flex items-center gap-1.5 pt-1">
@@ -98,7 +98,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                   key={pct}
                   type="button"
                   onClick={() => onChange({ downPayment: params.propertyValue * (pct / 100) })}
-                  className="text-[11px] px-2 py-1 rounded-lg bg-surface-2 border border-line text-slate-400 hover:text-slate-200 transition-all"
+                  className="text-[12px] sm:text-[11px] tap-target px-2 py-1 rounded-lg bg-surface-2 border border-line text-slate-400 hover:text-slate-200 transition-all"
                 >
                   {pct}%
                 </button>
@@ -119,7 +119,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 step="0.1"
                 value={params.annualInterestRate}
                 onChange={(e) => onChange({ annualInterestRate: Number(e.target.value) })}
-                className="w-full accent-sky-400 h-1.5 bg-line rounded-lg cursor-pointer"
+                className="w-full accent-sky-400 range-touch bg-line rounded-lg cursor-pointer"
               />
               <div className="w-24 shrink-0 relative">
                 <input
@@ -129,9 +129,9 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                   step="0.1"
                   value={params.annualInterestRate}
                   onChange={(e) => onChange({ annualInterestRate: Number(e.target.value) })}
-                  className="w-full px-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-sky-500"
+                  className="w-full tap-field px-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-sky-500"
                 />
-                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">% a.a.</span>
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] sm:text-[10px] text-slate-400">% a.a.</span>
               </div>
             </div>
           </div>
@@ -155,7 +155,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 step="12"
                 value={params.termMonths}
                 onChange={(e) => onChange({ termMonths: Number(e.target.value) })}
-                className="w-full accent-sky-400 h-1.5 bg-line rounded-lg cursor-pointer"
+                className="w-full accent-sky-400 range-touch bg-line rounded-lg cursor-pointer"
               />
             </div>
             <div className="flex items-center gap-1.5 pt-1">
@@ -164,7 +164,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                   key={months}
                   type="button"
                   onClick={() => onChange({ termMonths: months })}
-                  className={`text-[11px] px-2 py-1 rounded-lg border transition-all ${
+                  className={`text-[12px] sm:text-[11px] tap-target px-2 py-1 rounded-lg border transition-all ${
                     params.termMonths === months
                       ? 'bg-sky-500/15 border-sky-500/40 text-sky-300 font-semibold'
                       : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
@@ -186,7 +186,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 <button
                   key={sys}
                   onClick={() => onChange({ amortizationSystem: sys })}
-                  className={`flex-1 text-xs font-medium py-2 rounded-lg transition-all ${
+                  className={`flex-1 tap-target text-xs font-medium py-2 rounded-lg transition-all ${
                     params.amortizationSystem === sys
                       ? 'bg-line text-white shadow-sm'
                       : 'text-slate-500 hover:text-slate-300'
@@ -204,7 +204,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
               <DollarSign className="w-3.5 h-3.5" />
               Amortização Extraordinária Mensal
             </label>
-            <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
+            <p className="text-[12px] sm:text-[11px] text-slate-400 leading-relaxed mb-3">
               Simule o envio de um valor extra fixo todos os meses para abater o saldo devedor e encurtar a dívida.
             </p>
             <div className="relative">
@@ -217,7 +217,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 step="100"
                 value={params.extraMonthlyAmortization}
                 onChange={(e) => onChange({ extraMonthlyAmortization: Number(e.target.value) })}
-                className="w-full pl-9 pr-4 py-2.5 bg-bg border border-emerald-500/20 rounded-xl text-sm font-medium text-emerald-400 placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                className="w-full tap-field pl-9 pr-4 py-2.5 bg-bg border border-emerald-500/20 rounded-xl text-sm font-medium text-emerald-400 placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
                 placeholder="Ex: 500 para R$ 500 todo mês"
               />
             </div>
