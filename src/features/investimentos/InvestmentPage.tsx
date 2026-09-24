@@ -75,8 +75,6 @@ export const InvestmentPage: React.FC = () => {
         </div>
       </div>
 
-      <SummaryCards summary={summary} years={params.years} taxExempt={params.taxExempt} />
-
       <InvestmentForm
         params={params}
         onChange={handleParamChange}
@@ -84,6 +82,8 @@ export const InvestmentPage: React.FC = () => {
         marketRates={rates}
         ratesAreLive={hasFetched && liveCount > 0}
       />
+      
+      <SummaryCards summary={summary} years={params.years} taxExempt={params.taxExempt} />
 
       <ComparisonCharts summary={summary} taxExempt={params.taxExempt} />
 
