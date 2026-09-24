@@ -125,14 +125,15 @@ export default defineConfig(({ isSsrBuild }) => {
       rollupOptions: {
         // Só no bundle do navegador: no build de servidor estas dependências ficam
         // externas, e o Rollup recusa nomear um módulo externo em manualChunks.
-        output: isSsrBuild
-          ? {}
-          : {
-              manualChunks: {
-                'vendor-charts': ['recharts'],
-                'vendor-icons': ['lucide-react'],
-              },
-            },
+        //
+        // O recharts NÃO entra aqui de propósito. Forçá-lo num chunk nomeado o
+        // promovia ao grafo do entry, e o HTML de toda rota — inclusive o hub, que
+        // não tem gráfico nenhum — saía com um `modulepreload` de 393 kB. Sem o
+        // nome fixo, ele fica dentro do chunk das páginas que realmente o importam.
+        //
+        // O lucide fica, porque o shell (sidebar, header, rodapé) usa ícones em
+        // todas as rotas: é carregamento legítimo e ganha cache próprio.
+        output: isSsrBuild ? {} : { manualChunks: { 'vendor-icons': ['lucide-react'] } },
       },
     },
     server: {

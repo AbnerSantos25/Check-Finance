@@ -39,6 +39,9 @@ export const RootLayout: React.FC = () => {
               isCollapsed={false}
               setIsCollapsed={() => setIsMobileMenuOpen(false)}
               onAfterAction={() => setIsMobileMenuOpen(false)}
+              // A sidebar do desktop continua no DOM, só escondida por CSS: sem
+              // prefixo, abrir o drawer duplicaria todos os id da página.
+              idPrefix="mobile-"
             />
           </div>
         </div>

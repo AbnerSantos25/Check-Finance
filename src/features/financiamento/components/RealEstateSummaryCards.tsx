@@ -23,8 +23,17 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
   const monthsSavedRest = summary.monthsSaved % 12;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      
+    // <section> com título próprio porque os quatro cards são <h3> e vinham logo
+    // depois do <h1> da página: um salto de nível que o leitor de tela anuncia como
+    // seção faltando, e que os rastreadores leem como estrutura quebrada. O título
+    // fica fora da tela — a informação já está visível nos próprios cards.
+    <section aria-labelledby="resumo-financiamento" className="mb-6">
+      <h2 id="resumo-financiamento" className="sr-only">
+        Resumo do financiamento
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
       {/* Total Financiado */}
       <div className="bg-surface border border-line rounded-2xl p-5 relative overflow-hidden group">
         <div className="flex items-center gap-2 mb-3 relative z-10">
@@ -123,6 +132,7 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
         )}
       </div>
 
-    </div>
+      </div>
+    </section>
   );
 };
