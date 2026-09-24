@@ -101,3 +101,54 @@ describe('calculateFinancing — imóvel pago à vista', () => {
     });
   });
 });
+
+describe('calculateFinancing — juros zerados', () => {
+  // Sem juros, PRICE e SAC descrevem o mesmo empréstimo: a parcela é só o valor
+  // financiado dividido pelo prazo. Antes, a PRICE devolvia parcela zero, o saldo
+  // nunca caía e o laço parava no limite de segurança com o dobro do prazo.
+  const semJuros = { ...BASE, annualInterestRate: 0 };
+
+  it('PRICE amortiza normalmente e quita no prazo contratado', () => {
+    const s = calculateFinancing({ ...semJuros, amortizationSystem: 'PRICE' });
+
+    expect(s.actualTermMonths).toBe(360);
+    expect(s.schedule).toHaveLength(360);
+    expect(s.totalPaidOut).toBeCloseTo(400000, 6);
+    expect(s.totalInterestPaid).toBeCloseTo(0, 6);
+    expect(s.firstInstallment).toBeCloseTo(400000 / 360, 6);
+    expect(s.schedule[359].outstandingBalance).toBe(0);
+  });
+
+  it('PRICE e SAC coincidem quando não há juros', () => {
+    const price = calculateFinancing({ ...semJuros, amortizationSystem: 'PRICE' });
+    const sac = calculateFinancing({ ...semJuros, amortizationSystem: 'SAC' });
+
+    expect(price.totalPaidOut).toBeCloseTo(sac.totalPaidOut, 6);
+    expect(price.firstInstallment).toBeCloseTo(sac.firstInstallment, 6);
+    expect(price.actualTermMonths).toBe(sac.actualTermMonths);
+  });
+
+  it('a amortização extra encurta o prazo em vez de estourar o limite', () => {
+    const s = calculateFinancing({
+      ...semJuros,
+      amortizationSystem: 'PRICE',
+      extraMonthlyAmortization: 500,
+    });
+
+    expect(s.actualTermMonths).toBe(249);
+    expect(s.monthsSaved).toBe(111);
+    expect(s.totalPaidOut).toBeCloseTo(400000, 6);
+  });
+});
+
+describe('calculateFinancing — economia residual de ponto flutuante', () => {
+  // O card de economia do resumo decide o que exibir a partir deste número. Ele é a
+  // diferença entre dois somatórios e não fecha em zero exato: por isso a tela usa
+  // tolerância de um centavo em vez de comparar com zero.
+  it('mantém a economia da PRICE sem extra abaixo de um centavo', () => {
+    const s = calculateFinancing({ ...BASE, amortizationSystem: 'PRICE' });
+
+    expect(s.monthsSaved).toBe(0);
+    expect(s.interestSaved).toBeLessThan(0.01);
+  });
+});

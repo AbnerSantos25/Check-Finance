@@ -9,7 +9,18 @@ interface RealEstateSummaryCardsProps {
 }
 
 export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ summary, params }) => {
-  const isSaving = summary.monthsSaved > 0 || summary.interestSaved > 0;
+  // Um centavo de tolerância, e não `> 0`: a economia em dinheiro é a diferença entre
+  // dois somatórios de ponto flutuante e nunca fecha em zero exato. No cenário padrão
+  // com PRICE e sem amortização extra ela vale 5,8e-10 — zero na prática.
+  const hasMoneySaved = summary.interestSaved >= 0.01;
+
+  // Exige que o visitante esteja de fato simulando uma amortização extra, além de ela
+  // ter surtido algum efeito. Só olhar o resultado deixava o card acender sozinho.
+  const isSaving =
+    params.extraMonthlyAmortization > 0 && (hasMoneySaved || summary.monthsSaved > 0);
+
+  const yearsSaved = Math.floor(summary.monthsSaved / 12);
+  const monthsSavedRest = summary.monthsSaved % 12;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -83,11 +94,17 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
         <div className="relative z-10">
           {isSaving ? (
             <>
+              {/* Sem juros no contrato não há o que economizar em dinheiro, e a
+                  manchete "-R$ 0,00" esconderia o ganho real, que é de prazo. */}
               <span className="text-2xl font-bold text-emerald-400 tracking-tight flex items-center gap-1.5">
-                -{formatBRL(summary.interestSaved)}
+                {hasMoneySaved
+                  ? `-${formatBRL(summary.interestSaved)}`
+                  : `${yearsSaved} anos e ${monthsSavedRest} meses`}
               </span>
               <div className="mt-1 text-[11px] font-medium text-emerald-400/80">
-                Você reduziu a dívida em {Math.floor(summary.monthsSaved / 12)} anos e {summary.monthsSaved % 12} meses!
+                {hasMoneySaved
+                  ? `Você reduziu a dívida em ${yearsSaved} anos e ${monthsSavedRest} meses!`
+                  : 'Sem juros no financiamento, toda a economia da amortização extra está no prazo.'}
               </div>
             </>
           ) : (
