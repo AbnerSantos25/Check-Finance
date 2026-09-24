@@ -67,28 +67,29 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
         </button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
+      <div className="sm:overflow-x-auto">
+        <table role="table" className="table-cards w-full text-left border-collapse">
+          <thead role="rowgroup">
             <tr className="bg-bg/50">
-              <th className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-line">Período</th>
-              <th className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-line text-right">Parcela Base</th>
-              <th className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-emerald-400 uppercase tracking-wider border-b border-line text-right">Abatimento Extra</th>
-              <th className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-rose-400 uppercase tracking-wider border-b border-line text-right">Juros (Custo)</th>
-              <th className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-sky-400 uppercase tracking-wider border-b border-line text-right">Saldo Devedor</th>
+              <th role="columnheader" className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-line">Período</th>
+              <th role="columnheader" className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-line text-right">Parcela Base</th>
+              <th role="columnheader" className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-emerald-400 uppercase tracking-wider border-b border-line text-right">Abatimento Extra</th>
+              <th role="columnheader" className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-rose-400 uppercase tracking-wider border-b border-line text-right">Juros (Custo)</th>
+              <th role="columnheader" className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-sky-400 uppercase tracking-wider border-b border-line text-right">Saldo Devedor</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-line/50">
+          <tbody role="rowgroup" className="divide-y divide-line/50">
             {tableData.map((row, idx) => {
               const isLast = idx === tableData.length - 1;
               return (
                 <tr 
+                  role="row"
                   key={row.month}
                   className={`hover:bg-white/[0.02] transition-colors ${
                     isLast ? 'bg-sky-900/10' : ''
                   }`}
                 >
-                  <td className="px-4 py-3 whitespace-nowrap">
+                  <td role="cell" data-label="Período" className="px-4 py-3 whitespace-nowrap">
                     <div className="text-xs font-medium text-slate-300">
                       Mês {row.month}
                     </div>
@@ -96,22 +97,22 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
                       Ano {Math.ceil(row.month / 12)}
                     </div>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-right">
+                  <td role="cell" data-label="Parcela base" className="px-4 py-3 whitespace-nowrap text-right">
                     <span className="text-xs font-mono text-slate-300">
                       {formatBRL(row.payment - row.extraAmortization)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-right">
+                  <td role="cell" data-label="Abatimento extra" className="px-4 py-3 whitespace-nowrap text-right">
                     <span className="text-xs font-mono text-emerald-400">
                       {row.extraAmortization > 0 ? `+${formatBRL(row.extraAmortization)}` : '-'}
                     </span>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-right">
+                  <td role="cell" data-label="Juros (custo)" className="px-4 py-3 whitespace-nowrap text-right">
                     <span className="text-xs font-mono text-rose-400/80">
                       {formatBRL(row.interest)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-right">
+                  <td role="cell" data-label="Saldo devedor" className="px-4 py-3 whitespace-nowrap text-right">
                     <span className={`text-xs font-mono font-bold ${isLast ? 'text-sky-400' : 'text-slate-200'}`}>
                       {formatBRL(row.outstandingBalance)}
                     </span>

@@ -237,9 +237,9 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               step="1"
               value={params.annualAdjustmentRate}
               onChange={(e) => onChange({ annualAdjustmentRate: Number(e.target.value) })}
-              className="w-full accent-emerald-400 range-touch bg-line rounded-lg cursor-pointer"
+              className="w-full accent-emerald-400 range-touch cursor-pointer"
             />
-            <div className="w-20 shrink-0 relative">
+            <div className="w-28 sm:w-20 shrink-0 relative">
               <DraftNumberInput
                 id="annual-adjustment-input"
                 min="0"
@@ -247,7 +247,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 step="0.5"
                 value={params.annualAdjustmentRate}
                 onCommit={(v) => onChange({ annualAdjustmentRate: v })}
-                className="w-full tap-field px-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
+                className="w-full tap-field pl-2.5 pr-7 sm:pr-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
               <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] sm:text-[10px] text-slate-400">
                 %
@@ -291,9 +291,9 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               step="0.25"
               value={params.annualInterestRate}
               onChange={(e) => onChange({ annualInterestRate: Number(e.target.value) })}
-              className="w-full accent-emerald-400 range-touch bg-line rounded-lg cursor-pointer"
+              className="w-full accent-emerald-400 range-touch cursor-pointer"
             />
-            <div className="w-20 shrink-0 relative">
+            <div className="w-28 sm:w-20 shrink-0 relative">
               <DraftNumberInput
                 id="annual-interest-input"
                 min="0.1"
@@ -301,7 +301,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 step="0.25"
                 value={params.annualInterestRate}
                 onCommit={(v) => onChange({ annualInterestRate: v })}
-                className="w-full tap-field px-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
+                className="w-full tap-field pl-2.5 pr-7 sm:pr-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
               <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] sm:text-[10px] text-slate-400">
                 %
@@ -367,9 +367,9 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               step="0.5"
               value={params.annualInflationRate}
               onChange={(e) => onChange({ annualInflationRate: Number(e.target.value) })}
-              className="w-full accent-amber-400 range-touch bg-line rounded-lg cursor-pointer"
+              className="w-full accent-amber-400 range-touch cursor-pointer"
             />
-            <div className="w-20 shrink-0 relative">
+            <div className="w-28 sm:w-20 shrink-0 relative">
               <DraftNumberInput
                 id="annual-inflation-input"
                 min="0"
@@ -377,7 +377,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 step="0.5"
                 value={params.annualInflationRate}
                 onCommit={(v) => onChange({ annualInflationRate: v })}
-                className="w-full tap-field px-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-amber-500"
+                className="w-full tap-field pl-2.5 pr-7 sm:pr-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-amber-500"
               />
               <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] sm:text-[10px] text-slate-400">
                 %
@@ -433,9 +433,9 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               step="1"
               value={params.years}
               onChange={(e) => onChange({ years: Number(e.target.value) })}
-              className="w-full accent-emerald-400 range-touch bg-line rounded-lg cursor-pointer"
+              className="w-full accent-emerald-400 range-touch cursor-pointer"
             />
-            <div className="w-20 shrink-0 relative">
+            <div className="w-28 sm:w-20 shrink-0 relative">
               <DraftNumberInput
                 id="years-period-input"
                 min="1"
@@ -443,7 +443,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 step="1"
                 value={params.years}
                 onCommit={(v) => onChange({ years: v })}
-                className="w-full tap-field px-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
+                className="w-full tap-field pl-2.5 pr-7 sm:pr-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[12px] sm:text-[10px] text-slate-400">
                 anos

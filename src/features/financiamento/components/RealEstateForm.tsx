@@ -119,9 +119,9 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 step="0.1"
                 value={params.annualInterestRate}
                 onChange={(e) => onChange({ annualInterestRate: Number(e.target.value) })}
-                className="w-full accent-sky-400 range-touch bg-line rounded-lg cursor-pointer"
+                className="w-full accent-sky-400 range-touch cursor-pointer"
               />
-              <div className="w-24 shrink-0 relative">
+              <div className="w-28 sm:w-24 shrink-0 relative">
                 <input
                   type="number"
                   min="0"
@@ -129,7 +129,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                   step="0.1"
                   value={params.annualInterestRate}
                   onChange={(e) => onChange({ annualInterestRate: Number(e.target.value) })}
-                  className="w-full tap-field px-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-sky-500"
+                  className="w-full tap-field pl-2.5 pr-7 sm:pr-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-sky-500"
                 />
                 <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] sm:text-[10px] text-slate-400">% a.a.</span>
               </div>
@@ -155,7 +155,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 step="12"
                 value={params.termMonths}
                 onChange={(e) => onChange({ termMonths: Number(e.target.value) })}
-                className="w-full accent-sky-400 range-touch bg-line rounded-lg cursor-pointer"
+                className="w-full accent-sky-400 range-touch cursor-pointer"
               />
             </div>
             <div className="flex items-center gap-1.5 pt-1">

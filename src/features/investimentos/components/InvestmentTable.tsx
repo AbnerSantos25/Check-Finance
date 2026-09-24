@@ -135,25 +135,33 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
       </div>
 
       {/* Table responsive container */}
-      <div className="overflow-x-auto mt-4 max-h-[500px] overflow-y-auto">
-        <table className="w-full text-left text-xs border-collapse">
-          <thead className="sticky top-0 z-10 bg-bg border-b border-line text-[12px] sm:text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
-            <tr>
-              <th className="py-3 px-3.5 rounded-tl-lg">Ano</th>
-              <th className="py-3 px-3.5">Total Aportado</th>
-              <th className="py-3 px-3.5 text-emerald-400">Saldo Bruto</th>
-              <th className="py-3 px-3.5">Juros no Ano</th>
-              <th className="py-3 px-3.5 text-emerald-400">Juros Acumulados</th>
-              <th className="py-3 px-3.5">Líquido de IR</th>
-              <th className="py-3 px-3.5 text-teal-300">Renda Sustentável</th>
-              <th className="py-3 px-3.5 rounded-tr-lg">Líquido (valores de hoje)</th>
+      {/* A altura fixa com rolagem própria vale só de sm para cima. No celular, com
+          cada linha virando card, ela prendia 8500px de conteúdo numa janela de
+          500px — o dedo ficava preso numa rolagem aninhada em vez de rolar a
+          página. Quem quiser encurtar tem o filtro "Marcos (5 em 5)" acima. */}
+      <div className="mt-4 sm:max-h-[500px] sm:overflow-y-auto sm:overflow-x-auto">
+        <table role="table" className="table-cards w-full text-left text-xs border-collapse">
+          {/* `sm:sticky`: no celular o cabeçalho sai da tela pelo CSS de cards, e um
+              `position: sticky` vindo de utilitário venceria essa regra — o cabeçalho
+              continuaria ocupando 1170px e empurrando a página de lado. */}
+          <thead role="rowgroup" className="sm:sticky sm:top-0 z-10 bg-bg border-b border-line text-[12px] sm:text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+            <tr role="row">
+              <th role="columnheader" className="py-3 px-3.5 rounded-tl-lg">Ano</th>
+              <th role="columnheader" className="py-3 px-3.5">Total Aportado</th>
+              <th role="columnheader" className="py-3 px-3.5 text-emerald-400">Saldo Bruto</th>
+              <th role="columnheader" className="py-3 px-3.5">Juros no Ano</th>
+              <th role="columnheader" className="py-3 px-3.5 text-emerald-400">Juros Acumulados</th>
+              <th role="columnheader" className="py-3 px-3.5">Líquido de IR</th>
+              <th role="columnheader" className="py-3 px-3.5 text-teal-300">Renda Sustentável</th>
+              <th role="columnheader" className="py-3 px-3.5 rounded-tr-lg">Líquido (valores de hoje)</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-surface-2">
+          <tbody role="rowgroup" className="divide-y divide-surface-2">
             {displayData.map((row) => {
               const isLastYear = row.year === years;
               return (
                 <tr
+                  role="row"
                   key={row.year}
                   className={`transition-colors font-mono ${
                     isLastYear
@@ -161,7 +169,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                       : 'hover:bg-white/[0.02]'
                   }`}
                 >
-                  <td className="py-3 px-3.5 font-sans font-semibold text-white flex items-center gap-1.5">
+                  <td role="cell" data-label="Ano" className="py-3 px-3.5 font-sans font-semibold text-white flex items-center gap-1.5">
                     Ano {row.year}
                     {isLastYear && (
                       <span className="px-1.5 py-0.5 rounded text-[12px] sm:text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-sans">
@@ -169,27 +177,27 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                       </span>
                     )}
                   </td>
-                  <td className="py-3 px-3.5 text-slate-300">
+                  <td role="cell" data-label="Total aportado" className="py-3 px-3.5 text-slate-300">
                     {formatBRL(row.totalDeposited)}
                   </td>
-                  <td className="py-3 px-3.5 font-bold text-emerald-400">
+                  <td role="cell" data-label="Saldo bruto" className="py-3 px-3.5 font-bold text-emerald-400">
                     {formatBRL(row.grossBalance)}
                   </td>
-                  <td className="py-3 px-3.5 text-amber-300/90">
+                  <td role="cell" data-label="Juros no ano" className="py-3 px-3.5 text-amber-300/90">
                     +{formatBRL(row.yearlyInterestGained)}
                   </td>
-                  <td className="py-3 px-3.5">
+                  <td role="cell" data-label="Juros acumulados" className="py-3 px-3.5">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 font-semibold border border-emerald-500/20 text-[12px] sm:text-[11px]">
                       +{formatBRL(row.totalInterestGained)}
                     </span>
                   </td>
-                  <td className="py-3 px-3.5 text-slate-300">
+                  <td role="cell" data-label="Líquido de IR" className="py-3 px-3.5 text-slate-300">
                     {formatBRL(row.netBalance)}
                   </td>
-                  <td className="py-3 px-3.5 font-semibold text-teal-300">
+                  <td role="cell" data-label="Renda sustentável" className="py-3 px-3.5 font-semibold text-teal-300">
                     {formatBRL(row.sustainableMonthlyIncome)}/mês
                   </td>
-                  <td className="py-3 px-3.5 text-slate-400">
+                  <td role="cell" data-label="Líquido em valores de hoje" className="py-3 px-3.5 text-slate-400">
                     {formatBRL(row.realNetBalance)}
                   </td>
                 </tr>

@@ -120,3 +120,93 @@
     font-size: 1rem;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Tabela que vira cards no celular
+
+   As tabelas têm 8 e 5 colunas, e no celular ficavam dentro de um scroller
+   horizontal: para ler uma linha inteira era preciso arrastar de lado, o oposto
+   de uma leitura mobile-first.
+
+   A marcação NÃO é duplicada. É a mesma <table>, com o rótulo de cada célula
+   vindo do atributo `data-label` — assim o HTML pré-renderizado continua com as
+   mesmas linhas e o mesmo conteúdo indexável, sem peso extra.
+
+   Trocar o `display` de elementos de tabela apaga a semântica que o leitor de
+   tela usa, por isso os componentes declaram `role` explícito em table, tr, th
+   e td, que repõe exatamente essa semântica.
+   --------------------------------------------------------------------------- */
+
+@layer components {
+  @media (max-width: 639px) {
+    .table-cards {
+      display: block;
+      border-collapse: separate;
+    }
+
+    /* O cabeçalho some da tela, mas continua no documento: é dele que sai o texto
+       dos rótulos, e some só visualmente. */
+    .table-cards thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .table-cards tbody {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+    }
+
+    .table-cards tr {
+      display: block;
+      border-radius: 0.875rem;
+      overflow: hidden;
+    }
+
+    /* Borda e fundo dentro de `:where()`, que não soma especificidade: assim as
+       classes que destacam uma linha — o ano final da projeção, o mês da quitação —
+       continuam vencendo, em vez de sumirem atrás da cor padrão do card. */
+    :where(.table-cards) tr {
+      border: 1px solid var(--color-line);
+      background: var(--color-surface);
+    }
+
+    .table-cards td {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0.875rem;
+      text-align: right;
+    }
+
+    .table-cards td::before {
+      content: attr(data-label);
+      flex-shrink: 0;
+      text-align: left;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    /* A primeira célula é o título do card: ocupa a linha toda, sem rótulo. */
+    .table-cards td:first-child {
+      justify-content: flex-start;
+      text-align: left;
+      padding: 0.625rem 0.875rem;
+      background: var(--color-surface-2);
+      border-bottom: 1px solid var(--color-line-soft);
+    }
+
+    .table-cards td:first-child::before {
+      content: none;
+    }
+  }
+}
