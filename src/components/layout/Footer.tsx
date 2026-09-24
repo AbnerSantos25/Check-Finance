@@ -13,9 +13,11 @@ export const Footer: React.FC = () => {
         <Link to="/" className="flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors">
           <TrendingUp className="w-4 h-4 text-emerald-400" />
           <span className="font-semibold text-slate-300">CheckFinance</span>
-          <span>— Hub de Ferramentas Financeiras</span>
+          <span className="hidden sm:inline">— Hub de Ferramentas Financeiras</span>
         </Link>
-        <div className="flex items-center gap-4 text-[11px]">
+        {/* `flex-wrap`: cinco links numa linha só não cabem num celular estreito, e sem
+            quebrar eles empurravam a página para além da largura da tela. */}
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px]">
           {TOOLS.map((tool) =>
             tool.status === 'em-breve' ? (
               <button

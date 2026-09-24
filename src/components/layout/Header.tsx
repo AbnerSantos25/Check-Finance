@@ -106,50 +106,58 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
       {/* Main Header Bar */}
       <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
         {/* Left: Mobile Toggle & Breadcrumbs */}
-        <div className="flex items-center gap-3">
+        {/* `min-w-0` é o que permite o filho encolher: sem isso um item flex tem
+            largura mínima igual ao conteúdo, e o `truncate` abaixo nunca corta. */}
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           {/* `md:hidden` acompanha o drawer que este botão abre, que também é
               `md:hidden`. Com `lg:hidden` o botão aparecia entre 768px e 1023px
               e o clique não fazia nada. */}
           <button
             onClick={onOpenMobileMenu}
             aria-label="Abrir menu mobile"
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 md:hidden"
+            className="p-3 sm:p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 md:hidden"
           >
             <Menu className="w-5 h-5" />
           </button>
 
-          <nav aria-label="Trilha de navegação" className="flex items-center gap-2 text-xs sm:text-sm font-medium">
+          <nav aria-label="Trilha de navegação" className="flex items-center gap-2 text-xs sm:text-sm font-medium min-w-0">
             <Link
               to="/"
-              className="text-slate-400 hover:text-slate-200 transition-colors flex items-center gap-1.5"
+              className="text-slate-400 hover:text-slate-200 transition-colors flex items-center gap-1.5 shrink-0 whitespace-nowrap"
             >
               <TrendingUp className="w-4 h-4 text-emerald-400" />
               Início
             </Link>
+            {/* No celular fica só "Início": o nome da ferramenta já é o <h1> logo
+                abaixo, e era ele que empurrava as ações para fora da tela. O nó
+                BreadcrumbList do JSON-LD não depende desta marcação e segue completo. */}
             {activeTool && (
-              <>
+              <span className="hidden sm:flex items-center gap-2 min-w-0">
                 <span className="text-slate-600">/</span>
-                <span className="text-slate-200 font-semibold truncate max-w-[200px] sm:max-w-none">
+                <span className="text-slate-200 font-semibold truncate">
                   {activeTool.label}
                 </span>
-              </>
+              </span>
             )}
           </nav>
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Share Button */}
           <button
             id="share-btn"
             onClick={handleShare}
             title="Compartilhar simulador"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface hover:bg-line-soft border border-line text-xs font-medium text-slate-300 hover:text-white transition-colors"
+            className="flex items-center justify-center gap-1.5 min-h-11 min-w-11 sm:min-h-0 sm:min-w-0 px-3 py-1.5 rounded-xl bg-surface hover:bg-line-soft border border-line text-xs font-medium text-slate-300 hover:text-white transition-colors"
           >
             {copiedLink ? (
               <>
                 <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400">Link Copiado!</span>
+                {/* Escondido no celular como o rótulo "Compartilhar": o texto fazia o
+                    botão saltar de 44px para 119px por 2,5s, comprimindo a trilha de
+                    navegação a ponto de "Início" sumir da tela. O check já comunica. */}
+                <span className="hidden sm:inline text-emerald-400">Link Copiado!</span>
               </>
             ) : (
               <>
@@ -163,7 +171,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
           <button
             id="header-pix-btn"
             onClick={openPix}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-slate-950 text-xs font-bold shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all cursor-pointer"
+            className="flex items-center justify-center gap-1.5 min-h-11 sm:min-h-0 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-slate-950 text-xs font-bold shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all cursor-pointer shrink-0"
           >
             <Heart className="w-3.5 h-3.5 fill-slate-950 text-slate-950" />
             <span>Apoiar (PIX)</span>
