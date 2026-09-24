@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Lock, type LucideIcon } from 'lucide-react';
-import { TOOLS, type ToolMeta } from '../../config/tools.data';
+import { TOOLS, getTool, type ToolMeta } from '../../config/tools.data';
 import { ACCENT_CLASSES, TOOL_ICONS } from '../../config/tools.tsx';
 import { useModals } from '../../app/providers/ModalsProvider';
 import { Seo } from '../../shared/seo/Seo';
@@ -92,12 +92,78 @@ export const HubPage: React.FC = () => {
         })}
       </div>
 
-      <section className="mt-12 pt-8 border-t border-line-soft">
+      <section aria-labelledby="qual-calculadora" className="mt-12 pt-8 border-t border-line-soft">
+        <div className="mb-6">
+          <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
+            Por onde começar
+          </div>
+          <h2 id="qual-calculadora" className="text-xl font-extrabold text-white">
+            Qual calculadora usar em cada situação
+          </h2>
+        </div>
+
+        <div className="space-y-4 max-w-3xl">
+          <div className="p-5 rounded-2xl bg-surface border border-line">
+            <h3 className="text-sm font-bold text-white mb-1.5">
+              Você quer saber quanto o seu dinheiro rende ao longo dos anos
+            </h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              A calculadora de juros compostos responde "quanto eu terei" e "quanto preciso
+              aportar por mês para chegar lá". Ela é a única aqui que desconta inflação e
+              Imposto de Renda do resultado, então o número final já está em poder de compra de
+              hoje. Serve para planejar aposentadoria, montar reserva de longo prazo ou juntar a
+              entrada de um imóvel.
+            </p>
+            {/* Link em linha própria, e não dentro do parágrafo: um <a> inline herda a
+                altura da linha (14px) e vira um alvo difícil de acertar no celular. */}
+            <Link
+              to={getTool('investimentos').path}
+              className="tap-target mt-3 gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300"
+            >
+              Abrir a calculadora de juros compostos
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-surface border border-line">
+            <h3 className="text-sm font-bold text-white mb-1.5">
+              Você vai assumir uma dívida imobiliária, ou já tem uma
+            </h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              O simulador de financiamento compara SAC e PRICE antes de você assinar, mostra
+              quanto o contrato custa em juros do começo ao fim e, principalmente, mede o efeito
+              de amortizar um valor extra todo mês. É onde aparece a diferença entre pagar o
+              imóvel em trinta anos ou em dezenove.
+            </p>
+            <Link
+              to={getTool('financiamento').path}
+              className="tap-target mt-3 gap-1.5 text-xs font-semibold text-sky-400 hover:text-sky-300"
+            >
+              Abrir o simulador de financiamento
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-surface border border-line">
+            <h3 className="text-sm font-bold text-white mb-1.5">
+              As duas juntas respondem à pergunta mais comum
+            </h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Financiar o imóvel agora, ou continuar investindo e comprar à vista mais tarde?
+              Simule o custo total do financiamento de um lado e o crescimento do mesmo dinheiro
+              investido do outro. A comparação passa a ser entre dois números, e não entre duas
+              opiniões.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="por-que-checkfinance" className="mt-12 pt-8 border-t border-line-soft">
         <div className="mb-6">
           <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
             Por que o CheckFinance
           </div>
-          <h2 className="text-xl font-extrabold text-white">
+          <h2 id="por-que-checkfinance" className="text-xl font-extrabold text-white">
             Simulações que consideram o que o mercado costuma esconder
           </h2>
         </div>

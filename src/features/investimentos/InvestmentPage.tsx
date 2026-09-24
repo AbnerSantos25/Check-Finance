@@ -15,7 +15,9 @@ import { calculateInvestment } from './lib/calculateInvestment';
 import { sanitizeParams } from './lib/sanitizeParams';
 import { DEFAULT_PARAMS } from './defaults';
 import { Seo } from '../../shared/seo/Seo';
+import { Faq } from '../../shared/components/Faq';
 import { INVESTMENT_TOOL, investmentJsonLd } from './seo';
+import { INVESTMENT_FAQ } from './faq';
 
 export const InvestmentPage: React.FC = () => {
   const [params, setParams] = usePersistentState<InvestmentParams>('investimentos', DEFAULT_PARAMS);
@@ -134,9 +136,16 @@ export const InvestmentPage: React.FC = () => {
             </p>
           </div>
         </div>
-
-        <SupportBanner />
       </section>
+
+      <Faq
+        items={INVESTMENT_FAQ}
+        title="Dúvidas sobre juros compostos, inflação e Imposto de Renda"
+      />
+
+      {/* O banner fica por último e fora das seções de conteúdo: é chamada para
+          ação, não matéria indexável. */}
+      <SupportBanner />
 
       {isMethodologyOpen && (
         <MethodologyModal
