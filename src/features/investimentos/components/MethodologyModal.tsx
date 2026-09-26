@@ -1,6 +1,6 @@
 import React from 'react';
 import { type LucideIcon, BookOpen, Calculator, Sparkles, CheckCircle2, Landmark, Database, AlertTriangle } from 'lucide-react';
-import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../../components/ui/Dialog';
+import { Dialog, DialogCloseButton, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../../components/ui/Dialog';
 import { BrandMark } from '../../../components/ui/BrandMark';
 import { REFERENCE_DATE } from '../../../shared/lib/economicApi';
 
@@ -148,12 +148,9 @@ export const MethodologyModal: React.FC<MethodologyModalProps> = ({ onClose, tax
       </div>
 
       <DialogFooter>
-        <button
-          onClick={onClose}
-          className="px-5 py-2 rounded-xl bg-line-soft hover:bg-line-strong text-white text-xs font-semibold transition-colors cursor-pointer"
-        >
+        <DialogCloseButton className="px-5 py-2 rounded-xl bg-line-soft hover:bg-line-strong text-white text-xs font-semibold transition-colors cursor-pointer">
           Fechar
-        </button>
+        </DialogCloseButton>
       </DialogFooter>
     </Dialog>
   );

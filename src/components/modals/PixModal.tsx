@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Heart, Copy, Check, ShieldCheck } from 'lucide-react';
-import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogIcon, DialogTitle } from '../ui/Dialog';
+import { Dialog, DialogCloseButton, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/Dialog';
 import { BrandMark } from '../ui/BrandMark';
 
 interface PixModalProps {
@@ -83,12 +83,9 @@ export const PixModal: React.FC<PixModalProps> = ({ onClose }) => {
           <ShieldCheck className="w-4 h-4" />
           Pagamento Direto & Seguro
         </span>
-        <button
-          onClick={onClose}
-          className="text-slate-400 hover:text-slate-200 cursor-pointer"
-        >
+        <DialogCloseButton className="text-slate-400 hover:text-slate-200 cursor-pointer">
           Fechar
-        </button>
+        </DialogCloseButton>
       </DialogFooter>
     </Dialog>
   );
