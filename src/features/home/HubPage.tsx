@@ -59,8 +59,8 @@ export const HubPage: React.FC = () => {
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
           Simule <strong>juros compostos com inflação e Imposto de Renda</strong>, compare{' '}
-          <strong>SAC e PRICE</strong> no financiamento do seu imóvel e descubra o impacto real da
-          amortização extra. Todas as ferramentas usam indicadores oficiais do Banco Central e
+          <strong>SAC e PRICE</strong> no financiamento do seu imóvel e descubra{' '}
+          <strong>com que idade você pode viver de renda</strong>. Todas as ferramentas usam indicadores oficiais do Banco Central e
           funcionam direto no navegador, sem login.
         </p>
       </div>
@@ -154,6 +154,25 @@ export const HubPage: React.FC = () => {
               investido do outro. A comparação passa a ser entre dois números, e não entre duas
               opiniões.
             </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-surface border border-line">
+            <h3 className="text-sm font-bold text-white mb-1.5">
+              Você quer saber quando pode parar de depender do salário
+            </h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              A calculadora de independência financeira responde "quando eu chego lá". A partir da
+              renda que você quer ter, do que já investiu e de quanto aporta por mês, ela mostra o
+              patrimônio necessário e a idade em que ele fica pronto, tudo em valores de hoje. É a
+              conta por trás do movimento FIRE.
+            </p>
+            <Link
+              to={getTool('independencia').path}
+              className="tap-target mt-3 gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300"
+            >
+              Abrir a calculadora de independência financeira
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
       </section>

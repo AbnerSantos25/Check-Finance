@@ -72,6 +72,10 @@ export const routes: RouteRecord[] = [
         path: getTool('financiamento').path.slice(1),
         lazy: lazyRoute(() => import('../features/financiamento/FinancingPage'), 'FinancingPage'),
       },
+      {
+        path: getTool('independencia').path.slice(1),
+        lazy: lazyRoute(() => import('../features/independencia/IndependencePage'), 'IndependencePage'),
+      },
       // Rota concreta só para o pré-render gerar dist/404.html, que é o arquivo
       // que o Cloudflare serve (com status 404) em qualquer caminho sem
       // correspondência. O '*' abaixo continua cobrindo a navegação client-side.

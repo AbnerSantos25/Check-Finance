@@ -5,7 +5,7 @@ import type { JsonLdNode } from '../../shared/seo/jsonLd';
 export const HOME_SEO = {
   title: 'CheckFinance | Calculadoras Financeiras Gratuitas em Português',
   description:
-    'Hub gratuito de calculadoras financeiras: juros compostos com inflação e Imposto de Renda, simulador de financiamento imobiliário SAC vs PRICE e amortização extra. Sem cadastro.',
+    'Hub gratuito de calculadoras financeiras: juros compostos com inflação e Imposto de Renda, simulador de financiamento imobiliário SAC vs PRICE e calculadora de independência financeira (FIRE). Sem cadastro.',
 };
 
 /**

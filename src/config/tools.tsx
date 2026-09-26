@@ -1,10 +1,9 @@
-import { Compass, Flame, Home, TrendingUp, type LucideIcon } from 'lucide-react';
+import { Compass, Home, TrendingUp, type LucideIcon } from 'lucide-react';
 import type { ToolAccent, ToolId } from './tools.data';
 
 export const TOOL_ICONS: Record<ToolId, LucideIcon> = {
   investimentos: TrendingUp,
   financiamento: Home,
-  fire: Flame,
   independencia: Compass,
 };
 

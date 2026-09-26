@@ -8,10 +8,10 @@ import { ACTIVE_TOOLS, type ToolMeta } from '../config/tools.data';
  * outro destaque de "ferramenta ativa" derivam daqui, nunca de estado próprio.
  *
  * Procura só entre as ferramentas publicadas. As marcadas como `em-breve` têm
- * caminho no registry mas nenhuma rota: casar com elas faria `/calculadora-
- * aposentadoria-fire` exibir "Simulador Ativo: Aposentadoria FIRE" na lateral
- * enquanto o corpo da página diz que ela não existe — e, como o 404 é
- * pré-renderizado sem ferramenta ativa, ainda quebraria a hidratação.
+ * caminho no registry mas nenhuma rota: casar com elas faria o caminho de uma
+ * ferramenta futura exibir "Simulador Ativo" na lateral enquanto o corpo da
+ * página diz que ela não existe — e, como o 404 é pré-renderizado sem
+ * ferramenta ativa, ainda quebraria a hidratação.
  */
 export const useActiveTool = (): ToolMeta | null => {
   const { pathname } = useLocation();

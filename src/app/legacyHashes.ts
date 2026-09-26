@@ -11,8 +11,8 @@ import { getTool } from '../config/tools.data';
  *
  * `#metodologia` não tem rota própria: a metodologia é um modal da calculadora
  * de juros, então o visitante aterrissa na página que tem o botão para abri-la.
- * `#calculadora-fire` aponta para uma ferramenta ainda não lançada e cai no hub,
- * onde o card dela aparece.
+ * `#calculadora-fire` vai para a calculadora de independência financeira, que
+ * absorveu a FIRE.
  */
 // Um Map, e não um objeto literal: com objeto, `LEGACY_HASHES['constructor']`
 // devolveria uma função herdada do protótipo em vez de undefined, e `#constructor`
@@ -23,7 +23,7 @@ const LEGACY_HASHES = new Map<string, string>([
   ['metodologia', getTool('investimentos').path],
   ['simulador-financiamento', getTool('financiamento').path],
   ['real-estate-simulator', getTool('financiamento').path],
-  ['calculadora-fire', '/'],
+  ['calculadora-fire', getTool('independencia').path],
 ]);
 
 /**

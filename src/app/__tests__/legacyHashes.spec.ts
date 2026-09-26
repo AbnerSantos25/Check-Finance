@@ -4,6 +4,7 @@ import { getTool } from '../../config/tools.data';
 
 const INVESTIMENTOS = getTool('investimentos').path;
 const FINANCIAMENTO = getTool('financiamento').path;
+const INDEPENDENCIA = getTool('independencia').path;
 
 describe('resolveLegacyHash', () => {
   // Os quatro que estavam no sitemap antigo, isto é, os que o Google rastreou.
@@ -11,7 +12,7 @@ describe('resolveLegacyHash', () => {
     ['#calculadora', INVESTIMENTOS],
     ['#metodologia', INVESTIMENTOS],
     ['#simulador-financiamento', FINANCIAMENTO],
-    ['#calculadora-fire', '/'],
+    ['#calculadora-fire', INDEPENDENCIA],
   ])('leva %s para %s', (hash, expected) => {
     expect(resolveLegacyHash(hash)).toBe(expected);
   });

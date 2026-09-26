@@ -6,7 +6,7 @@
  * Node, onde não há pipeline de React. Ícones e classes moram em tools.tsx.
  */
 
-export type ToolId = 'investimentos' | 'financiamento' | 'fire' | 'independencia';
+export type ToolId = 'investimentos' | 'financiamento' | 'independencia';
 
 export type ToolStatus = 'ativo' | 'em-breve';
 
@@ -62,37 +62,20 @@ export const TOOLS: ToolMeta[] = [
     },
   },
   {
-    id: 'fire',
-    path: '/calculadora-aposentadoria-fire',
-    label: 'Calculadora de Aposentadoria (FIRE)',
-    shortLabel: 'Aposentadoria FIRE',
-    description:
-      'Descubra a sua taxa de poupança ideal, regra dos 4% e a data exata em que você alcançará sua independência financeira para viver de renda.',
-    accent: 'amber',
-    status: 'em-breve',
-    seo: {
-      title: 'Calculadora de Aposentadoria FIRE e Regra dos 4% | CheckFinance',
-      description:
-        'Calcule sua taxa de poupança ideal, aplique a regra dos 4% e descubra em que data seu patrimônio sustenta seu custo de vida.',
-      priority: 0.6,
-      changefreq: 'monthly',
-    },
-  },
-  {
     id: 'independencia',
     path: '/calculadora-independencia-financeira',
-    label: 'Calculadora de Independência Financeira',
+    label: 'Calculadora de Independência Financeira (FIRE)',
     shortLabel: 'Independência Financeira',
     description:
-      'Simulação completa por custo de vida mensal, reserva de emergência e patrimônio mínimo com alocação em renda fixa, FIIs e ações globais.',
+      'Descubra com que idade seu patrimônio passa a pagar a renda que você quer, em valores de hoje, com a inflação descontada.',
     accent: 'indigo',
-    status: 'em-breve',
+    status: 'ativo',
     seo: {
-      title: 'Calculadora de Independência Financeira | CheckFinance',
+      title: 'Calculadora de Independência Financeira e Aposentadoria (FIRE) | CheckFinance',
       description:
-        'Descubra o patrimônio mínimo para sua independência financeira a partir do custo de vida mensal, reserva de emergência e alocação de carteira.',
-      priority: 0.6,
-      changefreq: 'monthly',
+        'Descubra quando você pode viver de renda: patrimônio necessário, idade da independência financeira e evolução mês a mês, com a inflação descontada.',
+      priority: 0.9,
+      changefreq: 'weekly',
     },
   },
 ];

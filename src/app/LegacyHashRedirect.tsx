@@ -22,9 +22,9 @@ export const LegacyHashRedirect: React.FC = () => {
     if (pathname !== '/' || !hash) return;
 
     const target = resolveLegacyHash(hash);
-    // Navega mesmo quando o destino é a própria raiz (caso do `#calculadora-fire`,
-    // ferramenta ainda não lançada): o efeito é limpar o fragmento da barra de
-    // endereço. Como o `hash` fica vazio depois disso, o efeito não se repete.
+    // Se um dia o destino for a própria raiz, navegar mesmo assim limpa o
+    // fragmento da barra de endereço. Como o `hash` fica vazio depois disso, o
+    // efeito não se repete.
     if (target) navigate(target, { replace: true });
   }, [pathname, hash, navigate]);
 

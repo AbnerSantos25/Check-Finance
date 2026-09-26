@@ -171,7 +171,7 @@ const SupportBanner: React.FC = () => {
           Ajude a manter este site no ar e gratuito
         </h3>
         <p className="text-xs text-slate-400 max-w-xl">
-          Somos um hub de ferramentas financeiras independente. Sua contribuição via PIX financia novas ferramentas como a Calculadora FIRE e o Simulador de Financiamento.
+          Somos um hub de ferramentas financeiras independente. Sua contribuição via PIX financia novas ferramentas e mantém as atuais gratuitas e sem anúncios invasivos.
         </p>
       </div>
 
