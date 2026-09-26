@@ -6,6 +6,7 @@ import { ACCENT_CLASSES, TOOL_ICONS } from '../../config/tools.tsx';
 import { useModals } from '../../app/providers/ModalsProvider';
 import { Seo } from '../../shared/seo/Seo';
 import { HOME_SEO, homeJsonLd } from './seo';
+import { StatusBadge } from '@/src/components/ui/StatusBadge.tsx';
 
 const CARD_BASE =
   'group h-full text-left p-5 rounded-2xl bg-surface border border-line shadow-lg transition-all';
@@ -18,7 +19,7 @@ const CardBody: React.FC<{ tool: ToolMeta; icon: LucideIcon }> = ({ tool, icon: 
     <>
       <div className="flex items-start justify-between gap-3 mb-3">
         <div
-          className={`flex items-center justify-center w-10 h-10 rounded-xl border ${accent.iconSurface}`}
+          className={`flex items-center justify-center w-10 h-10 rounded-xl text-slate-950 ${accent.iconSurface}`}
         >
           <Icon className="w-5 h-5" />
         </div>
@@ -50,10 +51,7 @@ export const HubPage: React.FC = () => {
       />
 
       <div className="mb-8 max-w-3xl">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-3">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          Hub de Ferramentas Financeiras
-        </div>
+        <StatusBadge color="emerald">Hub de Ferramentas Financeiras</StatusBadge>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
           Calculadoras financeiras gratuitas, em português e sem cadastro
         </h1>
