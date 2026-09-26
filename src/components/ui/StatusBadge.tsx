@@ -3,6 +3,7 @@ import React from 'react';
 const GRADIENTS = {
   emerald: 'from-emerald-700 via-emerald-400 to-teal-700',
   sky: 'from-sky-600 via-sky-400 to-cyan-400',
+  indigo: 'from-indigo-600 via-indigo-400 to-violet-400',
 } as const;
 
 /**

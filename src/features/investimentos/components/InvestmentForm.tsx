@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   Sliders, 
   RotateCcw, 
@@ -13,6 +13,7 @@ import {
 import { InvestmentParams, MarketRates } from '../../../types';
 import { formatBRL, formatNumber, formatPercent, monthlyEquivalentRate } from '../../../shared/lib/format';
 import { REFERENCE_DATE } from '../../../shared/lib/economicApi';
+import { DraftNumberInput } from '../../../shared/components/DraftNumberInput';
 
 interface InvestmentFormProps {
   params: InvestmentParams;
@@ -21,33 +22,6 @@ interface InvestmentFormProps {
   marketRates: MarketRates;
   ratesAreLive: boolean;
 }
-
-type DraftNumberInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> & {
-  value: number;
-  onCommit: (value: number) => void;
-};
-
-// Keeps the typed text while editing, so a field can be cleared and retyped;
-// only complete numbers are committed, and the sanitized value shows again on blur.
-const DraftNumberInput: React.FC<DraftNumberInputProps> = ({ value, onCommit, onBlur, ...rest }) => {
-  const [draft, setDraft] = useState<string | null>(null);
-  return (
-    <input
-      {...rest}
-      type="number"
-      value={draft ?? value}
-      onChange={(e) => {
-        const text = e.target.value;
-        setDraft(text);
-        if (text.trim() !== '' && Number.isFinite(Number(text))) onCommit(Number(text));
-      }}
-      onBlur={(e) => {
-        setDraft(null);
-        onBlur?.(e);
-      }}
-    />
-  );
-};
 
 const round2 = (value: number) => Math.round(value * 100) / 100;
 
