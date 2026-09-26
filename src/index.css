@@ -124,6 +124,30 @@
 }
 
 /* ---------------------------------------------------------------------------
+   Entrada da página ao trocar de ferramenta
+
+   `backwards`, e não `both`: terminada a animação, o `transform` deixa de valer.
+   Um transform que ficasse no invólucro viraria o bloco de referência dos
+   `position: fixed` lá dentro, e os modais das páginas deixariam de cobrir a tela.
+   --------------------------------------------------------------------------- */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.page-enter {
+  animation: page-enter 250ms ease-out backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
    Tabela que vira cards no celular
 
    As tabelas têm 8 e 5 colunas, e no celular ficavam dentro de um scroller

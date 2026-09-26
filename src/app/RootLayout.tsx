@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Outlet, ScrollRestoration } from 'react-router-dom';
+import React, { useRef, useState } from 'react';
+import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
 import { AppSidebar } from '../components/layout/AppSidebar';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
@@ -10,6 +10,14 @@ export const RootLayout: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const activeTool = useActiveTool();
+  const { pathname } = useLocation();
+
+  // A transição de entrada só vale depois da primeira navegação. No carregamento
+  // inicial ela atrasaria a primeira pintura, e a classe no primeiro render do
+  // navegador divergiria do HTML pré-renderizado, quebrando a hidratação.
+  const initialPath = useRef(pathname);
+  const hasNavigated = useRef(false);
+  if (pathname !== initialPath.current) hasNavigated.current = true;
 
   return (
     <div className="min-h-screen bg-bg text-slate-100 flex flex-row selection:bg-emerald-500/30 selection:text-emerald-300">
@@ -51,7 +59,11 @@ export const RootLayout: React.FC = () => {
         <Header onOpenMobileMenu={() => setIsMobileMenuOpen(true)} />
 
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto w-full">
-          <Outlet />
+          {/* A chave remonta o invólucro a cada rota, e é isso que dispara a animação
+              de novo. O estado dos formulários vive no FormStateProvider, acima daqui. */}
+          <div key={pathname} className={hasNavigated.current ? 'page-enter' : undefined}>
+            <Outlet />
+          </div>
         </main>
 
         <Footer />

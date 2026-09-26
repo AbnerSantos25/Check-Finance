@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   type LucideIcon,
@@ -36,6 +36,14 @@ const NAV_BASE =
   'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all';
 
 /**
+ * Altura fixa dos itens de ferramenta e o espaço entre eles. O destaque deslizante
+ * se posiciona por essas duas medidas, sem medir o DOM: assim ele sai no lugar
+ * certo já no HTML pré-renderizado, antes de qualquer JavaScript.
+ */
+const TOOL_ITEM_HEIGHT = 'h-10';
+const TOOL_ITEM_STEP = '2.75rem'; // h-10 (2.5rem) + gap-1 (0.25rem)
+
+/**
  * Ferramenta publicada: é um link de verdade, não um botão. Crawlers seguem o
  * href, e o usuário pode abrir em nova aba ou copiar o endereço.
  */
@@ -45,27 +53,51 @@ const TabNavItem: React.FC<{
   icon: LucideIcon;
   label: string;
   accentIcon: string;
-  accentMarker: string;
   isActive: boolean;
   isCollapsed: boolean;
   onClick: () => void;
-}> = ({ id, to, icon: Icon, label, accentIcon, accentMarker, isActive, isCollapsed, onClick }) => (
+}> = ({ id, to, icon: Icon, label, accentIcon, isActive, isCollapsed, onClick }) => (
+  // O fundo do item ativo não é pintado aqui: quem pinta é o destaque deslizante do
+  // <nav>. O item cuida só da cor do texto e do ícone.
   <Link
     id={id}
     to={to}
     onClick={onClick}
     aria-current={isActive ? 'page' : undefined}
-    className={`${NAV_BASE} relative ${isActive
-      ? 'text-white bg-gradient-to-r from-white/10 to-white/5 border border-white/10'
+    className={`${NAV_BASE} ${TOOL_ITEM_HEIGHT} relative ${isActive
+      ? 'text-white'
       : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
       }`}
   >
-    <Icon className={`w-4 h-4 ${isActive ? accentIcon : 'text-slate-400'}`} />
+    <Icon className={`w-4 h-4 transition-colors duration-300 ${isActive ? accentIcon : 'text-slate-400'}`} />
     {!isCollapsed && <span className="truncate flex-1 text-left">{label}</span>}
-    {isActive && !isCollapsed && (
-      <span className={`w-1.5 h-5 rounded-full absolute left-0 ${accentMarker}`} />
-    )}
   </Link>
+);
+
+/**
+ * Fundo e barrinha colorida do item ativo, desenhados uma vez só e deslizando até
+ * o item da ferramenta atual. No hub e no 404 some no lugar em que estava, em vez
+ * de voltar ao topo.
+ */
+const ActiveToolHighlight: React.FC<{
+  index: number;
+  visible: boolean;
+  marker: string;
+  isCollapsed: boolean;
+}> = ({ index, visible, marker, isCollapsed }) => (
+  <span
+    aria-hidden="true"
+    className={`${TOOL_ITEM_HEIGHT} absolute inset-x-0 top-0 rounded-xl bg-gradient-to-r from-white/10 to-white/5 border border-white/10 pointer-events-none transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none ${
+      visible ? 'opacity-100' : 'opacity-0'
+    }`}
+    style={{ transform: `translateY(calc(${index} * ${TOOL_ITEM_STEP}))` }}
+  >
+    {!isCollapsed && (
+      <span
+        className={`w-1.5 h-5 rounded-full absolute left-0 top-1/2 -translate-y-1/2 transition-colors duration-300 motion-reduce:transition-none ${marker}`}
+      />
+    )}
+  </span>
 );
 
 const ComingSoonNavItem: React.FC<{
@@ -79,7 +111,7 @@ const ComingSoonNavItem: React.FC<{
   <button
     id={id}
     onClick={onClick}
-    className={`${NAV_BASE} text-slate-400 hover:text-slate-200 hover:bg-white/[0.03] group`}
+    className={`${NAV_BASE} ${TOOL_ITEM_HEIGHT} text-slate-400 hover:text-slate-200 hover:bg-white/[0.03] group`}
   >
     <Icon className={`w-4 h-4 ${iconClass}`} />
     {!isCollapsed && (
@@ -101,6 +133,17 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
   idPrefix = '',
 }) => {
   const { openPix, openComingSoon } = useModals();
+
+  // Sem ferramenta ativa, o destaque fica no último item em que esteve e só some:
+  // voltar ao índice 0 o faria deslizar até o topo enquanto desaparece, e perder a
+  // cor apagaria a barrinha de uma vez em vez de acompanhar o fade.
+  const activeIndex = TOOLS.findIndex((tool) => tool.id === activeTool?.id);
+  const lastIndex = useRef(Math.max(activeIndex, 0));
+  const lastMarker = useRef(ACCENT_CLASSES[TOOLS[lastIndex.current].accent].indicator);
+  if (activeIndex >= 0) {
+    lastIndex.current = activeIndex;
+    lastMarker.current = ACCENT_CLASSES[TOOLS[activeIndex].accent].indicator;
+  }
 
   const act = (action: () => void) => {
     action();
@@ -177,7 +220,13 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               FERRAMENTAS
             </div>
           )}
-          <nav className="space-y-1">
+          <nav className="relative flex flex-col gap-1">
+            <ActiveToolHighlight
+              index={lastIndex.current}
+              visible={activeIndex >= 0}
+              marker={lastMarker.current}
+              isCollapsed={isCollapsed}
+            />
             {TOOLS.map((tool) => {
               const Icon = TOOL_ICONS[tool.id];
               const accent = ACCENT_CLASSES[tool.accent];
@@ -200,7 +249,6 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                   icon={Icon}
                   label={tool.shortLabel}
                   accentIcon={accent.activeIcon}
-                  accentMarker={accent.indicator}
                   isActive={activeTool?.id === tool.id}
                   isCollapsed={isCollapsed}
                   onClick={() => onAfterAction?.()}
