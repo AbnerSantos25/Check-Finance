@@ -103,3 +103,59 @@ export interface FinancingSummary {
   actualTermMonths: number;   // Em quantos meses a dívida foi realmente quitada
   schedule: FinancingInstallment[]; // Evolução mês a mês
 }
+
+// -----------------------------------------------------
+// FINANCIAL INDEPENDENCE TYPES
+// -----------------------------------------------------
+
+export interface IndependenceParams {
+  monthlyIncomeGoal: number;     // Renda mensal desejada, em valores de hoje
+  currentWealth: number;         // Patrimônio já investido
+  monthlyContribution: number;   // Aporte mensal, em valores de hoje
+  annualReturn: number;          // Rentabilidade nominal anual (%)
+  annualInflation: number;       // Inflação anual esperada (%)
+  currentAge: number;            // Idade atual, em anos
+  contributionFollowsInflation: boolean; // false = aporte nominal fixo, que perde valor real
+}
+
+/**
+ * - `reached`: a meta é atingida dentro do limite de 100 anos.
+ * - `already-reached`: o patrimônio atual já sustenta a renda.
+ * - `no-real-return`: a rentabilidade não supera a inflação; nenhum patrimônio
+ *   gera renda perpétua em valores de hoje.
+ * - `no-savings`: sem patrimônio nem aporte, não há o que acumular.
+ * - `over-limit`: levaria mais de 100 anos.
+ */
+export type IndependenceStatus = 'reached' | 'already-reached' | 'no-real-return' | 'no-savings' | 'over-limit';
+
+export interface IndependenceMonth {
+  month: number;
+  contributedReal: number;       // Patrimônio inicial + aportes, em valores de hoje
+  contributedNominal: number;
+  interestReal: number;          // Juros acumulados acima da inflação
+  interestNominal: number;
+  balanceReal: number;
+  balanceNominal: number;
+  incomeReal: number;            // Renda mensal perpétua que o saldo já sustenta
+  incomeNominal: number;
+}
+
+export interface IndependenceResult {
+  status: IndependenceStatus;
+  /** Meses até a meta; null quando ela não é atingida. */
+  months: number | null;
+  ageAtIndependence: number | null;
+  annualRealRate: number;        // %
+  monthlyRealRate: number;       // fração, não %
+  targetReal: number;            // Patrimônio necessário em valores de hoje (0 sem solução)
+  targetNominal: number;         // O mesmo patrimônio em valores do mês da meta
+  incomeGoalNominal: number;     // A renda desejada em valores do mês da meta
+  finalBalanceReal: number;
+  finalBalanceNominal: number;
+  totalContributedReal: number;
+  totalContributedNominal: number;
+  totalInterestReal: number;
+  totalInterestNominal: number;
+  /** Mês 0 (hoje) até o mês da meta. Vazio quando não há o que projetar. */
+  schedule: IndependenceMonth[];
+}
