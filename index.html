@@ -51,12 +51,13 @@
     }
     </script>
 
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6087444294118231"
-     crossorigin="anonymous"></script>
+    <!-- Conta do AdSense declarada por meta tag, o método de verificação de site do
+         próprio Google. O script de anúncios não está mais no HTML estático (ver o
+         carregador abaixo), então é esta tag que o robô de verificação encontra. -->
+    <meta name="google-adsense-account" content="ca-pub-6087444294118231" />
 
-     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3NYMS8KTGJ"></script>
+    <!-- Google tag (gtag.js): só a fila. `gtag()` empilha os comandos no dataLayer e
+         o gtag/js, quando chegar, envia tudo o que ficou esperando. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -65,13 +66,53 @@
       gtag('config', 'G-3NYMS8KTGJ');
     </script>
 
+    <!-- Terceiros (AdSense e Google Analytics) carregados depois da primeira pintura.
+
+         No PageSpeed mobile, AdSense, FundingChoices (a mensagem de consentimento que o
+         AdSense traz) e Tag Manager somavam ~1,9 s de JavaScript na thread principal,
+         bem na hora em que o navegador tenta desenhar a página: a LCP ia a 6,8 s e o
+         TBT a 1,4 s. Os scripts são exatamente os mesmos de antes, com o mesmo
+         client id; muda só o momento em que entram — no primeiro toque, rolagem ou
+         tecla, ou THIRD_PARTY_DELAY_MS depois do `load`, o que vier primeiro.
+
+         O custo: os anúncios aparecem um pouco mais tarde, e quem sai antes do prazo
+         sem interagir não chega a gerar page_view. -->
+    <script>
+      (function () {
+        var THIRD_PARTY_DELAY_MS = 4000;
+        var EVENTS = ['pointerdown', 'touchstart', 'scroll', 'keydown'];
+        var loaded = false;
+
+        function inject(src, crossOrigin) {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = src;
+          if (crossOrigin) s.crossOrigin = 'anonymous';
+          document.head.appendChild(s);
+        }
+
+        function load() {
+          if (loaded) return;
+          loaded = true;
+          EVENTS.forEach(function (e) { removeEventListener(e, load, { passive: true }); });
+          inject('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6087444294118231', true);
+          inject('https://www.googletagmanager.com/gtag/js?id=G-3NYMS8KTGJ');
+        }
+
+        EVENTS.forEach(function (e) { addEventListener(e, load, { once: true, passive: true }); });
+        function schedule() { setTimeout(load, THIRD_PARTY_DELAY_MS); }
+        if (document.readyState === 'complete') schedule();
+        else addEventListener('load', schedule, { once: true });
+      })();
+    </script>
+
     <style>
       @keyframes cf-pulse { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }
     </style>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <!-- Os indicadores do Banco Central são buscados logo após a hidratação: abrir a
+         conexão (DNS + TLS) agora tira essa espera do caminho da primeira pintura. -->
+    <link rel="preconnect" href="https://api.bcb.gov.br" crossorigin />
   </head>
   <body class="bg-[#0b0d12] text-slate-100 antialiased selection:bg-emerald-500/30 selection:text-emerald-300">
     <div id="root">
