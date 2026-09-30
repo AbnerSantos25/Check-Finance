@@ -1,5 +1,10 @@
 import { ViteReactSSG } from 'vite-react-ssg';
 import { routes } from './app/routes';
+// Fonte servida pelo próprio site, e não pelo Google Fonts: o CSS de lá bloqueava a
+// renderização por ~780 ms no mobile (conexão nova com dois domínios antes de pintar).
+// Daqui ela sai em /assets/ com hash e cache longo, e o navegador só baixa os
+// subconjuntos de caracteres que a página usa.
+import '@fontsource-variable/plus-jakarta-sans';
 import './index.css';
 
 /**
