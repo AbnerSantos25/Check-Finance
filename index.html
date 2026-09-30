@@ -96,7 +96,9 @@
           loaded = true;
           EVENTS.forEach(function (e) { removeEventListener(e, load, { passive: true }); });
           inject('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6087444294118231', true);
-          inject('https://www.googletagmanager.com/gtag/js?id=G-3NYMS8KTGJ');
+          // Caminho first-party do Google Tag Gateway (configurado no Cloudflare,
+          // measurement path /gtg). O Cloudflare encaminha para o Google.
+          inject('/gtg/gtag/js?id=G-3NYMS8KTGJ');
         }
 
         EVENTS.forEach(function (e) { addEventListener(e, load, { once: true, passive: true }); });
