@@ -2,6 +2,16 @@
 
 Meta: **≥ 90 no PageSpeed Insights, aba Celular**, em todas as páginas. O desktop passa com folga quando o celular passa, porque o celular é medido com CPU 4× mais lenta e 4G lento.
 
+> **⚠️ Não esqueça: a nota é protegida por duas guardas automáticas.** Elas só funcionam enquanto alguém presta atenção nelas.
+>
+> 1. **Lighthouse CI em todo PR e push na `main`** (`.github/workflows/ci.yml` + `lighthouserc.cjs`).
+>    - PR vermelho nesse passo é regressão de verdade: corrija o código, não baixe o limite para passar.
+>    - Rota nova precisa entrar em `ROUTES` no `lighthouserc.cjs`, senão fica sem medição.
+> 2. **PageSpeed semanal em produção, toda segunda às 08:17 (Brasília)** (`.github/workflows/pagespeed.yml` + `scripts/pagespeed.mjs`).
+>    - Depende do secret `PSI_API_KEY`. Se o job falhar sem medir nenhuma página, verifique a chave (veja "Configuração (uma vez)" mais abaixo).
+>    - Se abrir a issue **"PageSpeed abaixo do limite"**, investigue ("Como investigar uma queda") e feche a issue só depois que a medição seguinte passar.
+>    - Dá para rodar a qualquer momento em Actions → PageSpeed semanal → Run workflow, por exemplo logo depois de um deploy.
+
 ## Por que a nota era 40 (set/2026)
 
 O HTML, o CSS e o JavaScript do site são leves. O que derrubava a nota era o JavaScript de terceiros executado durante o carregamento:
