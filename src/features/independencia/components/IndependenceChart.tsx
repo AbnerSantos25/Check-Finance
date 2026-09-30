@@ -1,10 +1,9 @@
 import React from 'react';
 import { Area, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { ClientOnly } from 'vite-react-ssg';
 import { BarChart3 } from 'lucide-react';
 import type { IndependenceParams, IndependenceResult } from '../../../types';
 import { formatBRL, formatCompactBRL, monthlyEquivalentRate } from '../../../shared/lib/format';
-import { ChartFallback } from '../../../shared/components/ChartFallback';
+import { LazyChart } from '../../../shared/components/LazyChart';
 import type { ValueBasis } from './IndependenceResult';
 
 interface IndependenceChartProps {
@@ -33,7 +32,14 @@ export const IndependenceChart: React.FC<IndependenceChartProps> = ({ result, pa
   const real = basis === 'real';
   const monthlyInflation = monthlyEquivalentRate(params.annualInflation);
 
-  const data: Point[] = result.schedule.map((row) => ({
+  // Um ponto por ano, mais o mês em que a meta é atingida. A série mensal tinha
+  // centenas de pontos (562 com os valores padrão, dos 30 aos 77 anos) e o recharts
+  // desenhava três curvas com todos eles — era o que deixava esta página com o
+  // pior TBT do site. Na largura de um gráfico, a curva anual é indistinguível.
+  const lastMonth = result.schedule[result.schedule.length - 1]?.month;
+  const yearly = result.schedule.filter((row) => row.month % 12 === 0 || row.month === lastMonth);
+
+  const data: Point[] = yearly.map((row) => ({
     month: row.month,
     contributed: real ? row.contributedReal : row.contributedNominal,
     interest: real ? row.interestReal : row.interestNominal,
@@ -79,7 +85,7 @@ export const IndependenceChart: React.FC<IndependenceChartProps> = ({ result, pa
       </div>
 
       <div className="w-full h-72 sm:h-80">
-        <ClientOnly fallback={<ChartFallback />}>
+        <LazyChart>
           {() => (
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
@@ -182,7 +188,7 @@ export const IndependenceChart: React.FC<IndependenceChartProps> = ({ result, pa
               </ComposedChart>
             </ResponsiveContainer>
           )}
-        </ClientOnly>
+        </LazyChart>
       </div>
     </div>
   );

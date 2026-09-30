@@ -15,8 +15,7 @@ import {
 import { CalculationSummary } from '../../../types';
 import { formatBRL, formatCompactBRL, formatPercent } from '../../../shared/lib/format';
 import { BarChart3, PieChart as PieIcon, Sparkles } from 'lucide-react';
-import { ClientOnly } from 'vite-react-ssg';
-import { ChartFallback } from '../../../shared/components/ChartFallback';
+import { LazyChart } from '../../../shared/components/LazyChart';
 
 interface ComparisonChartsProps {
   summary: CalculationSummary;
@@ -85,7 +84,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
 
         {/* Chart container */}
         <div className="w-full h-72 sm:h-80">
-          <ClientOnly fallback={<ChartFallback />}>{() => (
+          <LazyChart>{() => (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={areaData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
               <defs>
@@ -159,6 +158,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
               />
 
               <Area 
+                isAnimationActive={false}
                 type="monotone" 
                 dataKey="grossBalance" 
                 name="Com Investimento"
@@ -169,6 +169,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
               />
               
               <Area 
+                isAnimationActive={false}
                 type="monotone" 
                 dataKey="savingsOnlyBalance" 
                 name="Apenas Guardado"
@@ -180,7 +181,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
               />
             </AreaChart>
           </ResponsiveContainer>
-          )}</ClientOnly>
+          )}</LazyChart>
         </div>
       </div>
 
@@ -198,10 +199,11 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
 
         {/* Donut Chart with centered multiplier */}
         <div className="relative w-full h-56 flex items-center justify-center my-2">
-          <ClientOnly fallback={<ChartFallback />}>{() => (
+          <LazyChart>{() => (
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
+                isAnimationActive={false}
                 data={pieData}
                 cx="50%"
                 cy="50%"
@@ -227,7 +229,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
               />
             </PieChart>
           </ResponsiveContainer>
-          )}</ClientOnly>
+          )}</LazyChart>
 
           {/* Centered label */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
