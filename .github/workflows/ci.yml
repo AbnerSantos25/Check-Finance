@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:run
+      - run: npm run build
+
+      # Lighthouse mobile nas rotas de lighthouserc.cjs, 3 execuções cada. Reprova o
+      # PR se nota ou métrica passar dos limites; o link de cada relatório completo
+      # aparece no log deste passo ("Open the report at ...").
+      - name: Lighthouse CI
+        run: npx --yes @lhci/cli@0.15.1 autorun

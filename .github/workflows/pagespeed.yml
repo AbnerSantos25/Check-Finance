@@ -1,0 +1,49 @@
+name: PageSpeed semanal
+
+# Mede o site em produção pela API do PageSpeed Insights — o mesmo teste da página
+# pagespeed.web.dev, com AdSense, Analytics e a Cloudflare de verdade, que o
+# Lighthouse do CI (rodando contra o build local) não enxerga.
+#
+# Requer o secret PSI_API_KEY (chave gratuita da "PageSpeed Insights API" no Google
+# Cloud Console). Sem chave, a cota anônima da API costuma estar esgotada.
+
+on:
+  schedule:
+    # Segundas-feiras, 08:17 em Brasília (11:17 UTC).
+    - cron: '17 11 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  pagespeed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Consultar o PageSpeed Insights
+        id: psi
+        env:
+          PSI_API_KEY: ${{ secrets.PSI_API_KEY }}
+        run: node scripts/pagespeed.mjs
+
+      # Uma issue aberta por vez: se já houver, a medição nova entra como comentário.
+      - name: Abrir ou atualizar a issue de alerta
+        if: steps.psi.outputs.below_threshold == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="PageSpeed abaixo do limite"
+          number=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body-file pagespeed-report.md
+          else
+            gh issue create --title "$title" --body-file pagespeed-report.md
+          fi
