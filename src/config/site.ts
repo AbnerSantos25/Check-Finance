@@ -9,6 +9,10 @@ export const SITE_NAME = 'CheckFinance';
 
 export const SITE_TAGLINE = 'Hub de Ferramentas Financeiras';
 
+/** E-mail de contato público. Repetido no JSON-LD `Organization` do index.html,
+ *  que é estático e não importa daqui: ao mudar, mude lá também. */
+export const CONTACT_EMAIL = 'contato@checkfinance.com.br';
+
 /** Cartão social padrão, usado quando a rota não define o seu. */
 export const DEFAULT_OG_IMAGE = '/og-image.png';
 
