@@ -105,7 +105,7 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
                     </span>
                   </td>
                   <td role="cell" data-label="Juros (custo)" className="px-4 py-3 whitespace-nowrap text-right">
-                    <span className="text-xs font-mono text-rose-400/80">
+                    <span className="text-xs font-mono text-rose-400">
                       {formatBRL(row.interest)}
                     </span>
                   </td>

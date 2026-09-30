@@ -215,7 +215,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
             </p>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-emerald-500/60 font-medium">R$</span>
+                <span className="text-emerald-400 font-medium">R$</span>
               </div>
               <input
                 id="re-extra-amortization"
