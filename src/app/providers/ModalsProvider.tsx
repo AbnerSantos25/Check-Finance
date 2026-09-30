@@ -1,7 +1,15 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, lazy, Suspense, useContext, useState } from 'react';
 import { getTool, type ToolId } from '../../config/tools.data';
-import { PixModal } from '../../components/modals/PixModal';
-import { ComingSoonModal } from '../../components/modals/ComingSoonModal';
+
+// Os modais só existem depois de um clique, então o código deles (e o `qrcode.react`
+// do PIX) fica fora do bundle que toda rota baixa antes de pintar. O chunk chega
+// em poucos milissegundos após o clique; até lá o fallback é nada.
+const PixModal = lazy(() =>
+  import('../../components/modals/PixModal').then((m) => ({ default: m.PixModal }))
+);
+const ComingSoonModal = lazy(() =>
+  import('../../components/modals/ComingSoonModal').then((m) => ({ default: m.ComingSoonModal }))
+);
 
 interface ModalsValue {
   openPix: () => void;
@@ -30,15 +38,17 @@ export const ModalsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       {children}
 
       {/* Os modais são montados sob demanda: o <dialog> nativo chama showModal() ao montar. */}
-      {isPixOpen && <PixModal onClose={() => setIsPixOpen(false)} />}
+      <Suspense fallback={null}>
+        {isPixOpen && <PixModal onClose={() => setIsPixOpen(false)} />}
 
-      {comingSoonTool && (
-        <ComingSoonModal
-          onClose={() => setComingSoonTool(null)}
-          toolName={getTool(comingSoonTool).label}
-          description={getTool(comingSoonTool).description}
-        />
-      )}
+        {comingSoonTool && (
+          <ComingSoonModal
+            onClose={() => setComingSoonTool(null)}
+            toolName={getTool(comingSoonTool).label}
+            description={getTool(comingSoonTool).description}
+          />
+        )}
+      </Suspense>
     </ModalsContext.Provider>
   );
 };

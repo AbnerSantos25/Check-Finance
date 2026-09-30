@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { lazy, Suspense, useMemo, useState } from 'react';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { Heart, HelpCircle } from 'lucide-react';
 import type { InvestmentParams } from '../../types';
@@ -10,7 +10,6 @@ import { SummaryCards } from './components/SummaryCards';
 import { InvestmentForm } from './components/InvestmentForm';
 import { ComparisonCharts } from './components/ComparisonCharts';
 import { InvestmentTable } from './components/InvestmentTable';
-import { MethodologyModal } from './components/MethodologyModal';
 import { calculateInvestment } from './lib/calculateInvestment';
 import { sanitizeParams } from './lib/sanitizeParams';
 import { DEFAULT_PARAMS } from './defaults';
@@ -18,6 +17,11 @@ import { Seo } from '../../shared/seo/Seo';
 import { Faq } from '../../shared/components/Faq';
 import { INVESTMENT_TOOL, investmentJsonLd } from './seo';
 import { INVESTMENT_FAQ } from './faq';
+
+// Aberto só por clique: fica fora do chunk da página, como os modais do ModalsProvider.
+const MethodologyModal = lazy(() =>
+  import('./components/MethodologyModal').then((m) => ({ default: m.MethodologyModal }))
+);
 
 export const InvestmentPage: React.FC = () => {
   const [params, setParams] = usePersistentState<InvestmentParams>('investimentos', DEFAULT_PARAMS);
@@ -148,10 +152,12 @@ export const InvestmentPage: React.FC = () => {
       <SupportBanner />
 
       {isMethodologyOpen && (
-        <MethodologyModal
-          onClose={() => setIsMethodologyOpen(false)}
-          taxExempt={params.taxExempt}
-        />
+        <Suspense fallback={null}>
+          <MethodologyModal
+            onClose={() => setIsMethodologyOpen(false)}
+            taxExempt={params.taxExempt}
+          />
+        </Suspense>
       )}
     </>
   );
