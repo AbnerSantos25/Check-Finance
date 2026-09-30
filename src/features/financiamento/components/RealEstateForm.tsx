@@ -47,12 +47,13 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
         <div className="space-y-8">
           {/* Valor do Imóvel */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-300">Valor do Imóvel</label>
+            <label htmlFor="re-property-value" className="text-xs font-semibold text-slate-300">Valor do Imóvel</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-slate-500 font-medium">R$</span>
+                <span className="text-slate-400 font-medium">R$</span>
               </div>
               <input
+                id="re-property-value"
                 type="number"
                 min="0"
                 step="10000"
@@ -66,7 +67,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
           {/* Valor da Entrada */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-300">Valor da Entrada</label>
+              <label htmlFor="re-down-payment" className="text-xs font-semibold text-slate-300">Valor da Entrada</label>
               <span className="text-xs font-mono font-medium text-sky-400">
                 {/* Guardar o divisor, e não filtrar o resultado com `|| 0`: dividir por
                     zero dá Infinity, que é um número verdadeiro e passava pelo `||`,
@@ -80,9 +81,10 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
             </div>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-slate-500 font-medium">R$</span>
+                <span className="text-slate-400 font-medium">R$</span>
               </div>
               <input
+                id="re-down-payment"
                 type="number"
                 min="0"
                 max={params.propertyValue}
@@ -108,11 +110,13 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
 
           {/* Taxa de Juros Anual */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+            <label htmlFor="re-interest-input" className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
               Taxa de Juros Efetiva (CET) Anual
             </label>
             <div className="flex items-center gap-3">
+              {/* O rótulo visível aponta para o campo numérico; o slider tem nome próprio. */}
               <input
+                aria-label="Taxa de juros efetiva (CET) anual (%)"
                 type="range"
                 min="6"
                 max="15"
@@ -123,6 +127,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
               />
               <div className="w-28 sm:w-24 shrink-0 relative">
                 <input
+                  id="re-interest-input"
                   type="number"
                   min="0"
                   max="50"
@@ -142,13 +147,14 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
           {/* Prazo */}
           <div className="space-y-2">
              <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-300">Prazo do Financiamento</label>
+              <label htmlFor="re-term-slider" className="text-xs font-semibold text-slate-300">Prazo do Financiamento</label>
               <span className="text-xs font-mono font-medium text-sky-400">
                 {params.termMonths} meses ({Math.floor(params.termMonths / 12)} anos)
               </span>
             </div>
             <div className="flex items-center gap-3">
               <input
+                id="re-term-slider"
                 type="range"
                 min="60"
                 max="420"
@@ -189,7 +195,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                   className={`flex-1 tap-target text-xs font-medium py-2 rounded-lg transition-all ${
                     params.amortizationSystem === sys
                       ? 'bg-line text-white shadow-sm'
-                      : 'text-slate-500 hover:text-slate-300'
+                      : 'text-slate-400 hover:text-slate-300'
                   }`}
                 >
                   {sys === 'SAC' ? 'SAC (Decrescente)' : 'PRICE (Constante)'}
@@ -200,7 +206,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
 
           {/* Amortização Extraordinária */}
           <div className="space-y-2 pt-2 border-t border-line-soft">
-            <label className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
+            <label htmlFor="re-extra-amortization" className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
               <DollarSign className="w-3.5 h-3.5" />
               Amortização Extraordinária Mensal
             </label>
@@ -212,6 +218,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                 <span className="text-emerald-500/60 font-medium">R$</span>
               </div>
               <input
+                id="re-extra-amortization"
                 type="number"
                 min="0"
                 step="100"

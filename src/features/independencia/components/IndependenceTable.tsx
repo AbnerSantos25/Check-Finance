@@ -149,7 +149,7 @@ export const IndependenceTable: React.FC<IndependenceTableProps> = ({ result, pa
                         </span>
                       )}
                     </div>
-                    <div className="text-caption text-slate-500 font-normal">
+                    <div className="text-caption text-slate-400 font-normal">
                       {params.currentAge + Math.floor(row.month / 12)} anos
                     </div>
                   </td>

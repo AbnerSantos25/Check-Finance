@@ -93,7 +93,7 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
                     <div className="text-xs font-medium text-slate-300">
                       Mês {row.month}
                     </div>
-                    <div className="text-caption text-slate-500">
+                    <div className="text-caption text-slate-400">
                       Ano {Math.ceil(row.month / 12)}
                     </div>
                   </td>

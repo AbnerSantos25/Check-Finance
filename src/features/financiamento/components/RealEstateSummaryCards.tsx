@@ -45,7 +45,7 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
             {formatBRL(summary.totalFinanced)}
           </span>
         </div>
-        <div className="mt-2 text-caption text-slate-500 relative z-10">
+        <div className="mt-2 text-caption text-slate-400 relative z-10">
           Imóvel: {formatBRL(params.propertyValue)} | Entrada: {formatBRL(params.downPayment)}
         </div>
       </div>
@@ -61,7 +61,7 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
             {formatBRL(summary.totalPaidOut)}
           </span>
         </div>
-        <div className="mt-2 text-caption text-slate-500 relative z-10">
+        <div className="mt-2 text-caption text-slate-400 relative z-10">
           Você pagará quase {((summary.totalPaidOut / (summary.totalFinanced || 1)) * 100).toFixed(0)}% do valor pego emprestado.
         </div>
       </div>
@@ -118,10 +118,10 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
             </>
           ) : (
             <>
-              <span className="text-lg font-medium text-slate-500 tracking-tight">
+              <span className="text-lg font-medium text-slate-400 tracking-tight">
                 Nenhuma amortização
               </span>
-              <div className="mt-1 text-caption text-slate-500">
+              <div className="mt-1 text-caption text-slate-400">
                 Adicione um valor mensal extra no painel abaixo para ver a mágica acontecer.
               </div>
             </>

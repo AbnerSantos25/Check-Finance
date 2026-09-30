@@ -72,7 +72,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
           <p className="text-sm font-mono font-bold" style={{ color: data.color }}>
             {formatBRL(data.value)}
           </p>
-          <p className="text-caption text-slate-500 mt-1">
+          <p className="text-caption text-slate-400 mt-1">
             {((data.value / summary.totalPaidOut) * 100).toFixed(1)}% do Custo Efetivo Total
           </p>
         </div>
@@ -127,7 +127,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
             </ResponsiveContainer>
             )}</ClientOnly>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-500">
+            <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-400">
               Sem financiamento (Pago à vista)
             </div>
           )}
@@ -198,7 +198,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
             </ResponsiveContainer>
             )}</ClientOnly>
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-xs text-slate-500">
+            <div className="w-full h-full flex items-center justify-center text-xs text-slate-400">
               Nenhuma dívida projetada.
             </div>
           )}
