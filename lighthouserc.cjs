@@ -28,6 +28,23 @@ module.exports = {
       settings: {
         // O runner do GitHub não tem sandbox de usuário para o Chrome.
         chromeFlags: '--no-sandbox',
+        // O CI mede o código do site, não o dos terceiros. Nas páginas mais lentas o
+        // prazo do carregador de anúncios (index.html) vence dentro da medição, e o
+        // AdSense servido para `localhost` grava cookie de terceiro — reprovando
+        // "práticas recomendadas" por algo que em produção não acontece assim.
+        // AdSense e Analytics são medidos de verdade pelo PageSpeed semanal.
+        //
+        // O `/api/ibovespa` é do Worker da Cloudflare, que o `vite preview` não
+        // roda: sem o bloqueio ele responde 500 e vira erro de console.
+        blockedUrlPatterns: [
+          '*googlesyndication.com*',
+          '*doubleclick.net*',
+          '*googletagmanager.com*',
+          '*google-analytics.com*',
+          '*fundingchoicesmessages.google.com*',
+          '*adtrafficquality.google*',
+          '*/api/ibovespa*',
+        ],
       },
     },
     assert: {

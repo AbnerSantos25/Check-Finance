@@ -40,7 +40,7 @@ Roda lint, testes e build. Depois roda o Lighthouse mobile 3 vezes em cada rota,
 - O PR fica vermelho se algum limite for violado.
 - LCP e TBT acima do alvo geram só aviso.
 - O link do relatório completo de cada execução aparece no log do passo "Lighthouse CI".
-- Na maioria das execuções, o Lighthouse termina antes do carregador de AdSense e Analytics disparar, então o CI mede sobretudo o código do site. Nas páginas de ferramenta, mais lentas, às vezes o prazo de 4 s vence dentro da medição. O efeito real dos terceiros aparece na medição semanal.
+- O CI mede só o código do site: AdSense, Analytics e o `/api/ibovespa` (que o `vite preview` não serve) ficam bloqueados em `blockedUrlPatterns`. O efeito real dos terceiros aparece na medição semanal.
 - **Ajustar limites:** só suba. Baixar um limite para o PR passar esconde uma regressão.
 
 ### Toda segunda-feira: PageSpeed em produção (`.github/workflows/pagespeed.yml`)
