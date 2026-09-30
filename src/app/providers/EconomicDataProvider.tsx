@@ -39,11 +39,19 @@ export const EconomicDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // O provider fica acima da navegação e sobrevive à troca de ferramenta, então
   // esta busca acontece uma vez por sessão. O ref existe porque o StrictMode
   // executa o efeito duas vezes em desenvolvimento.
+  //
+  // A busca espera o navegador ficar ocioso: disparada no meio da hidratação, as seis
+  // requisições e o re-render que elas causam competiam com a primeira pintura no
+  // celular. Até lá a tela mostra os valores de referência, como já fazia.
   const fetchedOnce = useRef(false);
   useEffect(() => {
     if (fetchedOnce.current) return;
     fetchedOnce.current = true;
-    fetchRates(false);
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => fetchRates(false), { timeout: 2000 });
+    } else {
+      setTimeout(() => fetchRates(false), 1);
+    }
   }, [fetchRates]);
 
   return (

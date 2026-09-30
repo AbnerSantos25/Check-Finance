@@ -6,6 +6,10 @@ import {defineConfig} from 'vite';
 import {absoluteUrl} from './src/config/site';
 import {ACTIVE_TOOLS} from './src/config/tools.data';
 
+/** Os `.html` gerados pelo pré-render, um por rota. */
+const htmlFiles = (dist: string) =>
+  fs.readdirSync(dist).filter((f) => f.endsWith('.html')).map((f) => path.join(dist, f));
+
 /**
  * Acrescenta o `modulepreload` do chunk do react-dom a cada página gerada.
  *
@@ -22,11 +26,56 @@ const preloadClientChunk = (dist: string) => {
   if (!chunk) return;
 
   const tag = `<link rel="modulepreload" crossorigin href="/assets/${chunk}">`;
-  for (const file of fs.readdirSync(dist).filter((f) => f.endsWith('.html'))) {
-    const full = path.join(dist, file);
-    const html = fs.readFileSync(full, 'utf8');
+  for (const file of htmlFiles(dist)) {
+    const html = fs.readFileSync(file, 'utf8');
     if (html.includes(chunk)) continue;
-    fs.writeFileSync(full, html.replace('</head>', `${tag}</head>`));
+    fs.writeFileSync(file, html.replace('</head>', `${tag}</head>`));
+  }
+};
+
+/**
+ * Devolve `<meta charset>` e `<meta viewport>` ao topo do `<head>`.
+ *
+ * O `<Head>` de cada rota (título, description, OpenGraph, JSON-LD) é injetado no
+ * começo do `<head>`, antes das tags do index.html. Com isso o charset caía além
+ * dos primeiros 1024 bytes, onde o navegador procura a declaração — ele pode ter de
+ * reinterpretar o documento, e o Lighthouse reprova a página em práticas
+ * recomendadas por isso.
+ */
+const hoistHeadEssentials = (dist: string) => {
+  const essentials = [/<meta charset="[^"]*"\s*\/?>/i, /<meta name="viewport"[^>]*>/i];
+  for (const file of htmlFiles(dist)) {
+    let html = fs.readFileSync(file, 'utf8');
+    const tags: string[] = [];
+    for (const pattern of essentials) {
+      const match = html.match(pattern);
+      if (!match) continue;
+      tags.push(match[0]);
+      html = html.replace(match[0], '');
+    }
+    fs.writeFileSync(file, html.replace(/<head>/i, `<head>${tags.join('')}`));
+  }
+};
+
+/**
+ * Preload do arquivo latino da Plus Jakarta Sans, a fonte de todo o texto.
+ *
+ * Sem ele o navegador só descobre a fonte depois de baixar e aplicar o CSS, e o
+ * texto da LCP pinta duas vezes: na fonte do sistema e de novo na definitiva. O
+ * nome tem hash, por isso a tag é escrita aqui e não no index.html.
+ */
+const preloadFont = (dist: string) => {
+  const assets = path.join(dist, 'assets');
+  const font = fs
+    .readdirSync(assets)
+    .find((file) => /^plus-jakarta-sans-latin-wght-normal-[\w-]+\.woff2$/.test(file));
+  if (!font) throw new Error('[build] fonte latina da Plus Jakarta Sans não encontrada em dist/assets');
+
+  const tag = `<link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/${font}">`;
+  for (const file of htmlFiles(dist)) {
+    const html = fs.readFileSync(file, 'utf8');
+    if (html.includes(tag)) continue;
+    fs.writeFileSync(file, html.replace('</head>', `${tag}</head>`));
   }
 };
 
@@ -107,20 +156,39 @@ export default defineConfig(({ isSsrBuild }) => {
       // /static-loader-data-manifest-undefined.json, toma 404, cai na tela de erro
       // e o resultado é um descasamento de hidratação contra o HTML pré-renderizado.
       script: 'defer' as const,
+      // CSS crítico inline desligado. Com o Tailwind v4 o "crítico" dá ~8 kB gzip de
+      // 13 kB do arquivo inteiro — regras globais, variáveis e @property que toda página
+      // usa. Inline, isso engordava todo HTML (que não tem cache longo) e o CSS era
+      // baixado de novo em seguida, para economizar uma requisição de mesma origem.
+      beastiesOptions: false as const,
       // `mock` fica desligado de propósito: fingir `window` no Node faz bibliotecas
       // acharem que estão no navegador e renderem markup que a hidratação desmente.
       // O que depende de DOM — os gráficos — está dentro de <ClientOnly>.
       onFinished: () => {
         const dist = path.resolve(__dirname, 'dist');
         preloadClientChunk(dist);
+        preloadFont(dist);
+        hoistHeadEssentials(dist);
         writeSitemap(dist);
         removeBuildMetadata(dist);
       },
+    },
+    esbuild: {
+      // Os ícones do lucide trazem um comentário `@license` por arquivo, e o esbuild
+      // preserva esse tipo de comentário por padrão: o chunk `vendor-icons` saía com
+      // dezenas deles e o Lighthouse o apontava como não minificado. A licença (ISC)
+      // continua no pacote; o bundle não precisa carregar uma cópia por ícone.
+      legalComments: 'none' as const,
     },
     build: {
       target: 'esnext',
       minify: 'esbuild' as const,
       cssMinify: true,
+      // Nenhuma fonte vira data: URI. O subconjunto cirílico da Plus Jakarta tem menos
+      // de 4 kB e o Vite o embutia em base64 no CSS — CSS que bloqueia a renderização,
+      // carregando bytes de uma fonte que texto em português nunca usa. Como arquivo,
+      // o navegador só o baixa se o `unicode-range` casar.
+      assetsInlineLimit: (file: string) => (file.endsWith('.woff2') ? false : undefined),
       sourcemap: false,
       rollupOptions: {
         // Só no bundle do navegador: no build de servidor estas dependências ficam

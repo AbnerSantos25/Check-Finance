@@ -205,6 +205,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
           <div className="flex items-center gap-3">
             <input
               id="annual-adjustment-slider"
+              aria-label="Reajuste anual do aporte (%)"
               type="range"
               min="0"
               max="20"
@@ -259,6 +260,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
           <div className="flex items-center gap-3">
             <input
               id="annual-interest-slider"
+              aria-label="Taxa de juros anual bruta (%)"
               type="range"
               min="1"
               max="25"
@@ -335,6 +337,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
           <div className="flex items-center gap-3">
             <input
               id="annual-inflation-slider"
+              aria-label="Inflação anual média (IPCA) (%)"
               type="range"
               min="0"
               max="15"
@@ -401,6 +404,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
           <div className="flex items-center gap-3">
             <input
               id="years-period-slider"
+              aria-label="Período de investimento (anos)"
               type="range"
               min="1"
               max="45"
