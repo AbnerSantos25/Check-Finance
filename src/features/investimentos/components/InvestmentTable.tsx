@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
-import { 
-  Table as TableIcon, 
-  Download, 
-  ChevronDown, 
-  ChevronUp, 
-  Sparkles, 
-  Filter,
-  Check
-} from 'lucide-react';
+import { Table as TableIcon } from 'lucide-react';
 import { CalculationSummary, YearlyResult } from '../../../types';
 import { formatBRL, formatPercent } from '../../../shared/lib/format';
+import { TableCard } from '../../../shared/components/TableCard';
+import { ExportCsvButton } from '../../../shared/components/ExportCsvButton';
 
 interface InvestmentTableProps {
   summary: CalculationSummary;
@@ -19,7 +13,6 @@ interface InvestmentTableProps {
 
 export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years, taxExempt }) => {
   const [filterMode, setFilterMode] = useState<'all' | 'milestones'>('all');
-  const [copiedCsv, setCopiedCsv] = useState(false);
 
   // Filter rows if milestones (every 5 years or last year)
   const displayData = filterMode === 'milestones' && years > 5
@@ -62,28 +55,16 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
-    setCopiedCsv(true);
-    setTimeout(() => setCopiedCsv(false), 2500);
   };
 
   return (
-    <div 
+    <TableCard
       id="investment-table-container"
-      className="rounded-2xl bg-surface border border-line p-5 sm:p-6 shadow-xl"
-    >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-line-soft">
-        <div>
-          <h3 className="text-lg font-bold text-white flex items-center gap-2.5">
-            <TableIcon className="w-5 h-5 text-emerald-400" />
-            Tabela Detalhada Ano a Ano
-          </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Acompanhe o crescimento gradual e a aceleração dos juros compostos com o tempo.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2.5">
+      icon={TableIcon}
+      title="Tabela Detalhada Ano a Ano"
+      subtitle="Acompanhe o crescimento gradual e a aceleração dos juros compostos com o tempo."
+      actions={
+        <>
           {/* Milestones toggle */}
           {years > 7 && (
             <div className="flex items-center rounded-xl bg-bg-deep p-1 border border-line text-xs">
@@ -112,28 +93,10 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
             </div>
           )}
 
-          {/* Export CSV button */}
-          <button
-            id="export-csv-btn"
-            onClick={handleExportCsv}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-2 hover:bg-line border border-line-strong text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
-            title="Baixar planilha CSV"
-          >
-            {copiedCsv ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400">Baixado!</span>
-              </>
-            ) : (
-              <>
-                <Download className="w-3.5 h-3.5 text-slate-400" />
-                <span>Exportar CSV</span>
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
+          <ExportCsvButton onExport={handleExportCsv} />
+        </>
+      }
+    >
       {/* Table responsive container */}
       {/* A altura fixa com rolagem própria vale só de sm para cima. No celular, com
           cada linha virando card, ela prendia 8500px de conteúdo numa janela de
@@ -222,6 +185,6 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
           Total de {years} períodos anuais calculados
         </div>
       </div>
-    </div>
+    </TableCard>
   );
 };

@@ -1,7 +1,9 @@
 import React from 'react';
 import { FinancingSummary } from '../../../types';
 import { formatBRL } from '../../../shared/lib/format';
-import { Table, Download } from 'lucide-react';
+import { Table } from 'lucide-react';
+import { TableCard } from '../../../shared/components/TableCard';
+import { ExportCsvButton } from '../../../shared/components/ExportCsvButton';
 
 interface RealEstateTableProps {
   summary: FinancingSummary;
@@ -46,27 +48,22 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
   };
 
   return (
-    <div className="rounded-2xl bg-surface border border-line shadow-xl overflow-hidden mb-8">
-      <div className="p-5 sm:p-6 border-b border-line-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <Table className="w-4 h-4 text-sky-400" />
-            Cronograma Resumido (Anual)
-          </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Evolução do saldo devedor e parcelas ao final de cada ano de contrato.
-          </p>
-        </div>
-        
-        <button
-          onClick={exportCSV}
+    <TableCard
+      variant="flush"
+      className="mb-8"
+      icon={Table}
+      iconClassName="text-sky-400"
+      title="Cronograma Resumido (Anual)"
+      subtitle="Evolução do saldo devedor e parcelas ao final de cada ano de contrato."
+      actions={
+        <ExportCsvButton
+          onExport={exportCSV}
+          label="Baixar Cronograma Completo (CSV)"
+          title="Baixar cronograma completo em CSV"
           className="flex items-center gap-1.5 tap-target px-3 py-1.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 text-xs font-medium text-sky-400 transition-colors"
-        >
-          <Download className="w-3.5 h-3.5" />
-          Baixar Cronograma Completo (CSV)
-        </button>
-      </div>
-
+        />
+      }
+    >
       <div className="sm:overflow-x-auto">
         <table role="table" className="table-cards w-full text-left border-collapse">
           <thead role="rowgroup">
@@ -126,6 +123,6 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
           </tbody>
         </table>
       </div>
-    </div>
+    </TableCard>
   );
 };

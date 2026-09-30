@@ -1,8 +1,10 @@
 import React, { useRef, useState } from 'react';
-import { Check, ChevronDown, ChevronUp, Download, Table as TableIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp, Table as TableIcon } from 'lucide-react';
 import type { IndependenceParams, IndependenceResult } from '../../../types';
 import { formatBRL } from '../../../shared/lib/format';
 import type { ValueBasis } from './IndependenceResult';
+import { TableCard } from '../../../shared/components/TableCard';
+import { ExportCsvButton } from '../../../shared/components/ExportCsvButton';
 
 interface IndependenceTableProps {
   result: IndependenceResult;
@@ -18,7 +20,6 @@ const csvMoney = (value: number) => value.toFixed(2).replace('.', ',');
 
 export const IndependenceTable: React.FC<IndependenceTableProps> = ({ result, params, basis }) => {
   const [expanded, setExpanded] = useState(false);
-  const [downloaded, setDownloaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // O mês 0 é o ponto de partida do gráfico; a tabela começa no primeiro aporte.
@@ -75,49 +76,25 @@ export const IndependenceTable: React.FC<IndependenceTableProps> = ({ result, pa
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-
-    setDownloaded(true);
-    setTimeout(() => setDownloaded(false), 2500);
   };
 
   return (
-    <div
+    <TableCard
       ref={containerRef}
       id="tabela-mes-a-mes"
-      className="scroll-mt-20 rounded-2xl bg-surface border border-line p-5 sm:p-6 shadow-xl mb-8"
-    >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-line-soft">
-        <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2.5">
-            <TableIcon className="w-5 h-5 text-indigo-400" />
-            Projeção mês a mês
-          </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {real ? 'Em valores de hoje' : 'Em valores nominais'}, do primeiro aporte até o mês em que a meta é
-            atingida.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={exportCsv}
-          className="flex items-center gap-1.5 tap-target self-start sm:self-auto px-3 py-1.5 rounded-xl bg-surface-2 hover:bg-line border border-line-strong text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
+      className="scroll-mt-20 mb-8"
+      icon={TableIcon}
+      iconClassName="text-indigo-400"
+      title="Projeção mês a mês"
+      subtitle={`${real ? 'Em valores de hoje' : 'Em valores nominais'}, do primeiro aporte até o mês em que a meta é atingida.`}
+      actions={
+        <ExportCsvButton
+          onExport={exportCsv}
           title="Baixar todos os meses em planilha CSV"
-        >
-          {downloaded ? (
-            <>
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-emerald-400">Baixado!</span>
-            </>
-          ) : (
-            <>
-              <Download className="w-3.5 h-3.5 text-slate-400" />
-              <span>Exportar CSV</span>
-            </>
-          )}
-        </button>
-      </div>
-
+          className="flex items-center gap-1.5 tap-target self-start sm:self-auto px-3 py-1.5 rounded-xl bg-surface-2 hover:bg-line border border-line-strong text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
+        />
+      }
+    >
       <div className="mt-4 sm:overflow-x-auto">
         <table role="table" className="table-cards w-full text-left text-xs border-collapse">
           <thead role="rowgroup" className="bg-bg border-b border-line text-caption font-semibold text-slate-300 uppercase tracking-wider">
@@ -203,6 +180,6 @@ export const IndependenceTable: React.FC<IndependenceTableProps> = ({ result, pa
             </button>
           ))}
       </div>
-    </div>
+    </TableCard>
   );
 };
