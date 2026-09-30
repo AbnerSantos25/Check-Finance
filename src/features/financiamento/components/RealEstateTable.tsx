@@ -49,7 +49,7 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
     <div className="rounded-2xl bg-surface border border-line shadow-xl overflow-hidden mb-8">
       <div className="p-5 sm:p-6 border-b border-line-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-sm font-bold text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <Table className="w-4 h-4 text-sky-400" />
             Cronograma Resumido (Anual)
           </h2>
@@ -71,11 +71,11 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
         <table role="table" className="table-cards w-full text-left border-collapse">
           <thead role="rowgroup">
             <tr className="bg-bg/50">
-              <th role="columnheader" className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-line">Período</th>
-              <th role="columnheader" className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-line text-right">Parcela Base</th>
-              <th role="columnheader" className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-emerald-400 uppercase tracking-wider border-b border-line text-right">Abatimento Extra</th>
-              <th role="columnheader" className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-rose-400 uppercase tracking-wider border-b border-line text-right">Juros (Custo)</th>
-              <th role="columnheader" className="px-4 py-3 text-[12px] sm:text-[10px] font-bold text-sky-400 uppercase tracking-wider border-b border-line text-right">Saldo Devedor</th>
+              <th role="columnheader" className="px-4 py-3 text-caption font-bold text-slate-400 uppercase tracking-wider border-b border-line">Período</th>
+              <th role="columnheader" className="px-4 py-3 text-caption font-bold text-slate-400 uppercase tracking-wider border-b border-line text-right">Parcela Base</th>
+              <th role="columnheader" className="px-4 py-3 text-caption font-bold text-emerald-400 uppercase tracking-wider border-b border-line text-right">Abatimento Extra</th>
+              <th role="columnheader" className="px-4 py-3 text-caption font-bold text-rose-400 uppercase tracking-wider border-b border-line text-right">Juros (Custo)</th>
+              <th role="columnheader" className="px-4 py-3 text-caption font-bold text-sky-400 uppercase tracking-wider border-b border-line text-right">Saldo Devedor</th>
             </tr>
           </thead>
           <tbody role="rowgroup" className="divide-y divide-line/50">
@@ -93,7 +93,7 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
                     <div className="text-xs font-medium text-slate-300">
                       Mês {row.month}
                     </div>
-                    <div className="text-[12px] sm:text-[10px] text-slate-500">
+                    <div className="text-caption text-slate-500">
                       Ano {Math.ceil(row.month / 12)}
                     </div>
                   </td>
@@ -117,7 +117,7 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
                       {formatBRL(row.outstandingBalance)}
                     </span>
                     {isLast && (
-                      <div className="text-[12px] sm:text-[10px] text-sky-400/70 mt-0.5">Quitação</div>
+                      <div className="text-caption text-sky-400/70 mt-0.5">Quitação</div>
                     )}
                   </td>
                 </tr>

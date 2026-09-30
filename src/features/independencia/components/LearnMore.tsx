@@ -4,13 +4,13 @@ import { EXAMPLE } from '../example';
 
 const Block: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="space-y-2.5">
-    <h3 className="text-sm font-bold text-white">{title}</h3>
+    <h3 className="text-lg font-bold text-white">{title}</h3>
     {children}
   </div>
 );
 
 const P: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <p className="text-xs sm:text-[13px] text-slate-400 leading-relaxed">{children}</p>
+  <p className="text-sm text-slate-400 leading-relaxed">{children}</p>
 );
 
 /**
@@ -27,7 +27,7 @@ export const LearnMore: React.FC = () => (
       <h2 id="entenda-title" className="text-xl font-extrabold text-white">
         Independência financeira: quanto é preciso e quando você chega lá
       </h2>
-      <p className="text-xs sm:text-[13px] text-slate-400 leading-relaxed mt-2">
+      <p className="text-sm text-slate-400 leading-relaxed mt-2">
         Independência financeira é o ponto em que o seu patrimônio paga o seu custo de vida sem depender de salário.
         A calculadora acima encontra esse ponto a partir da renda que você quer ter, do que já investiu, de quanto
         consegue aportar e da rentabilidade e inflação esperadas.

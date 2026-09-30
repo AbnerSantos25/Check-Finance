@@ -99,12 +99,12 @@ export const InvestmentPage: React.FC = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="p-5 rounded-2xl bg-surface border border-line">
-            <h3 className="text-sm font-bold text-white mb-1.5">
+            <h3 className="text-lg font-bold text-white mb-1.5">
               1. O Tempo é o Maior Fator
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-sm text-slate-400 leading-relaxed">
               Na fórmula de juros compostos, o tempo está no expoente. No começo, quase todo o patrimônio vem dos seus aportes; com os anos, os juros passam a crescer mais rápido que eles.{' '}
               {summary.interestSurpassesDepositsYear
                 ? `No seu cenário, os juros acumulados superam o total aportado no ano ${summary.interestSurpassesDepositsYear}.`
@@ -113,10 +113,10 @@ export const InvestmentPage: React.FC = () => {
           </div>
 
           <div className="p-5 rounded-2xl bg-surface border border-line">
-            <h3 className="text-sm font-bold text-white mb-1.5">
+            <h3 className="text-lg font-bold text-white mb-1.5">
               2. Reajuste Anual dos Aportes
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-sm text-slate-400 leading-relaxed">
               Manter o mesmo valor de aporte por décadas reduz seu esforço real, porque a inflação corrói esse valor.{' '}
               {adjustmentEffect.userAdjusts
                 ? `No seu cenário, reajustar o aporte em ${formatPercent(adjustmentEffect.rate, 1)} ao ano deixa o patrimônio final ${formatPercent(adjustmentEffect.increase, 1)} maior do que manter o aporte fixo.`
@@ -125,10 +125,10 @@ export const InvestmentPage: React.FC = () => {
           </div>
 
           <div className="p-5 rounded-2xl bg-surface border border-line">
-            <h3 className="text-sm font-bold text-white mb-1.5">
+            <h3 className="text-lg font-bold text-white mb-1.5">
               3. Viver de Renda Passiva
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-sm text-slate-400 leading-relaxed">
               Para viver de renda sem empobrecer, saque só o que sobra do rendimento depois do IR e de repor a inflação.{' '}
               {summary.sustainableMonthlyIncomeReal > 0
                 ? `No seu cenário, isso dá ${formatBRL(summary.sustainableMonthlyIncomeReal)}/mês em valores de hoje. Sacar o rendimento inteiro (${formatBRL(summary.fullYieldMonthlyNetIncome)}/mês nominais) consumiria o poder de compra do patrimônio.`

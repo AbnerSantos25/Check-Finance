@@ -53,7 +53,7 @@ export const IndependenceChart: React.FC<IndependenceChartProps> = ({ result, pa
     <div className="rounded-2xl bg-surface border border-line p-5 sm:p-6 shadow-xl mb-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-indigo-400" />
             Evolução até a independência
           </h2>
@@ -126,7 +126,7 @@ export const IndependenceChart: React.FC<IndependenceChartProps> = ({ result, pa
                       <div className="p-3.5 rounded-xl bg-panel border border-line shadow-2xl text-xs space-y-2 min-w-[220px]">
                         <div className="font-bold text-white pb-1.5 border-b border-white/10 flex justify-between items-center gap-3">
                           <span>{p.month === 0 ? 'Hoje' : `Mês ${p.month}`}</span>
-                          <span className="text-[12px] sm:text-[10px] text-slate-400 font-normal">
+                          <span className="text-caption text-slate-400 font-normal">
                             {params.currentAge + years} anos
                           </span>
                         </div>

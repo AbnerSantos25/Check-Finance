@@ -98,7 +98,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                   key={pct}
                   type="button"
                   onClick={() => onChange({ downPayment: params.propertyValue * (pct / 100) })}
-                  className="text-[12px] sm:text-[11px] tap-target px-2 py-1 rounded-lg bg-surface-2 border border-line text-slate-400 hover:text-slate-200 transition-all"
+                  className="text-caption tap-target px-2 py-1 rounded-lg bg-surface-2 border border-line text-slate-400 hover:text-slate-200 transition-all"
                 >
                   {pct}%
                 </button>
@@ -131,7 +131,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                   onChange={(e) => onChange({ annualInterestRate: Number(e.target.value) })}
                   className="w-full tap-field pl-2.5 pr-7 sm:pr-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-sky-500"
                 />
-                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] sm:text-[10px] text-slate-400">% a.a.</span>
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-caption text-slate-400">% a.a.</span>
               </div>
             </div>
           </div>
@@ -164,7 +164,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
                   key={months}
                   type="button"
                   onClick={() => onChange({ termMonths: months })}
-                  className={`text-[12px] sm:text-[11px] tap-target px-2 py-1 rounded-lg border transition-all ${
+                  className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
                     params.termMonths === months
                       ? 'bg-sky-500/15 border-sky-500/40 text-sky-300 font-semibold'
                       : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
@@ -204,7 +204,7 @@ export const RealEstateForm: React.FC<RealEstateFormProps> = ({
               <DollarSign className="w-3.5 h-3.5" />
               Amortização Extraordinária Mensal
             </label>
-            <p className="text-[12px] sm:text-[11px] text-slate-400 leading-relaxed mb-3">
+            <p className="text-caption text-slate-400 leading-relaxed mb-3">
               Simule o envio de um valor extra fixo todos os meses para abater o saldo devedor e encurtar a dívida.
             </p>
             <div className="relative">

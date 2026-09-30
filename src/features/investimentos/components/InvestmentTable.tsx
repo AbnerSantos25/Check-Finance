@@ -74,7 +74,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-line-soft">
         <div>
-          <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2.5">
+          <h3 className="text-lg font-bold text-white flex items-center gap-2.5">
             <TableIcon className="w-5 h-5 text-emerald-400" />
             Tabela Detalhada Ano a Ano
           </h3>
@@ -144,7 +144,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
           {/* `sm:sticky`: no celular o cabeçalho sai da tela pelo CSS de cards, e um
               `position: sticky` vindo de utilitário venceria essa regra — o cabeçalho
               continuaria ocupando 1170px e empurrando a página de lado. */}
-          <thead role="rowgroup" className="sm:sticky sm:top-0 z-10 bg-bg border-b border-line text-[12px] sm:text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+          <thead role="rowgroup" className="sm:sticky sm:top-0 z-10 bg-bg border-b border-line text-caption font-semibold text-slate-300 uppercase tracking-wider">
             <tr role="row">
               <th role="columnheader" className="py-3 px-3.5 rounded-tl-lg">Ano</th>
               <th role="columnheader" className="py-3 px-3.5">Total Aportado</th>
@@ -172,7 +172,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                   <td role="cell" data-label="Ano" className="py-3 px-3.5 font-sans font-semibold text-white flex items-center gap-1.5">
                     Ano {row.year}
                     {isLastYear && (
-                      <span className="px-1.5 py-0.5 rounded text-[12px] sm:text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-sans">
+                      <span className="px-1.5 py-0.5 rounded text-caption bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-sans">
                         Final
                       </span>
                     )}
@@ -187,7 +187,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                     +{formatBRL(row.yearlyInterestGained)}
                   </td>
                   <td role="cell" data-label="Juros acumulados" className="py-3 px-3.5">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 font-semibold border border-emerald-500/20 text-[12px] sm:text-[11px]">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 font-semibold border border-emerald-500/20 text-caption">
                       +{formatBRL(row.totalInterestGained)}
                     </span>
                   </td>
@@ -208,7 +208,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
       </div>
 
       {/* Table footer note */}
-      <div className="mt-4 pt-3 border-t border-line-soft flex flex-col sm:flex-row items-center justify-between text-[12px] sm:text-[11px] text-slate-400 gap-2">
+      <div className="mt-4 pt-3 border-t border-line-soft flex flex-col sm:flex-row items-center justify-between text-caption text-slate-400 gap-2">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
           <span>

@@ -88,7 +88,7 @@ export const IndependenceTable: React.FC<IndependenceTableProps> = ({ result, pa
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-line-soft">
         <div>
-          <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2.5">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2.5">
             <TableIcon className="w-5 h-5 text-indigo-400" />
             Projeção mês a mês
           </h2>
@@ -120,7 +120,7 @@ export const IndependenceTable: React.FC<IndependenceTableProps> = ({ result, pa
 
       <div className="mt-4 sm:overflow-x-auto">
         <table role="table" className="table-cards w-full text-left text-xs border-collapse">
-          <thead role="rowgroup" className="bg-bg border-b border-line text-[12px] sm:text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+          <thead role="rowgroup" className="bg-bg border-b border-line text-caption font-semibold text-slate-300 uppercase tracking-wider">
             <tr role="row">
               <th role="columnheader" className="py-3 px-3.5 rounded-tl-lg">Mês</th>
               <th role="columnheader" className="py-3 px-3.5 text-right text-blue-400">Investido do bolso</th>
@@ -144,12 +144,12 @@ export const IndependenceTable: React.FC<IndependenceTableProps> = ({ result, pa
                     <div className="flex items-center gap-1.5 font-semibold text-white">
                       Mês {row.month}
                       {isGoal && (
-                        <span className="px-1.5 py-0.5 rounded text-[12px] sm:text-[9px] bg-indigo-500/20 text-indigo-200 border border-indigo-500/30">
+                        <span className="px-1.5 py-0.5 rounded text-caption bg-indigo-500/20 text-indigo-200 border border-indigo-500/30">
                           Meta atingida
                         </span>
                       )}
                     </div>
-                    <div className="text-[12px] sm:text-[10px] text-slate-500 font-normal">
+                    <div className="text-caption text-slate-500 font-normal">
                       {params.currentAge + Math.floor(row.month / 12)} anos
                     </div>
                   </td>
@@ -173,7 +173,7 @@ export const IndependenceTable: React.FC<IndependenceTableProps> = ({ result, pa
       </div>
 
       <div className="mt-4 pt-3 border-t border-line-soft flex flex-col sm:flex-row items-center justify-between gap-3">
-        <span className="text-[12px] sm:text-[11px] text-slate-400">
+        <span className="text-caption text-slate-400">
           Mostrando {visible.length} de {rows.length} {rows.length === 1 ? 'mês' : 'meses'}. Renda mensal: quanto o
           patrimônio daquele mês já paga para sempre, sem perder poder de compra.
         </span>

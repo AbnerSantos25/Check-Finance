@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
         </Link>
         {/* `flex-wrap`: cinco links numa linha só não cabem num celular estreito, e sem
             quebrar eles empurravam a página para além da largura da tela. */}
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[12px] sm:text-[11px]">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-caption">
           {TOOLS.map((tool) =>
             tool.status === 'em-breve' ? (
               <button
@@ -45,7 +45,7 @@ export const Footer: React.FC = () => {
           </button>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto mt-4 pt-4 border-t border-white/5 text-[12px] sm:text-[10px] text-slate-400 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-2">
+      <div className="max-w-7xl mx-auto mt-4 pt-4 border-t border-white/5 text-caption text-slate-400 text-center sm:text-left flex flex-col sm:flex-row justify-between items-center gap-2">
         <span>
           © {__BUILD_YEAR__} CheckFinance. Ferramenta de fins educativos e de simulação. Não constitui recomendação de investimento.
         </span>

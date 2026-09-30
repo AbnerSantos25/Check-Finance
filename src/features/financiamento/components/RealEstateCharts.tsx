@@ -72,7 +72,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
           <p className="text-sm font-mono font-bold" style={{ color: data.color }}>
             {formatBRL(data.value)}
           </p>
-          <p className="text-[12px] sm:text-[10px] text-slate-500 mt-1">
+          <p className="text-caption text-slate-500 mt-1">
             {((data.value / summary.totalPaidOut) * 100).toFixed(1)}% do Custo Efetivo Total
           </p>
         </div>
@@ -88,7 +88,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
       <div className="rounded-2xl bg-surface border border-line p-5 shadow-xl lg:col-span-1 flex flex-col">
         <div className="flex items-center gap-2 mb-4">
           <PieIcon className="w-4 h-4 text-slate-400" />
-          <h3 className="text-sm font-bold text-white">Composição do Custo Total</h3>
+          <h3 className="text-lg font-bold text-white">Composição do Custo Total</h3>
         </div>
         
         <div className="flex-1 min-h-[250px] relative">
@@ -133,7 +133,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
           )}
           {summary.totalPaidOut > 0 && (
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-8">
-              <span className="text-[12px] sm:text-[10px] text-slate-400 uppercase tracking-wider">Custo Total</span>
+              <span className="text-caption text-slate-400 uppercase tracking-wider">Custo Total</span>
               <span className="text-sm font-bold text-white tracking-tight">
                 {formatBRL(summary.totalPaidOut)}
               </span>
@@ -147,10 +147,10 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <LineChart className="w-4 h-4 text-slate-400" />
-            <h3 className="text-sm font-bold text-white">Evolução do Saldo Devedor</h3>
+            <h3 className="text-lg font-bold text-white">Evolução do Saldo Devedor</h3>
           </div>
           {summary.monthsSaved > 0 && (
-            <div className="text-[12px] sm:text-[10px] font-semibold text-emerald-400 px-2 py-1 rounded bg-emerald-500/10 border border-emerald-500/20">
+            <div className="text-caption font-semibold text-emerald-400 px-2 py-1 rounded bg-emerald-500/10 border border-emerald-500/20">
               Dívida encurtada em {summary.monthsSaved} meses
             </div>
           )}

@@ -12,6 +12,34 @@
   --color-line: #1f2636;        /* borda padrão */
   --color-line-soft: #1c2230;   /* divisória, borda de baixo contraste */
   --color-line-strong: #273044; /* borda/hover de destaque */
+
+  /* Escala tipográfica: o único lugar onde os tamanhos de texto são definidos.
+     Cada token vira utilitário (text-caption, text-xs, text-sm…) e vale em todas
+     as larguras de tela — nada de encolher o texto no desktop com `sm:text-[..px]`.
+     Para ajustar o site inteiro, mude o valor aqui.
+
+     Uso:
+     - caption: legendas, dicas sob campos, selos, notas de rodapé de card
+     - xs:      subtítulos, rótulos de campo, textos de apoio, células de tabela
+     - sm:      conteúdo de card, parágrafos
+     - lg:      título de card
+     - xl a 3xl: títulos de seção e de página (H2 e H1) */
+  --text-caption: 0.75rem; /* 12px */
+  --text-caption--line-height: 1.4;
+  --text-xs: 0.875rem; /* 14px */
+  --text-xs--line-height: calc(1.25 / 0.875);
+  --text-sm: 1rem; /* 16px */
+  --text-sm--line-height: 1.5;
+  --text-base: 1rem; /* 16px */
+  --text-base--line-height: 1.5;
+  --text-lg: 1.125rem; /* 18px */
+  --text-lg--line-height: calc(1.75 / 1.125);
+  --text-xl: 1.25rem; /* 20px */
+  --text-xl--line-height: calc(1.75 / 1.25);
+  --text-2xl: 1.5rem; /* 24px */
+  --text-2xl--line-height: calc(2 / 1.5);
+  --text-3xl: 1.875rem; /* 30px */
+  --text-3xl--line-height: calc(2.25 / 1.875);
 }
 
 @layer base {

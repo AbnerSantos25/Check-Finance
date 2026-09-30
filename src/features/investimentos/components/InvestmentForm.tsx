@@ -115,7 +115,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 key={val}
                 type="button"
                 onClick={() => onChange({ initialDeposit: val })}
-                className={`text-[12px] sm:text-[11px] tap-target px-2 py-1 rounded-lg border transition-all ${
+                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
                   params.initialDeposit === val
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold'
                     : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
@@ -170,7 +170,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 key={val}
                 type="button"
                 onClick={() => onChange({ monthlyDeposit: val })}
-                className={`text-[12px] sm:text-[11px] tap-target px-2 py-1 rounded-lg border transition-all ${
+                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
                   params.monthlyDeposit === val
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold'
                     : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
@@ -223,13 +223,13 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 onCommit={(v) => onChange({ annualAdjustmentRate: v })}
                 className="w-full tap-field pl-2.5 pr-7 sm:pr-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] sm:text-[10px] text-slate-400">
+              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-caption text-slate-400">
                 %
               </span>
             </div>
           </div>
 
-          <div className="text-[12px] sm:text-[11px] text-slate-400 pt-1">
+          <div className="text-caption text-slate-400 pt-1">
             {params.annualAdjustmentRate === 0 
               ? 'Aporte fixo ao longo dos anos' 
               : `A cada 12 meses o aporte cresce ${formatPercent(params.annualAdjustmentRate, 1)}`}
@@ -277,7 +277,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 onCommit={(v) => onChange({ annualInterestRate: v })}
                 className="w-full tap-field pl-2.5 pr-7 sm:pr-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] sm:text-[10px] text-slate-400">
+              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-caption text-slate-400">
                 %
               </span>
             </div>
@@ -291,7 +291,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 type="button"
                 title={preset.hint}
                 onClick={() => onChange({ annualInterestRate: preset.rate, taxExempt: preset.taxExempt })}
-                className={`text-[12px] sm:text-[10px] tap-field px-2 py-1 rounded-lg border text-left flex items-center justify-between gap-2 transition-all ${
+                className={`text-caption tap-field px-2 py-1 rounded-lg border text-left flex items-center justify-between gap-2 transition-all ${
                   params.annualInterestRate === preset.rate && params.taxExempt === preset.taxExempt
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold'
                     : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
@@ -305,7 +305,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               </button>
             ))}
           </div>
-          <div className="text-[12px] sm:text-[10px] text-slate-400">
+          <div className="text-caption text-slate-400">
             {ratesAreLive
               ? 'Taxas atuais do Banco Central; não garantem rentabilidade futura.'
               : `Taxas de referência de ${REFERENCE_DATE}; Banco Central indisponível.`}
@@ -353,7 +353,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 onCommit={(v) => onChange({ annualInflationRate: v })}
                 className="w-full tap-field pl-2.5 pr-7 sm:pr-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-amber-500"
               />
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] sm:text-[10px] text-slate-400">
+              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-caption text-slate-400">
                 %
               </span>
             </div>
@@ -366,7 +366,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 type="button"
                 onClick={() => onChange({ annualInflationRate: inf })}
                 title={index === 1 ? 'IPCA acumulado nos últimos 12 meses (IBGE, via BCB)' : undefined}
-                className={`text-[12px] sm:text-[11px] tap-target px-2 py-1 rounded-lg border transition-all ${
+                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
                   params.annualInflationRate === inf
                     ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 font-semibold'
                     : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
@@ -419,7 +419,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 onCommit={(v) => onChange({ years: v })}
                 className="w-full tap-field pl-2.5 pr-7 sm:pr-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[12px] sm:text-[10px] text-slate-400">
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-caption text-slate-400">
                 anos
               </span>
             </div>
@@ -432,7 +432,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 key={y}
                 type="button"
                 onClick={() => onChange({ years: y })}
-                className={`text-[12px] sm:text-[11px] tap-target px-2 py-1 rounded-lg border transition-all ${
+                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
                   params.years === y
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold'
                     : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
@@ -479,7 +479,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
           </div>
         </div>
 
-        <div className="text-[12px] sm:text-[11px] text-slate-400">
+        <div className="text-caption text-slate-400">
           Taxa mensal equivalente: <span className="text-white font-mono font-semibold">{formatNumber(monthlyEquivalentRate(params.annualInterestRate) * 100, 4)}% ao mês</span>
         </div>
       </div>

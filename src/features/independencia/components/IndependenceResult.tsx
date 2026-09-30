@@ -62,14 +62,14 @@ const Stat: React.FC<{ label: string; value: string; detail: string; valueClass:
   valueClass,
 }) => (
   <div className="p-4 rounded-xl bg-bg/60 border border-line">
-    <div className="text-[12px] sm:text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{label}</div>
+    <div className="text-caption font-semibold text-slate-400 uppercase tracking-wider">{label}</div>
     <div className={`text-lg sm:text-xl font-extrabold font-mono mt-1 ${valueClass}`}>{value}</div>
-    <div className="text-[12px] sm:text-[11px] text-slate-400 mt-0.5">{detail}</div>
+    <div className="text-caption text-slate-400 mt-0.5">{detail}</div>
   </div>
 );
 
 const Disclaimer: React.FC = () => (
-  <p className="mt-5 pt-4 border-t border-line-soft flex items-start gap-2 text-[12px] sm:text-[11px] text-slate-400 leading-relaxed">
+  <p className="mt-5 pt-4 border-t border-line-soft flex items-start gap-2 text-caption text-slate-400 leading-relaxed">
     <Info className="w-3.5 h-3.5 shrink-0 mt-0.5 text-slate-500" />
     Projeção matemática com rentabilidade e inflação constantes, sem Imposto de Renda nem taxas. Não é garantia de
     resultado nem recomendação de investimento.
@@ -81,7 +81,7 @@ const Problem: React.FC<{ title: string; children: React.ReactNode }> = ({ title
     <div className="flex items-start gap-3">
       <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
       <div>
-        <h2 className="text-base sm:text-lg font-bold text-white">{title}</h2>
+        <h2 className="text-lg font-bold text-white">{title}</h2>
         <p className="text-xs sm:text-sm text-slate-400 mt-1 leading-relaxed max-w-2xl">{children}</p>
       </div>
     </div>
@@ -212,7 +212,7 @@ export const IndependenceResult: React.FC<IndependenceResultProps> = ({
       )}
 
       {sensitivity && (
-        <div className="relative mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[12px] sm:text-xs">
+        <div className="relative mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
           <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-500/5 border border-rose-500/20 text-slate-300">
             <TrendingDown className="w-4 h-4 text-rose-400 shrink-0" />
             <span>

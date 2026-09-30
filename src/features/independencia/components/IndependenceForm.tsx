@@ -18,7 +18,7 @@ interface IndependenceFormProps {
 const round2 = (value: number) => Math.round(value * 100) / 100;
 
 const chipClass = (active: boolean) =>
-  `text-[12px] sm:text-[11px] tap-target px-2 py-1 rounded-lg border transition-all ${
+  `text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
     active
       ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-300 font-semibold'
       : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
@@ -95,7 +95,7 @@ const RateInput: React.FC<{
           accent === 'amber' ? 'focus:border-amber-500' : 'focus:border-indigo-500'
         }`}
       />
-      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] sm:text-[10px] text-slate-400">
+      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-caption text-slate-400">
         % a.a.
       </span>
     </div>
@@ -209,7 +209,7 @@ export const IndependenceForm: React.FC<IndependenceFormProps> = ({
             value={params.monthlyContribution}
             onCommit={(v) => onChange({ monthlyContribution: v })}
           />
-          <label className="tap-field flex items-center gap-2 pt-1 text-[12px] sm:text-[11px] text-slate-400 cursor-pointer select-none">
+          <label className="tap-field flex items-center gap-2 pt-1 text-caption text-slate-400 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={params.contributionFollowsInflation}
@@ -237,7 +237,7 @@ export const IndependenceForm: React.FC<IndependenceFormProps> = ({
             accent="indigo"
             onCommit={(v) => onChange({ annualReturn: v })}
           />
-          <p className="text-[12px] sm:text-[11px] text-slate-400 leading-relaxed">
+          <p className="text-caption text-slate-400 leading-relaxed">
             Referência: CDI {formatPercent(marketRates.cdi)} a.a. e IPCA {formatPercent(marketRates.ipca)} em 12
             meses
             {ratesAreLive ? ' (Banco Central).' : ` (valores de ${REFERENCE_DATE}).`} Acima da inflação, você ganha{' '}
@@ -278,7 +278,7 @@ export const IndependenceForm: React.FC<IndependenceFormProps> = ({
                       ? 'IPCA acumulado nos últimos 12 meses (IBGE, via BCB)'
                       : undefined
                 }
-                className={`text-[12px] sm:text-[11px] tap-target px-2 py-1 rounded-lg border transition-all ${
+                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
                   params.annualInflation === inf
                     ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 font-semibold'
                     : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
