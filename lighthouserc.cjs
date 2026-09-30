@@ -74,16 +74,16 @@ module.exports = {
           },
         },
         {
-          // Ferramentas: a hidratação com os gráficos do recharts ainda custa caro no
-          // celular (0,72 a 0,85 medidos localmente). O piso barra regressão grande sem
-          // deixar o CI instável; suba-o quando os gráficos passarem a montar só ao
-          // entrar na tela.
+          // Ferramentas: com os gráficos montados só ao entrar na tela (LazyChart), a
+          // medição local ficou em 0,91 a 0,93. O piso fica abaixo disso para absorver
+          // o ruído do runner; o FCP das ferramentas (~2,6 s, HTML maior que o do hub)
+          // é o que ainda as separa da nota do hub.
           matchingUrlPattern: `^http://localhost:${PORT}/.+`,
           aggregationMethod: 'median-run',
           assertions: {
-            'categories:performance': ['error', { minScore: 0.6 }],
+            'categories:performance': ['error', { minScore: 0.8 }],
             'largest-contentful-paint': ['warn', { maxNumericValue: 3000 }],
-            'total-blocking-time': ['warn', { maxNumericValue: 600 }],
+            'total-blocking-time': ['warn', { maxNumericValue: 300 }],
           },
         },
       ],
