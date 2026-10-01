@@ -1,0 +1,9 @@
+# Fim de linha LF no repositório e na cópia de trabalho, em qualquer sistema.
+# Sem isto, um clone no Windows com core.autocrlf converte tudo para CRLF e o
+# `git status` mostra o projeto inteiro como modificado.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary
