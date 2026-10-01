@@ -57,10 +57,29 @@
     <meta name="google-adsense-account" content="ca-pub-6087444294118231" />
 
     <!-- Google tag (gtag.js): só a fila. `gtag()` empilha os comandos no dataLayer e
-         o gtag/js, quando chegar, envia tudo o que ficou esperando. -->
+         o gtag/js, quando chegar, envia tudo o que ficou esperando.
+
+         Consent Mode: o estado padrão precisa vir antes de qualquer `config`. No
+         Espaço Econômico Europeu, no Reino Unido e na Suíça começa negado e só muda
+         quando o visitante responde à mensagem do FundingChoices; no resto, concedido.
+         O comando mais específico (com `region`) vale sobre o geral. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        region: ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH'],
+        wait_for_update: 500
+      });
+      gtag('consent', 'default', {
+        ad_storage: 'granted',
+        ad_user_data: 'granted',
+        ad_personalization: 'granted',
+        analytics_storage: 'granted'
+      });
       gtag('js', new Date());
 
       gtag('config', 'G-3NYMS8KTGJ');
