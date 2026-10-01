@@ -1,5 +1,5 @@
 /**
- * Lighthouse CI: roda em cada PR (ver .github/workflows/lighthouse.yml) contra o
+ * Lighthouse CI: roda em cada PR (ver .github/workflows/ci.yml) contra o
  * build de produção servido pelo `vite preview`, que resolve as URLs sem `.html`
  * como a Cloudflare faz. Acessar /rota.html cairia no 404 do roteador no cliente.
  *
