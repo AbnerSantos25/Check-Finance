@@ -22,6 +22,13 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      # Vulnerabilidades nas dependências que vão para o navegador e o Worker.
+      # O limite é `high` porque as moderadas atuais vêm do react-router 6, sem
+      # correção na v6 (exige >= 7.18, e o vite-react-ssg pede ^6), e não se aplicam
+      # aqui: <Link> e navigate() só recebem destinos fixos (legacyHashes.ts) e o
+      # deserializeErrors é do SSR com data router, que o site não usa.
+      - run: npm audit --omit=dev --audit-level=high
       - run: npm run lint
       - run: npm run test:run
       - run: npm run build
