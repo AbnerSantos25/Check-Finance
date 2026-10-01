@@ -61,6 +61,28 @@ export interface IbovespaQuote {
   source: 'HG Brasil';
 }
 
+/** Um ponto de série do SGS do Banco Central. */
+export interface SgsPoint {
+  /** dd/mm/aaaa, como o BCB publica. */
+  date: string;
+  value: number;
+}
+
+/** Último valor de cada série do BCB; o PTAX traz os dois últimos para a variação. */
+export interface BcbSeries {
+  selic: SgsPoint | null;
+  cdi: SgsPoint | null;
+  ipca: SgsPoint | null;
+  poupanca: SgsPoint | null;
+  ptax: SgsPoint[] | null;
+}
+
+/** Resposta de GET /api/indicadores (Worker). */
+export interface IndicatorsResponse {
+  series: BcbSeries | null;
+  ibovespa: IbovespaQuote | null;
+}
+
 export interface MarketRates {
   selic: number;
   cdi: number;

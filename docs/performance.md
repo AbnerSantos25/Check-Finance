@@ -34,7 +34,9 @@ Somava-se a isso o CSS do Google Fonts bloqueando a renderização por 780 ms. R
    - Fonte nova precisa de uso real no CSS: o JetBrains Mono era baixado sem nunca ser usado.
 3. **Código que só roda depois de um clique vai em import dinâmico.** Modais usam `React.lazy`: veja `ModalsProvider.tsx` e o `MethodologyModal` em `InvestmentPage.tsx`. Biblioteca pesada (gráficos, QR code) nunca entra no bundle do hub.
 4. **O `<meta charset>` precisa estar nos primeiros 1024 bytes.** O pré-render injeta o `<Head>` da rota no topo do `<head>`, e o `hoistHeadEssentials` em `vite.config.ts` devolve charset e viewport ao começo. Não remova esse passo.
-5. **Busca de dados não compete com a primeira pintura.** Os indicadores do BCB esperam o navegador ficar ocioso (`requestIdleCallback` no `EconomicDataProvider`).
+5. **Busca de dados não compete com a primeira pintura.** Os indicadores (BCB e IBOVESPA) vêm numa requisição só ao Worker, `/api/indicadores`, que espera o navegador ficar ocioso (`requestIdleCallback` no `EconomicDataProvider`).
+   - O BCB não é chamado do navegador: o Worker consulta as séries e guarda no KV, com cache compartilhado por todos os visitantes.
+   - No `npm run dev` o Worker não roda, e os indicadores aparecem como valores de referência. Para ver os dados reais, use `npm run dev:api`.
 6. **Gráfico só monta ao chegar perto da tela, sem animação de entrada e com poucos pontos.** Use `LazyChart` (`src/shared/components/LazyChart.tsx`) em vez de `ClientOnly`, `isAnimationActive={false}` nas séries do recharts e no máximo um ponto por ano. Série mensal desenhada inteira deixava a calculadora de independência com TBT de 887 ms e nota 74.
 
 ## Guardas automáticas
@@ -51,7 +53,7 @@ Roda lint, testes e build. Depois roda o Lighthouse mobile 3 vezes em cada rota,
 - O PR fica vermelho se algum limite for violado.
 - LCP e TBT acima do alvo geram só aviso.
 - O link do relatório completo de cada execução aparece no log do passo "Lighthouse CI".
-- O CI mede só o código do site: AdSense, Analytics e o `/api/ibovespa` (que o `vite preview` não serve) ficam bloqueados em `blockedUrlPatterns`. O efeito real dos terceiros aparece na medição semanal.
+- O CI mede só o código do site: AdSense, Analytics e o `/api/*` do Worker (que o `vite preview` não serve) ficam bloqueados em `blockedUrlPatterns`. O efeito real dos terceiros aparece na medição semanal.
 - **Ajustar limites:** só suba. Baixar um limite para o PR passar esconde uma regressão.
 
 ### Toda segunda-feira: PageSpeed em produção (`.github/workflows/pagespeed.yml`)

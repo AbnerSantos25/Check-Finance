@@ -34,8 +34,9 @@ module.exports = {
         // "práticas recomendadas" por algo que em produção não acontece assim.
         // AdSense e Analytics são medidos de verdade pelo PageSpeed semanal.
         //
-        // O `/api/ibovespa` é do Worker da Cloudflare, que o `vite preview` não
-        // roda: sem o bloqueio ele responde 500 e vira erro de console.
+        // O `/api/*` (indicadores do BCB e IBOVESPA) é do Worker da Cloudflare, que
+        // o `vite preview` não roda: sem o bloqueio ele responde 500 e vira erro de
+        // console. A página mostra os valores de referência, como quando a API cai.
         blockedUrlPatterns: [
           '*googlesyndication.com*',
           '*doubleclick.net*',
@@ -43,7 +44,7 @@ module.exports = {
           '*google-analytics.com*',
           '*fundingchoicesmessages.google.com*',
           '*adtrafficquality.google*',
-          '*/api/ibovespa*',
+          '*/api/*',
         ],
       },
     },

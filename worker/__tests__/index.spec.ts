@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import worker, { type Env } from '../index';
+import type { IndicatorsResponse } from '../../src/types';
 import { resetInflight } from '../cache';
 import okPayload from '../../server/__fixtures__/hg-finance-ok.json';
 
@@ -146,5 +147,67 @@ describe('roteamento', () => {
   it('respostas da API levam nosniff', async () => {
     const { call } = setup(cachedQuote(MINUTE));
     expect((await call('/api/ibovespa')).headers.get('x-content-type-options')).toBe('nosniff');
+  });
+});
+
+describe('GET /api/indicadores', () => {
+  const today = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo' }).format(new Date());
+  let sgs: Record<string, unknown>;
+
+  beforeEach(() => {
+    sgs = {
+      432: [{ data: today, valor: '14.25' }],
+      4389: [{ data: today, valor: '14.15' }],
+      13522: [{ data: today, valor: '4.50' }],
+      195: [{ data: today, valor: '0.6' }],
+      1: [{ data: '01/01/2026', valor: '5.10' }, { data: today, valor: '5.20' }],
+    };
+    upstream.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.startsWith('https://api.hgbrasil.com')) return Response.json(okPayload);
+      const id = /bcdata\.sgs\.(\d+)\//.exec(url)?.[1];
+      return id && sgs[id] ? Response.json(sgs[id]) : new Response('not found', { status: 404 });
+    });
+  });
+
+  it('junta as séries do BCB e o IBOVESPA numa resposta só', async () => {
+    const { call, kv } = setup();
+    const res = await call('/api/indicadores');
+    expect(res.status).toBe(200);
+    expect(res.headers.get('cache-control')).toBe('public, max-age=300');
+
+    const body = (await res.json()) as IndicatorsResponse;
+    expect(body.series).toMatchObject({
+      selic: { date: today, value: 14.25 },
+      poupanca: { value: 0.6 },
+      ptax: [{ value: 5.1 }, { value: 5.2 }],
+    });
+    expect(body.ibovespa).toMatchObject({ points: 185229.17 });
+    expect(upstream).toHaveBeenCalledTimes(6);
+    expect(kv.store.has('bcb:v1')).toBe(true);
+  });
+
+  it('uma série fora do ar mantém o valor anterior do cache', async () => {
+    delete sgs[13522];
+    const previous = { selic: null, cdi: null, ipca: { date: '10/09/2026', value: 4.1 }, poupanca: null, ptax: null };
+    const { call, pending } = setup({ 'bcb:v1': { value: previous, fetchedAt: ago(2 * 60 * MINUTE) } });
+
+    // Cache vencido: a primeira resposta ainda é o valor antigo; a revalidação vem depois.
+    const first = (await (await call('/api/indicadores')).json()) as IndicatorsResponse;
+    expect(first.series!.selic).toBeNull();
+    await Promise.all(pending);
+
+    const second = (await (await call('/api/indicadores')).json()) as IndicatorsResponse;
+    expect(second.series!.selic).toEqual({ date: today, value: 14.25 });
+    expect(second.series!.ipca).toEqual({ date: '10/09/2026', value: 4.1 });
+  });
+
+  it('BCB e HG Brasil fora do ar, sem cache: séries null e max-age curto', async () => {
+    upstream.mockImplementation(async () => new Response('erro', { status: 500 }));
+    const { call } = setup();
+    const res = await call('/api/indicadores');
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ series: null, ibovespa: null });
+    expect(res.headers.get('cache-control')).toBe('public, max-age=60');
   });
 });

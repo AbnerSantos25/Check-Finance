@@ -40,8 +40,8 @@ export const EconomicDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // esta busca acontece uma vez por sessão. O ref existe porque o StrictMode
   // executa o efeito duas vezes em desenvolvimento.
   //
-  // A busca espera o navegador ficar ocioso: disparada no meio da hidratação, as seis
-  // requisições e o re-render que elas causam competiam com a primeira pintura no
+  // A busca espera o navegador ficar ocioso: disparada no meio da hidratação, a
+  // requisição e o re-render que ela causa competiam com a primeira pintura no
   // celular. Até lá a tela mostra os valores de referência, como já fazia.
   const fetchedOnce = useRef(false);
   useEffect(() => {
