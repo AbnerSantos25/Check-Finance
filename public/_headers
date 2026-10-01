@@ -1,0 +1,14 @@
+# Cabeçalhos aplicados pelo Workers Static Assets a todo arquivo servido do dist/.
+# Não valem para as respostas do Worker (/api/*): essas recebem os cabeçalhos no
+# próprio worker/index.ts.
+#
+# Sem Content-Security-Policy por enquanto: AdSense e FundingChoices carregam
+# scripts de domínios do Google que mudam sem aviso, e o index.html tem scripts
+# inline. O Permissions-Policy deixa de fora o que os anúncios usam
+# (browsing-topics, attribution-reporting, run-ad-auction…).
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000

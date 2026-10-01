@@ -28,6 +28,8 @@ const jsonResponse = (body: unknown, status: number, maxAgeSeconds: number) =>
     headers: {
       'content-type': 'application/json; charset=utf-8',
       'cache-control': `public, max-age=${maxAgeSeconds}`,
+      // O public/_headers só vale para os arquivos estáticos.
+      'x-content-type-options': 'nosniff',
     },
   });
 
