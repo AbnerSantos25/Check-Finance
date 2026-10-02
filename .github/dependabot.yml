@@ -8,12 +8,22 @@ updates:
       timezone: America/Sao_Paulo
     open-pull-requests-limit: 5
     groups:
-      # Minor e patch num PR só por semana; major chega sozinho, para revisar com calma.
+      # O Vite e os plugins dele mudam de major juntos (o @vitejs/plugin-react 6 só
+      # instala com o vite 8), então chegam num PR só, qualquer que seja a versão.
+      # Vem antes do grupo geral: o Dependabot põe cada pacote no primeiro que casar.
+      vite:
+        patterns: ['vite', '@vitejs/*', 'vitest', '@vitest/*', '@tailwindcss/vite']
+      # Demais minor e patch num PR só por semana; major chega sozinho, para revisar
+      # com calma.
       minor-e-patch:
         update-types: [minor, patch]
     ignore:
       # O vite-react-ssg 0.9 exige react-router-dom ^6 (peerDependency).
       - dependency-name: react-router-dom
+        update-types: [version-update:semver-major]
+      # Os tipos do Node acompanham o Node do CI e do build (22, em ci.yml), não a
+      # última versão publicada.
+      - dependency-name: '@types/node'
         update-types: [version-update:semver-major]
 
   - package-ecosystem: github-actions
