@@ -10,6 +10,11 @@ export interface Env {
 }
 
 const UPSTREAM_TIMEOUT_MS = 5000;
+// Com o cache vazio, quanto a resposta espera a fonte antes de sair sem o valor (a
+// consulta continua em segundo plano). O /api/indicadores começa antes do fim da
+// primeira pintura, e o PageSpeed conta a duração dele no LCP: uma fonte esperada
+// até o timeout de 5 s empurrava o LCP de todas as páginas em ~2 s.
+const COLD_CACHE_WAIT_MS = 1500;
 
 const jsonResponse = (body: unknown, status: number, maxAgeSeconds: number, headers: HeadersInit = {}) =>
   new Response(JSON.stringify(body), {
@@ -36,6 +41,7 @@ const ibovespaSpec = (env: Env): SwrSpec<ParsedIbovespa> => ({
   // Depois disso, um valor antigo deixa de ser informação útil sobre o mercado.
   maxStaleMs: 24 * 60 * 60 * 1000,
   retryMs: 2 * 60 * 1000,
+  waitMs: COLD_CACHE_WAIT_MS,
   load: () => fetchFromHgBrasil(env.HG_BRASIL_KEY),
 });
 
@@ -87,6 +93,7 @@ const bcbSpec: SwrSpec<BcbSeries> = {
   // ainda é informação correta; passado isso, as calculadoras usam a referência.
   maxStaleMs: 7 * 24 * 60 * 60 * 1000,
   retryMs: 10 * 60 * 1000,
+  waitMs: COLD_CACHE_WAIT_MS,
   load: (previous) => fetchBcbSeries(previous),
 };
 
