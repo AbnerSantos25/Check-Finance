@@ -28,6 +28,22 @@ const seconds = (ms) => (typeof ms === 'number' ? `${(ms / 1000).toFixed(1).repl
 const millis = (ms) => (typeof ms === 'number' ? `${Math.round(ms).toLocaleString('pt-BR')} ms` : '—');
 const cls = (value) => (typeof value === 'number' ? value.toFixed(3).replace('.', ',') : '—');
 
+/**
+ * Qual elemento foi o LCP e em que fase o tempo dele foi gasto. O audit
+ * `largest-contentful-paint-element` traz duas tabelas: o nó e as fases (TTFB,
+ * atraso até começar a carregar, carregamento e atraso de renderização).
+ */
+export function lcpBreakdown(lhr) {
+  const tables = lhr.audits['largest-contentful-paint-element']?.details?.items ?? [];
+  const node = tables[0]?.items?.[0]?.node;
+  const phases = tables[1]?.items ?? [];
+  if (!node && phases.length === 0) return null;
+  return {
+    element: node ? { label: node.nodeLabel ?? '', selector: node.selector ?? '' } : null,
+    phases: Object.fromEntries(phases.map((p) => [p.phase, p.timing])),
+  };
+}
+
 /** Extrai o que interessa de uma resposta da API v5. */
 export function summarize(url, response) {
   const lhr = response.lighthouseResult;
@@ -50,6 +66,7 @@ export function summarize(url, response) {
       tbt: audit('total-blocking-time'),
       cls: audit('cumulative-layout-shift'),
     },
+    lcp: lcpBreakdown(lhr),
     field: field
       ? {
           scope: field === response.loadingExperience ? 'página' : 'domínio',
@@ -83,6 +100,28 @@ export function renderReport(results, failures, minPerformance) {
         `${r.scores['best-practices'] ?? '—'} | ${r.scores.seo ?? '—'} | ${seconds(r.lab.fcp)} | ` +
         `${seconds(r.lab.lcp)} | ${millis(r.lab.tbt)} | ${cls(r.lab.cls)} |`
     );
+  }
+
+  // Sem isto o relatório só diz que o LCP piorou; o elemento e a fase dizem onde.
+  const withLcp = results.filter((r) => r.lcp);
+  if (withLcp.length > 0) {
+    lines.push(
+      '',
+      '### Elemento do LCP',
+      '',
+      '| Página | Elemento | TTFB | Atraso p/ carregar | Carregamento | Atraso de renderização |',
+      '| --- | --- | --- | --- | --- | --- |'
+    );
+    const cell = (text) => text.replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim();
+    for (const r of withLcp) {
+      const el = r.lcp.element;
+      const label = el ? `${cell(el.label).slice(0, 60)} (\`${cell(el.selector).slice(-50)}\`)` : '—';
+      const ph = r.lcp.phases;
+      lines.push(
+        `| ${new URL(r.url).pathname} | ${label} | ${millis(ph.TTFB)} | ${millis(ph['Load Delay'])} | ` +
+          `${millis(ph['Load Time'])} | ${millis(ph['Render Delay'])} |`
+      );
+    }
   }
 
   const withField = results.filter((r) => r.field);
