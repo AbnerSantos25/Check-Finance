@@ -21,8 +21,35 @@ const lhrWithLcp = {
   },
 };
 
+const lhr13 = {
+  audits: {
+    'lcp-breakdown-insight': {
+      details: {
+        type: 'list',
+        items: [
+          {
+            type: 'table',
+            items: [
+              { subpart: 'timeToFirstByte', label: 'Time to first byte', duration: 35 },
+              { subpart: 'elementRenderDelay', label: 'Element render delay', duration: 1237 },
+            ],
+          },
+          { type: 'node', nodeLabel: 'Simule juros compostos', selector: 'main > p.text-xs' },
+        ],
+      },
+    },
+  },
+};
+
 describe('lcpBreakdown', () => {
-  it('lê o elemento e as fases do LCP', () => {
+  it('lê o formato do Lighthouse 13 (lcp-breakdown-insight)', () => {
+    expect(lcpBreakdown(lhr13)).toEqual({
+      element: { label: 'Simule juros compostos', selector: 'main > p.text-xs' },
+      phases: { TTFB: 35, 'Render Delay': 1237 },
+    });
+  });
+
+  it('lê o formato do Lighthouse 12 (largest-contentful-paint-element)', () => {
     expect(lcpBreakdown(lhrWithLcp)).toEqual({
       element: { label: 'Simule juros | compostos', selector: 'main > p.text-xs' },
       phases: { TTFB: 470, 'Load Delay': 0, 'Load Time': 0, 'Render Delay': 1668 },

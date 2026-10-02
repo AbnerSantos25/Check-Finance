@@ -28,12 +28,35 @@ const seconds = (ms) => (typeof ms === 'number' ? `${(ms / 1000).toFixed(1).repl
 const millis = (ms) => (typeof ms === 'number' ? `${Math.round(ms).toLocaleString('pt-BR')} ms` : '—');
 const cls = (value) => (typeof value === 'number' ? value.toFixed(3).replace('.', ',') : '—');
 
+// Nomes das fases no Lighthouse 13 (`lcp-breakdown-insight`) → nomes do 12.
+const LCP_SUBPARTS = {
+  timeToFirstByte: 'TTFB',
+  resourceLoadDelay: 'Load Delay',
+  resourceLoadDuration: 'Load Time',
+  elementRenderDelay: 'Render Delay',
+};
+
 /**
- * Qual elemento foi o LCP e em que fase o tempo dele foi gasto. O audit
- * `largest-contentful-paint-element` traz duas tabelas: o nó e as fases (TTFB,
- * atraso até começar a carregar, carregamento e atraso de renderização).
+ * Qual elemento foi o LCP e em que fase o tempo dele foi gasto: TTFB, atraso até
+ * começar a carregar, carregamento e atraso de renderização.
+ *
+ * O Lighthouse 13 (o do PSI desde 2026) traz isso no `lcp-breakdown-insight`; o 12,
+ * no `largest-contentful-paint-element`. Lê os dois, para o relatório não ficar
+ * mudo quando o PSI trocar de versão.
  */
 export function lcpBreakdown(lhr) {
+  const insight = lhr.audits['lcp-breakdown-insight']?.details?.items;
+  if (Array.isArray(insight)) {
+    const node = insight.find((item) => item.type === 'node');
+    const rows = insight.find((item) => item.type === 'table')?.items ?? [];
+    if (node || rows.length > 0) {
+      return {
+        element: node ? { label: node.nodeLabel ?? '', selector: node.selector ?? '' } : null,
+        phases: Object.fromEntries(rows.map((r) => [LCP_SUBPARTS[r.subpart] ?? r.subpart, r.duration])),
+      };
+    }
+  }
+
   const tables = lhr.audits['largest-contentful-paint-element']?.details?.items ?? [];
   const node = tables[0]?.items?.[0]?.node;
   const phases = tables[1]?.items ?? [];
