@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react';
 import fs from 'node:fs';
 import path from 'path';
 import {defineConfig} from 'vite';
-import {absoluteUrl} from './src/config/site';
-import {ACTIVE_TOOLS} from './src/config/tools.data';
+import {absoluteUrl} from './src/config/site.ts';
+import {ACTIVE_TOOLS} from './src/config/tools.data.ts';
 
 /** Os `.html` gerados pelo pré-render, um por rota. */
 const htmlFiles = (dist: string) =>
@@ -137,7 +137,7 @@ export default defineConfig(({ isSsrBuild }) => {
     publicDir: 'public',
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': path.resolve(import.meta.dirname, '.'),
       },
     },
     define: {
@@ -165,7 +165,7 @@ export default defineConfig(({ isSsrBuild }) => {
       // acharem que estão no navegador e renderem markup que a hidratação desmente.
       // O que depende de DOM — os gráficos — está dentro de <ClientOnly>.
       onFinished: () => {
-        const dist = path.resolve(__dirname, 'dist');
+        const dist = path.resolve(import.meta.dirname, 'dist');
         preloadClientChunk(dist);
         preloadFont(dist);
         hoistHeadEssentials(dist);
@@ -173,16 +173,10 @@ export default defineConfig(({ isSsrBuild }) => {
         removeBuildMetadata(dist);
       },
     },
-    esbuild: {
-      // Os ícones do lucide trazem um comentário `@license` por arquivo, e o esbuild
-      // preserva esse tipo de comentário por padrão: o chunk `vendor-icons` saía com
-      // dezenas deles e o Lighthouse o apontava como não minificado. A licença (ISC)
-      // continua no pacote; o bundle não precisa carregar uma cópia por ícone.
-      legalComments: 'none' as const,
-    },
     build: {
       target: 'esnext',
-      minify: 'esbuild' as const,
+      // Minificador padrão do Vite 8 (Oxc).
+      minify: true,
       cssMinify: true,
       // Nenhuma fonte vira data: URI. O subconjunto cirílico da Plus Jakarta tem menos
       // de 4 kB e o Vite o embutia em base64 no CSS — CSS que bloqueia a renderização,
@@ -190,18 +184,27 @@ export default defineConfig(({ isSsrBuild }) => {
       // o navegador só o baixa se o `unicode-range` casar.
       assetsInlineLimit: (file: string) => (file.endsWith('.woff2') ? false : undefined),
       sourcemap: false,
-      rollupOptions: {
-        // Só no bundle do navegador: no build de servidor estas dependências ficam
-        // externas, e o Rollup recusa nomear um módulo externo em manualChunks.
-        //
-        // O recharts NÃO entra aqui de propósito. Forçá-lo num chunk nomeado o
-        // promovia ao grafo do entry, e o HTML de toda rota — inclusive o hub, que
-        // não tem gráfico nenhum — saía com um `modulepreload` de 393 kB. Sem o
-        // nome fixo, ele fica dentro do chunk das páginas que realmente o importam.
-        //
-        // O lucide fica, porque o shell (sidebar, header, rodapé) usa ícones em
-        // todas as rotas: é carregamento legítimo e ganha cache próprio.
-        output: isSsrBuild ? {} : { manualChunks: { 'vendor-icons': ['lucide-react'] } },
+      rolldownOptions: {
+        output: {
+          // Os ícones do lucide trazem um comentário `@license` por arquivo, que o
+          // bundler preserva por padrão: o chunk `vendor-icons` saía com dezenas deles
+          // e o Lighthouse o apontava como não minificado. A licença (ISC) continua
+          // no pacote; o bundle não precisa carregar uma cópia por ícone.
+          comments: { legal: false },
+          // Só no bundle do navegador: no build de servidor estas dependências ficam
+          // externas, e um módulo externo não pode ser nomeado num grupo de chunk.
+          //
+          // O recharts NÃO entra aqui de propósito. Forçá-lo num chunk nomeado o
+          // promovia ao grafo do entry, e o HTML de toda rota — inclusive o hub, que
+          // não tem gráfico nenhum — saía com um `modulepreload` de 393 kB. Sem o
+          // nome fixo, ele fica dentro do chunk das páginas que realmente o importam.
+          //
+          // O lucide fica, porque o shell (sidebar, header, rodapé) usa ícones em
+          // todas as rotas: é carregamento legítimo e ganha cache próprio.
+          ...(isSsrBuild
+            ? {}
+            : { codeSplitting: { groups: [{ name: 'vendor-icons', test: /[\\/]node_modules[\\/]lucide-react[\\/]/ }] } }),
+        },
       },
     },
     server: {
