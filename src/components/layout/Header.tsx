@@ -32,10 +32,26 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
         ? { text: 'Sem conexão com as fontes · valores de referência', dot: 'bg-amber-500', color: 'text-amber-400' }
         : { text: `${liveCount} de ${EXPECTED_INDICATORS} fontes atualizadas`, dot: 'bg-amber-500', color: 'text-amber-400' };
 
+  // Nas ferramentas, a URL carrega os campos preenchidos (useShareableParams):
+  // o link reabre a mesma simulação.
+  const shareTitle = activeTool ? 'Compartilhar esta simulação' : 'Compartilhar o CheckFinance';
+
   const handleShare = async () => {
+    const url = window.location.href;
+    // No celular, o menu nativo (WhatsApp, Telegram…) é o caminho natural. No
+    // desktop o menu do sistema é pouco útil; lá o link vai para a área de transferência.
+    if (navigator.share && matchMedia('(pointer: coarse)').matches) {
+      try {
+        await navigator.share({ title: document.title, url });
+        return;
+      } catch (err) {
+        // Fechar o menu sem escolher nada não é erro.
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+      }
+    }
     if (navigator.clipboard) {
       try {
-        await navigator.clipboard.writeText(window.location.href);
+        await navigator.clipboard.writeText(url);
         setCopiedLink(true);
         setTimeout(() => setCopiedLink(false), 2500);
       } catch (err) {
@@ -148,7 +164,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
           <button
             id="share-btn"
             onClick={handleShare}
-            title="Compartilhar simulador"
+            title={shareTitle}
             className="flex items-center justify-center gap-1.5 min-h-11 min-w-11 md:min-h-0 md:min-w-0 px-3 py-1.5 rounded-xl bg-surface hover:bg-line-soft border border-line text-xs font-medium text-slate-300 hover:text-white transition-colors"
           >
             {copiedLink ? (
@@ -157,7 +173,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
                 {/* Escondido no celular como o rótulo "Compartilhar": o texto fazia o
                     botão saltar de 44px para 119px por 2,5s, comprimindo a trilha de
                     navegação a ponto de "Início" sumir da tela. O check já comunica. */}
-                <span className="hidden sm:inline text-emerald-400">Link Copiado!</span>
+                <span className="hidden sm:inline text-emerald-400">
+                  {activeTool ? 'Link da simulação copiado!' : 'Link copiado!'}
+                </span>
               </>
             ) : (
               <>

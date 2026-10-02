@@ -5,7 +5,7 @@ import type { InvestmentParams } from '../../types';
 import { formatBRL, formatPercent } from '../../shared/lib/format';
 import { useEconomicData } from '../../app/providers/EconomicDataProvider';
 import { useModals } from '../../app/providers/ModalsProvider';
-import { usePersistentState } from '../../app/providers/FormStateProvider';
+import { useShareableParams } from '../../app/useShareableParams';
 import { SummaryCards } from './components/SummaryCards';
 import { InvestmentForm } from './components/InvestmentForm';
 import { ComparisonCharts } from './components/ComparisonCharts';
@@ -13,6 +13,7 @@ import { InvestmentTable } from './components/InvestmentTable';
 import { calculateInvestment } from './lib/calculateInvestment';
 import { sanitizeParams } from './lib/sanitizeParams';
 import { DEFAULT_PARAMS } from './defaults';
+import { SHARE_SCHEMA } from './share';
 import { Seo } from '../../shared/seo/Seo';
 import { Faq } from '../../shared/components/Faq';
 import { INVESTMENT_TOOL, investmentJsonLd } from './seo';
@@ -24,7 +25,12 @@ const MethodologyModal = lazy(() =>
 );
 
 export const InvestmentPage: React.FC = () => {
-  const [params, setParams] = usePersistentState<InvestmentParams>('investimentos', DEFAULT_PARAMS);
+  const [params, setParams] = useShareableParams<InvestmentParams>(
+    'investimentos',
+    DEFAULT_PARAMS,
+    SHARE_SCHEMA,
+    sanitizeParams
+  );
   const [isMethodologyOpen, setIsMethodologyOpen] = useState(false);
   const { rates, liveCount, hasFetched } = useEconomicData();
 
