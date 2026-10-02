@@ -4,16 +4,20 @@
  * - Valor fresco: devolvido direto, sem tocar na fonte.
  * - Valor vencido, mas ainda útil: devolvido na hora, e a revalidação roda depois
  *   da resposta, em `ctx.waitUntil`. O visitante não espera pela fonte.
- * - Sem valor útil: aí sim a requisição espera a fonte.
+ * - Sem valor útil: a requisição espera a fonte por no máximo `waitMs`. Se ela
+ *   demorar mais, a resposta sai sem o valor e a consulta continua em segundo
+ *   plano, deixando o KV pronto para a próxima visita.
  *
- * Quando a fonte falha, a falha fica registrada no KV e só se tenta de novo depois
- * de `retryMs` — senão, com a fonte fora do ar, cada visita viraria uma chamada.
+ * Quando a fonte falha, a falha fica registrada no KV — mesmo sem valor anterior —
+ * e só se tenta de novo depois de `retryMs`. Senão, com a fonte fora do ar, cada
+ * visita viraria uma chamada e uma espera.
  */
 
 export interface CacheEntry<T> {
-  value: T;
-  /** Última vez que a fonte respondeu (ISO). */
-  fetchedAt: string;
+  /** Último valor bom; null enquanto a fonte nunca respondeu. */
+  value: T | null;
+  /** Última vez que a fonte respondeu (ISO); null enquanto nunca respondeu. */
+  fetchedAt: string | null;
   /** Última tentativa que falhou (ISO), se for mais recente que `fetchedAt`. */
   failedAt?: string;
 }
@@ -33,6 +37,12 @@ export interface SwrSpec<T> {
   maxStaleMs: number;
   /** Intervalo mínimo entre tentativas depois de uma falha. */
   retryMs: number;
+  /**
+   * Quanto uma requisição espera a fonte quando não há valor útil no cache. A
+   * resposta do Worker entra no caminho da primeira pintura, então uma fonte lenta
+   * não pode segurá-la pelo timeout inteiro.
+   */
+  waitMs: number;
   /** Consulta a fonte. `previous` permite aproveitar partes do valor antigo; null = falhou. */
   load: (previous: T | null) => Promise<T | null>;
 }
@@ -73,10 +83,10 @@ function refresh<T>(kv: KVNamespace, spec: SwrSpec<T>, previous: CacheEntry<T> |
     }
 
     const now = new Date().toISOString();
-    const entry: CacheEntry<T> | null = value
+    const entry: CacheEntry<T> = value
       ? { value, fetchedAt: now }
-      : previous && { ...previous, failedAt: now };
-    if (entry) await writeEntry(kv, spec, entry);
+      : { value: previous?.value ?? null, fetchedAt: previous?.fetchedAt ?? null, failedAt: now };
+    await writeEntry(kv, spec, entry);
     return entry;
   })().finally(() => inflight.delete(spec.key));
 
@@ -84,14 +94,27 @@ function refresh<T>(kv: KVNamespace, spec: SwrSpec<T>, previous: CacheEntry<T> |
   return run;
 }
 
-const age = (iso: string | undefined, now: number) => (iso ? now - Date.parse(iso) : Infinity);
+const age = (iso: string | null | undefined, now: number) => (iso ? now - Date.parse(iso) : Infinity);
 
 function toCachedValue<T>(entry: CacheEntry<T> | null, spec: SwrSpec<T>, now: number): CachedValue<T> | null {
-  if (!entry) return null;
+  if (!entry || entry.value === null || !entry.fetchedAt) return null;
   const fetchedAge = age(entry.fetchedAt, now);
   if (!(fetchedAge >= 0 && fetchedAge < spec.maxStaleMs)) return null;
   const stale = entry.failedAt !== undefined && Date.parse(entry.failedAt) > Date.parse(entry.fetchedAt);
   return { value: entry.value, fetchedAt: entry.fetchedAt, stale };
+}
+
+/** A promessa, ou null se ela não terminar em `ms`. */
+async function within<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), ms);
+  });
+  try {
+    return await Promise.race([promise, deadline]);
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
+  }
 }
 
 export async function cachedWithRevalidate<T>(
@@ -102,20 +125,23 @@ export async function cachedWithRevalidate<T>(
   const now = Date.now();
   const cached = await readEntry<T>(kv, spec.key);
   const usable = toCachedValue(cached, spec, now);
+  const recentlyFailed = age(cached?.failedAt, now) < spec.retryMs;
 
   if (usable) {
-    const fetchedAge = age(cached!.fetchedAt, now);
-    const recentlyFailed = age(cached!.failedAt, now) < spec.retryMs;
-    if (fetchedAge >= spec.freshMs && !recentlyFailed) {
+    if (age(cached!.fetchedAt, now) >= spec.freshMs && !recentlyFailed) {
       ctx.waitUntil(refresh(kv, spec, cached).then(() => undefined));
     }
     return usable;
   }
 
   // Nada útil para servir, mas a fonte acabou de falhar: não insiste a cada visita.
-  if (age(cached?.failedAt, now) < spec.retryMs) return null;
+  if (recentlyFailed) return null;
 
-  return toCachedValue(await refresh(kv, spec, cached), spec, Date.now());
+  // A consulta segue até o fim em segundo plano mesmo que a resposta saia antes.
+  const pending = refresh(kv, spec, cached);
+  ctx.waitUntil(pending.then(() => undefined));
+  const entry = await within(pending, spec.waitMs);
+  return toCachedValue(entry, spec, Date.now());
 }
 
 /** Só para os testes: esquece revalidações pendentes entre um caso e outro. */

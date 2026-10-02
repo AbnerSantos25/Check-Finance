@@ -47,6 +47,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
@@ -78,11 +79,37 @@ describe('GET /api/ibovespa', () => {
     expect(upstream).toHaveBeenCalledTimes(1);
   });
 
-  it('sem cache, espera a fonte', async () => {
-    const { call, pending } = setup();
+  it('sem cache, espera a fonte quando ela responde no prazo', async () => {
+    const { call } = setup();
     const res = await call('/api/ibovespa');
     expect(await res.json()).toMatchObject({ points: 185229.17, stale: false });
-    expect(pending).toHaveLength(0);
+  });
+
+  it('sem cache e fonte lenta: responde no prazo sem o valor e preenche o KV depois', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    let answer!: (res: Response) => void;
+    upstream.mockImplementation(() => new Promise<Response>((resolve) => (answer = resolve)));
+    const { call, pending, kv } = setup();
+
+    const responding = call('/api/ibovespa');
+    await vi.advanceTimersByTimeAsync(1500);
+    expect((await responding).status).toBe(503);
+
+    // A consulta continua em segundo plano e deixa o KV pronto para a próxima visita.
+    answer(Response.json(okPayload));
+    await Promise.all(pending);
+    vi.useRealTimers();
+    expect(JSON.parse(kv.store.get('ibovespa:v2')!).value).toEqual({ points: 185229.17, changePercent: -0.41 });
+    expect((await (await call('/api/ibovespa')).json()) as object).toMatchObject({ points: 185229.17 });
+  });
+
+  it('falha sem valor anterior fica registrada: a próxima visita não espera a fonte', async () => {
+    upstream.mockImplementation(async () => new Response('erro', { status: 500 }));
+    const { call, pending } = setup();
+    expect((await call('/api/ibovespa')).status).toBe(503);
+    await Promise.all(pending);
+    expect((await call('/api/ibovespa')).status).toBe(503);
+    expect(upstream).toHaveBeenCalledTimes(1);
   });
 
   it('fonte fora do ar: devolve o último valor como stale e não insiste a cada visita', async () => {
