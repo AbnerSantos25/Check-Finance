@@ -67,6 +67,34 @@ export function lcpBreakdown(lhr) {
   };
 }
 
+/**
+ * O que o navegador do PSI de fato viu, sem a simulação de rede lenta: quando
+ * aconteceram a primeira pintura, o LCP e o `load`, e quais requisições terminaram
+ * até o LCP. É o que separa "o HTML chegou tarde" de "algo segurou a pintura".
+ */
+export function observedTimeline(lhr) {
+  const m = lhr.audits.metrics?.details?.items?.[0];
+  if (!m) return null;
+  const lcpAt = m.observedLargestContentfulPaint;
+  const requests = (lhr.audits['network-requests']?.details?.items ?? [])
+    .filter((r) => typeof r.networkEndTime === 'number' && r.networkEndTime <= lcpAt)
+    .sort((a, b) => a.networkEndTime - b.networkEndTime)
+    .map((r) => ({
+      url: r.url,
+      type: r.resourceType ?? '',
+      start: r.networkRequestTime,
+      end: r.networkEndTime,
+      kb: typeof r.transferSize === 'number' ? Math.round(r.transferSize / 1024) : null,
+    }));
+  return {
+    fcp: m.observedFirstContentfulPaint,
+    lcp: lcpAt,
+    domContentLoaded: m.observedDomContentLoaded,
+    load: m.observedLoad,
+    requests,
+  };
+}
+
 /** Extrai o que interessa de uma resposta da API v5. */
 export function summarize(url, response) {
   const lhr = response.lighthouseResult;
@@ -90,6 +118,7 @@ export function summarize(url, response) {
       cls: audit('cumulative-layout-shift'),
     },
     lcp: lcpBreakdown(lhr),
+    timeline: observedTimeline(lhr),
     field: field
       ? {
           scope: field === response.loadingExperience ? 'página' : 'domínio',
@@ -145,6 +174,27 @@ export function renderReport(results, failures, minPerformance) {
           `${millis(ph['Load Time'])} | ${millis(ph['Render Delay'])} |`
       );
     }
+  }
+
+  // Recolhido: é para investigar, não para ler toda semana.
+  const withTimeline = results.filter((r) => r.timeline);
+  if (withTimeline.length > 0) {
+    lines.push('', '<details><summary>Linha do tempo observada (sem simulação)</summary>', '');
+    for (const r of withTimeline) {
+      const t = r.timeline;
+      lines.push(
+        `**${new URL(r.url).pathname}** — FCP ${millis(t.fcp)}, LCP ${millis(t.lcp)}, ` +
+          `DOMContentLoaded ${millis(t.domContentLoaded)}, load ${millis(t.load)}`,
+        '',
+        '| Início | Fim | Tipo | kB | Requisição até o LCP |',
+        '| --- | --- | --- | --- | --- |'
+      );
+      for (const q of t.requests.slice(0, 25)) {
+        lines.push(`| ${millis(q.start)} | ${millis(q.end)} | ${q.type} | ${q.kb ?? '—'} | ${q.url.slice(0, 90)} |`);
+      }
+      lines.push('');
+    }
+    lines.push('</details>');
   }
 
   const withField = results.filter((r) => r.field);

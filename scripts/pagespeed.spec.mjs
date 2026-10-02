@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lcpBreakdown, renderReport } from './pagespeed.mjs';
+import { lcpBreakdown, observedTimeline, renderReport } from './pagespeed.mjs';
 
 const lhrWithLcp = {
   audits: {
@@ -73,5 +73,32 @@ describe('renderReport', () => {
     const report = renderReport([result], [], 80);
     expect(report).toContain('### Elemento do LCP');
     expect(report).toContain('| / | Simule juros \\| compostos (`main > p.text-xs`) | 470 ms | 0 ms | 0 ms | 1.668 ms |');
+  });
+});
+
+describe('observedTimeline', () => {
+  it('lista as requisições que terminaram até o LCP observado, em ordem de término', () => {
+    const lhr = {
+      audits: {
+        metrics: { details: { items: [{ observedFirstContentfulPaint: 300, observedLargestContentfulPaint: 900, observedDomContentLoaded: 200, observedLoad: 250 }] } },
+        'network-requests': {
+          details: {
+            items: [
+              { url: 'https://x/app.css', resourceType: 'Stylesheet', networkRequestTime: 50, networkEndTime: 400, transferSize: 12_000 },
+              { url: 'https://x/', resourceType: 'Document', networkRequestTime: 0, networkEndTime: 30, transferSize: 5_000 },
+              { url: 'https://ads/late.js', resourceType: 'Script', networkRequestTime: 800, networkEndTime: 1_500, transferSize: 90_000 },
+            ],
+          },
+        },
+      },
+    };
+    const t = observedTimeline(lhr);
+    expect(t).toMatchObject({ fcp: 300, lcp: 900, domContentLoaded: 200, load: 250 });
+    expect(t.requests.map((r) => r.url)).toEqual(['https://x/', 'https://x/app.css']);
+    expect(t.requests[1].kb).toBe(12);
+  });
+
+  it('sem o audit de métricas, devolve null', () => {
+    expect(observedTimeline({ audits: {} })).toBeNull();
   });
 });
