@@ -276,7 +276,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                 <span className="truncate flex-1 text-left font-semibold">Apoiar Projeto (PIX)</span>
               )}
               {!isCollapsed && (
-                <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400/70" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400/70 light:text-emerald-400" />
               )}
             </button>
 

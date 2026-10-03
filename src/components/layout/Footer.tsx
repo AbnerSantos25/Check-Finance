@@ -71,7 +71,10 @@ export const Footer: React.FC = () => {
         >
           <span>Desenvolvido por</span>
           <span className="flex items-center justify-center rounded p-0.5">
-            <img src="/ABS_Tecnologia_Branca.svg" alt="" className="h-4 w-4" />
+            {/* Um logo por tema. `lazy`: o rodapé está longe da primeira tela, e o
+                que está escondido nem chega a ser baixado. */}
+            <img src="/ABS_Tecnologia_Branca.svg" alt="" loading="lazy" className="h-4 w-4 light:hidden" />
+            <img src="/ABS_Tecnologia_Escura.svg" alt="" loading="lazy" className="h-4 w-4 hidden light:block" />
           </span>
           <span className="font-semibold text-slate-300">ABS Tecnologia</span>
         </a>

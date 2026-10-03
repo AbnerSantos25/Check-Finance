@@ -13,6 +13,7 @@ import { EXPECTED_INDICATORS } from '../../shared/lib/economicApi';
 import { useEconomicData } from '../../app/providers/EconomicDataProvider';
 import { useModals } from '../../app/providers/ModalsProvider';
 import { useActiveTool } from '../../app/useActiveTool';
+import { ThemeToggle } from './ThemeToggle';
 
 interface HeaderProps {
   onOpenMobileMenu: () => void;
@@ -120,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
       </div>
 
       {/* Main Header Bar */}
-      <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
+      <div className="flex items-center justify-between gap-2 px-3 sm:px-6 lg:px-8 h-16">
         {/* Left: Mobile Toggle & Breadcrumbs */}
         {/* `min-w-0` é o que permite o filho encolher: sem isso um item flex tem
             largura mínima igual ao conteúdo, e o `truncate` abaixo nunca corta. */}
@@ -159,7 +160,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <ThemeToggle />
+
           {/* Share Button */}
           <button
             id="share-btn"
@@ -189,10 +192,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
           <button
             id="header-pix-btn"
             onClick={openPix}
-            className="flex items-center justify-center gap-1.5 min-h-11 md:min-h-0 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-slate-950 text-xs font-bold shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all cursor-pointer shrink-0"
+            className="flex items-center justify-center gap-1.5 min-h-11 min-w-11 md:min-h-0 md:min-w-0 px-3 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 text-on-accent text-xs font-bold shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all cursor-pointer shrink-0"
           >
-            <Heart className="w-3.5 h-3.5 fill-slate-950 text-slate-950" />
-            <span>Apoiar (PIX)</span>
+            <Heart className="w-3.5 h-3.5 fill-on-accent text-on-accent" />
+            {/* Nos celulares estreitos o rótulo encolhe para caber o botão de tema
+                sem cortar o "Início": "Apoiar" abaixo de 400px, só o coração abaixo
+                de 340px. `sr-only`, e não `hidden`, mantém o nome para leitor de tela. */}
+            <span className="max-[339px]:sr-only">
+              Apoiar<span className="max-[399px]:sr-only"> (PIX)</span>
+            </span>
           </button>
         </div>
       </div>

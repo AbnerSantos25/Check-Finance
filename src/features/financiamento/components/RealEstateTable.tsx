@@ -114,7 +114,7 @@ export const RealEstateTable: React.FC<RealEstateTableProps> = ({ summary }) => 
                       {formatBRL(row.outstandingBalance)}
                     </span>
                     {isLast && (
-                      <div className="text-caption text-sky-400/70 mt-0.5">Quitação</div>
+                      <div className="text-caption text-sky-400/70 light:text-sky-400 mt-0.5">Quitação</div>
                     )}
                   </td>
                 </tr>

@@ -100,7 +100,7 @@ export const IndependenceChart: React.FC<IndependenceChartProps> = ({ result, pa
                   </linearGradient>
                 </defs>
 
-                <CartesianGrid strokeDasharray="3 3" stroke="#1c2333" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-line-soft)" vertical={false} />
 
                 <XAxis
                   dataKey="month"
@@ -108,14 +108,14 @@ export const IndependenceChart: React.FC<IndependenceChartProps> = ({ result, pa
                   domain={[0, totalMonths]}
                   ticks={ticks}
                   tickFormatter={(m: number) => (m === 0 ? 'Hoje' : `${params.currentAge + Math.floor(m / 12)} anos`)}
-                  stroke="#64748b"
+                  stroke="var(--color-slate-500)"
                   fontSize={11}
                   tickLine={false}
-                  axisLine={{ stroke: '#1f2738' }}
+                  axisLine={{ stroke: 'var(--color-line)' }}
                 />
 
                 <YAxis
-                  stroke="#64748b"
+                  stroke="var(--color-slate-500)"
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}

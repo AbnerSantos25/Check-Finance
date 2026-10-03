@@ -98,19 +98,19 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
                 </linearGradient>
               </defs>
 
-              <CartesianGrid strokeDasharray="3 3" stroke="#1c2333" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-line-soft)" vertical={false} />
               
               <XAxis 
                 dataKey="name" 
-                stroke="#64748b" 
+                stroke="var(--color-slate-500)" 
                 fontSize={11}
                 tickLine={false}
-                axisLine={{ stroke: '#1f2738' }}
+                axisLine={{ stroke: 'var(--color-line)' }}
                 interval="preserveStartEnd"
               />
               
               <YAxis 
-                stroke="#64748b" 
+                stroke="var(--color-slate-500)" 
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
@@ -220,10 +220,10 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
               <Tooltip
                 formatter={(value: any) => [formatBRL(Number(value)), '']}
                 contentStyle={{
-                  backgroundColor: '#0f121a',
-                  borderColor: '#232a3d',
+                  backgroundColor: 'var(--color-panel)',
+                  borderColor: 'var(--color-line-strong)',
                   borderRadius: '12px',
-                  color: '#fff',
+                  color: 'var(--color-white)',
                   fontSize: '12px',
                 }}
               />

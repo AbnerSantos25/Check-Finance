@@ -30,7 +30,7 @@ export const RouteError: React.FC = () => {
 
         <button
           onClick={() => window.location.reload()}
-          className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/25 transition-all cursor-pointer"
+          className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 text-on-accent text-xs font-bold shadow-lg shadow-emerald-500/25 transition-all cursor-pointer"
         >
           <RotateCw className="w-3.5 h-3.5" />
           Recarregar a página

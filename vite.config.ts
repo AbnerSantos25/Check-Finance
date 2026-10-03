@@ -80,6 +80,22 @@ const preloadFont = (dist: string) => {
 };
 
 /**
+ * Tira do `<head>` publicado os comentários do index.html.
+ *
+ * Eles documentam o arquivo para quem o edita (por que o gtag é atrasado, como o
+ * tema é decidido…) e iam inteiros para toda página, baixados por todo visitante.
+ * Só o `<head>`: no `<body>` o React usa comentários (`<!--$-->`, `<!-- -->`) como
+ * marcadores de hidratação, e removê-los quebraria a página.
+ */
+const stripHeadComments = (dist: string) => {
+  for (const file of htmlFiles(dist)) {
+    const html = fs.readFileSync(file, 'utf8');
+    const stripped = html.replace(/<head>[\s\S]*?<\/head>/i, (head) => head.replace(/<!--[\s\S]*?-->\s*/g, ''));
+    if (stripped !== html) fs.writeFileSync(file, stripped);
+  }
+};
+
+/**
  * Apaga o `dist/.vite/`, que o build deixa para trás.
  *
  * São metadados de compilação: nenhum bundle os busca em runtime, mas o Cloudflare
@@ -170,6 +186,7 @@ export default defineConfig(({ isSsrBuild }) => {
         preloadFont(dist);
         hoistHeadEssentials(dist);
         writeSitemap(dist);
+        stripHeadComments(dist);
         removeBuildMetadata(dist);
       },
     },

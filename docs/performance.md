@@ -38,6 +38,12 @@ Somava-se a isso o CSS do Google Fonts bloqueando a renderização por 780 ms. R
    - O BCB não é chamado do navegador: o Worker consulta as séries e guarda no KV, com cache compartilhado por todos os visitantes.
    - No `npm run dev` o Worker não roda, e os indicadores aparecem como valores de referência. Para ver os dados reais, use `npm run dev:api`.
 6. **Gráfico só monta ao chegar perto da tela, sem animação de entrada e com poucos pontos.** Use `LazyChart` (`src/shared/components/LazyChart.tsx`) em vez de `ClientOnly`, `isAnimationActive={false}` nas séries do recharts e no máximo um ponto por ano. Série mensal desenhada inteira deixava a calculadora de independência com TBT de 887 ms e nota 74.
+7. **Tema claro/escuro sem custo de pintura.** O tema é decidido por um script mínimo no `<head>` do `index.html`, antes da primeira pintura: nada de esperar o React, o que faria a página piscar no tema errado.
+   - O tema claro não tem CSS próprio por componente: só redefine variáveis em `src/index.css` (`:root[data-theme='light']`).
+   - Componente novo usa os tokens (`bg-surface`, `border-line`, `text-slate-*`, `text-on-accent`) e funciona nos dois temas sem nada a mais.
+   - Texto de acento com opacidade (`text-emerald-400/80`) precisa de `light:text-emerald-400`: a transparência derruba o contraste no fundo claro.
+   - O Lighthouse do CI roda no tema claro (padrão do Chrome), e é ele que vigia esse contraste.
+8. **Comentário do `index.html` não vai para o ar.** O build tira os comentários do `<head>` (`stripHeadComments` em `vite.config.ts`). Pode documentar à vontade; cada visitante deixou de baixar cerca de 1 kB gzip de texto inútil. No `<body>` os comentários ficam: o React os usa como marcadores de hidratação.
 
 ## Guardas automáticas
 
