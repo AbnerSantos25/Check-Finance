@@ -13,6 +13,7 @@ import { EXPECTED_INDICATORS } from '../../shared/lib/economicApi';
 import { useEconomicData } from '../../app/providers/EconomicDataProvider';
 import { useModals } from '../../app/providers/ModalsProvider';
 import { useActiveTool } from '../../app/useActiveTool';
+import { ThemeToggle } from './ThemeToggle';
 
 interface HeaderProps {
   onOpenMobileMenu: () => void;
@@ -160,6 +161,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* No celular não cabe: a trilha "Início" sumia da tela. Lá o botão fica
+              no menu lateral (AppSidebar, drawer). */}
+          <div className="hidden sm:flex">
+            <ThemeToggle />
+          </div>
+
           {/* Share Button */}
           <button
             id="share-btn"
@@ -189,9 +196,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
           <button
             id="header-pix-btn"
             onClick={openPix}
-            className="flex items-center justify-center gap-1.5 min-h-11 md:min-h-0 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-slate-950 text-xs font-bold shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all cursor-pointer shrink-0"
+            className="flex items-center justify-center gap-1.5 min-h-11 md:min-h-0 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 text-on-accent text-xs font-bold shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all cursor-pointer shrink-0"
           >
-            <Heart className="w-3.5 h-3.5 fill-slate-950 text-slate-950" />
+            <Heart className="w-3.5 h-3.5 fill-on-accent text-on-accent" />
             <span>Apoiar (PIX)</span>
           </button>
         </div>

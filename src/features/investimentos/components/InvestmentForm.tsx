@@ -303,7 +303,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                   {preset.name}
                   <span className="text-slate-400 font-normal"> · {preset.taxExempt ? 'isento' : 'com IR'}</span>
                 </span>
-                <span className="font-mono text-emerald-400/80 shrink-0">{formatNumber(preset.rate)}% a.a.</span>
+                <span className="font-mono text-emerald-400/80 light:text-emerald-400 shrink-0">{formatNumber(preset.rate)}% a.a.</span>
               </button>
             ))}
           </div>

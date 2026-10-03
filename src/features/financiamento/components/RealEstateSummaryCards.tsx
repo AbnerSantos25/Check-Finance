@@ -110,7 +110,7 @@ export const RealEstateSummaryCards: React.FC<RealEstateSummaryCardsProps> = ({ 
                   ? `-${formatBRL(summary.interestSaved)}`
                   : `${yearsSaved} anos e ${monthsSavedRest} meses`}
               </span>
-              <div className="mt-1 text-caption font-medium text-emerald-400/80">
+              <div className="mt-1 text-caption font-medium text-emerald-400/80 light:text-emerald-400">
                 {hasMoneySaved
                   ? `Você reduziu a dívida em ${yearsSaved} anos e ${monthsSavedRest} meses!`
                   : 'Sem juros no financiamento, toda a economia da amortização extra está no prazo.'}

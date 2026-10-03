@@ -10,6 +10,7 @@ import {
   ArrowUpRight
 } from 'lucide-react';
 import { BrandMark } from '../ui/BrandMark';
+import { ThemeToggle } from './ThemeToggle';
 import { TOOLS, type ToolMeta } from '../../config/tools.data';
 import { ACCENT_CLASSES, TOOL_ICONS } from '../../config/tools.tsx';
 import { useModals } from '../../app/providers/ModalsProvider';
@@ -178,6 +179,13 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           )}
         </Link>
 
+        {/* Só no drawer do celular, onde o cabeçalho não tem espaço para o botão. */}
+        {onAfterAction && (
+          <div className="sm:hidden ml-auto mr-2">
+            <ThemeToggle />
+          </div>
+        )}
+
         {!isCollapsed && (
           <button
             id={`${idPrefix}toggle-sidebar-btn`}
@@ -276,7 +284,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                 <span className="truncate flex-1 text-left font-semibold">Apoiar Projeto (PIX)</span>
               )}
               {!isCollapsed && (
-                <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400/70" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400/70 light:text-emerald-400" />
               )}
             </button>
 

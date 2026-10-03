@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0b0d12" />
 
+    <!-- Tema claro/escuro, decidido aqui e não no React: este script roda antes da
+         primeira pintura, então a página já nasce no tema certo, sem piscar o escuro.
+         Vale a escolha gravada pelo botão do cabeçalho; sem ela, o tema do sistema.
+         O React (ThemeToggle) só troca o atributo depois. -->
+    <script>
+      (function () {
+        var t;
+        try { t = localStorage.getItem('cf-theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+        if (t === 'light') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f4f6fa');
+      })();
+    </script>
+
     <!-- Nenhuma tag de SEO mora aqui: título, description, canonical, robots,
          OpenGraph e Twitter são escritos por rota pelo componente <Seo> e chegam
          ao HTML pelo pré-render. Repetir qualquer uma neste arquivo produziria
@@ -130,7 +144,7 @@
       @keyframes cf-pulse { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }
     </style>
   </head>
-  <body class="bg-[#0b0d12] text-slate-100 antialiased selection:bg-emerald-500/30 selection:text-emerald-300">
+  <body class="bg-bg text-slate-100 antialiased selection:bg-emerald-500/30 selection:text-emerald-300">
     <div id="root">
       <!-- Splash de partida, substituído pelo React na primeira renderização.
            Precisa morar no HTML, e não num fallback do roteador: a tela em branco
@@ -139,13 +153,13 @@
            Estilo inline de propósito — não depende do CSS ter carregado.
            No build, o pré-render substitui este bloco pelo HTML da rota; ele só
            aparece no dev server, sem pré-renderização. -->
-      <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#0b0d12">
+      <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--color-bg)">
         <div style="width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:linear-gradient(45deg,#059669,#10b981 55%,#99f6e4);animation:cf-pulse 1.6s ease-in-out infinite">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#020617" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M16 7h6v6" /><path d="m22 7-8.5 8.5-5-5L2 17" />
           </svg>
         </div>
-        <p style="margin:0;font:500 12px/1.4 system-ui,sans-serif;color:#94a3b8">Carregando o CheckFinance…</p>
+        <p style="margin:0;font:500 12px/1.4 system-ui,sans-serif;color:var(--color-slate-400)">Carregando o CheckFinance…</p>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>

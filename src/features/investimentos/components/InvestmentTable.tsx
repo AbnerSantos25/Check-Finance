@@ -146,7 +146,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                   <td role="cell" data-label="Saldo bruto" className="py-3 px-3.5 font-bold text-emerald-400">
                     {formatBRL(row.grossBalance)}
                   </td>
-                  <td role="cell" data-label="Juros no ano" className="py-3 px-3.5 text-amber-300/90">
+                  <td role="cell" data-label="Juros no ano" className="py-3 px-3.5 text-amber-300/90 light:text-amber-300">
                     +{formatBRL(row.yearlyInterestGained)}
                   </td>
                   <td role="cell" data-label="Juros acumulados" className="py-3 px-3.5">
