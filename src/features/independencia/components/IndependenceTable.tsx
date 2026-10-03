@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, Table as TableIcon } from 'lucide-react';
 import type { IndependenceParams, IndependenceResult } from '../../../types';
 import { formatBRL } from '../../../shared/lib/format';
-import type { ValueBasis } from './IndependenceResult';
+import type { ValueBasis } from '../../../shared/components/BasisToggle';
 import { TableCard } from '../../../shared/components/TableCard';
 import { ExportCsvButton } from '../../../shared/components/ExportCsvButton';
 

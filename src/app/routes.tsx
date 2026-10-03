@@ -73,6 +73,10 @@ export const routes: RouteRecord[] = [
         lazy: lazyRoute(() => import('../features/financiamento/FinancingPage'), 'FinancingPage'),
       },
       {
+        path: getTool('aluguel').path.slice(1),
+        lazy: lazyRoute(() => import('../features/aluguel/RentVsBuyPage'), 'RentVsBuyPage'),
+      },
+      {
         path: getTool('independencia').path.slice(1),
         lazy: lazyRoute(() => import('../features/independencia/IndependencePage'), 'IndependencePage'),
       },
