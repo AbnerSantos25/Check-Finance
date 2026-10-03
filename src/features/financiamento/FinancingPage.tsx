@@ -2,20 +2,27 @@ import React, { useMemo } from 'react';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import type { RealEstateParams } from '../../types';
 import { useEconomicData } from '../../app/providers/EconomicDataProvider';
-import { usePersistentState } from '../../app/providers/FormStateProvider';
+import { useShareableParams } from '../../app/useShareableParams';
 import { RealEstateForm } from './components/RealEstateForm';
 import { RealEstateSummaryCards } from './components/RealEstateSummaryCards';
 import { RealEstateCharts } from './components/RealEstateCharts';
 import { RealEstateTable } from './components/RealEstateTable';
 import { calculateFinancing } from './lib/calculateFinancing';
 import { DEFAULT_RE_PARAMS } from './defaults';
+import { sanitizeParams } from './lib/sanitizeParams';
+import { SHARE_SCHEMA } from './share';
 import { Seo } from '../../shared/seo/Seo';
 import { Faq } from '../../shared/components/Faq';
 import { FINANCING_TOOL, financingJsonLd } from './seo';
 import { FINANCING_FAQ } from './faq';
 
 export const FinancingPage: React.FC = () => {
-  const [params, setParams] = usePersistentState<RealEstateParams>('financiamento', DEFAULT_RE_PARAMS);
+  const [params, setParams] = useShareableParams<RealEstateParams>(
+    'financiamento',
+    DEFAULT_RE_PARAMS,
+    SHARE_SCHEMA,
+    sanitizeParams
+  );
   const { rates } = useEconomicData();
 
   const summary = useMemo(() => calculateFinancing(params), [params]);

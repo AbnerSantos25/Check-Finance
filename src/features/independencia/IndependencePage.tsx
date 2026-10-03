@@ -3,6 +3,7 @@ import { StatusBadge } from '../../components/ui/StatusBadge';
 import type { IndependenceParams } from '../../types';
 import { useEconomicData } from '../../app/providers/EconomicDataProvider';
 import { usePersistentState } from '../../app/providers/FormStateProvider';
+import { useShareableParams } from '../../app/useShareableParams';
 import { Seo } from '../../shared/seo/Seo';
 import { Faq } from '../../shared/components/Faq';
 import { IndependenceForm } from './components/IndependenceForm';
@@ -13,11 +14,17 @@ import { LearnMore } from './components/LearnMore';
 import { calculateIndependence, sensitivity } from './lib/calculateIndependence';
 import { sanitizeParams } from './lib/sanitizeParams';
 import { DEFAULT_PARAMS } from './defaults';
+import { SHARE_SCHEMA } from './share';
 import { INDEPENDENCE_TOOL, independenceJsonLd } from './seo';
 import { INDEPENDENCE_FAQ } from './faq';
 
 export const IndependencePage: React.FC = () => {
-  const [params, setParams] = usePersistentState<IndependenceParams>('independencia', DEFAULT_PARAMS);
+  const [params, setParams] = useShareableParams<IndependenceParams>(
+    'independencia',
+    DEFAULT_PARAMS,
+    SHARE_SCHEMA,
+    sanitizeParams
+  );
   const [basis, setBasis] = usePersistentState<ValueBasis>('independencia:base', 'real');
   const { rates, liveCount, hasFetched } = useEconomicData();
 
