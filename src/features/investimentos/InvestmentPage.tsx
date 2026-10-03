@@ -184,9 +184,9 @@ const SupportBanner: React.FC = () => {
       <div className="flex items-center gap-3 shrink-0">
         <button
           onClick={openPix}
-          className="tap-target px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/25 transition-all cursor-pointer flex items-center gap-2"
+          className="tap-target px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 text-on-accent text-xs font-bold shadow-lg shadow-emerald-500/25 transition-all cursor-pointer flex items-center gap-2"
         >
-          <Heart className="w-4 h-4 fill-slate-950" />
+          <Heart className="w-4 h-4 fill-on-accent" />
           <span>Fazer Doação PIX</span>
         </button>
       </div>

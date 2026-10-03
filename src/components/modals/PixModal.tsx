@@ -32,7 +32,7 @@ export const PixModal: React.FC<PixModalProps> = ({ onClose }) => {
       </DialogHeader>
 
       {/* Informative text */}
-      <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300/90 leading-relaxed mb-5">
+      <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300/90 light:text-emerald-300 leading-relaxed mb-5">
         Este site foi desenvolvido para ajudar qualquer brasileiro a planejar seu futuro financeiro com clareza e transparência. Qualquer contribuição ajuda a cobrir custos de hospedagem e desenvolvimento de novas calculadoras!
       </div>
 
@@ -61,7 +61,7 @@ export const PixModal: React.FC<PixModalProps> = ({ onClose }) => {
           <button
             id="copy-pix-btn"
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs shadow-md transition-all shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-on-accent font-bold text-xs shadow-md transition-all shrink-0 cursor-pointer"
           >
             {copied ? (
               <>

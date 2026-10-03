@@ -121,7 +121,7 @@ export const IndependenceTable: React.FC<IndependenceTableProps> = ({ result, pa
                     <div className="flex items-center gap-1.5 font-semibold text-white">
                       Mês {row.month}
                       {isGoal && (
-                        <span className="px-1.5 py-0.5 rounded text-caption bg-indigo-500/20 text-indigo-200 border border-indigo-500/30">
+                        <span className="px-1.5 py-0.5 rounded text-caption bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                           Meta atingida
                         </span>
                       )}
@@ -173,7 +173,7 @@ export const IndependenceTable: React.FC<IndependenceTableProps> = ({ result, pa
               onClick={() => setExpanded(true)}
               aria-controls="tabela-mes-a-mes"
               aria-expanded="false"
-              className="flex items-center gap-1.5 tap-target shrink-0 px-4 py-2 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/40 text-xs font-semibold text-indigo-200 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 tap-target shrink-0 px-4 py-2 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/40 text-xs font-semibold text-indigo-300 transition-colors cursor-pointer"
             >
               <ChevronDown className="w-4 h-4" />
               Ler mais ({hidden} {hidden === 1 ? 'mês' : 'meses'})

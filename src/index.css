@@ -12,6 +12,9 @@
   --color-line: #1f2636;        /* borda padrão */
   --color-line-soft: #1c2230;   /* divisória, borda de baixo contraste */
   --color-line-strong: #273044; /* borda/hover de destaque */
+  /* Texto e ícone sobre botão/selo de acento (gradiente emerald, sky…). Fica escuro
+     nos dois temas: o acento é claro o bastante para isso em ambos. */
+  --color-on-accent: oklch(12.9% 0.042 264.695);
 
   /* Escala tipográfica: o único lugar onde os tamanhos de texto são definidos.
      Cada token vira utilitário (text-caption, text-xs, text-sm…) e vale em todas
@@ -42,11 +45,81 @@
   --text-3xl--line-height: calc(2.25 / 1.875);
 }
 
+/* `light:` vale quando o tema claro está ativo (data-theme no <html>, posto pelo
+   script do index.html antes da primeira pintura). */
+@custom-variant light (&:where([data-theme='light'], [data-theme='light'] *));
+
+/* ---------------------------------------------------------------------------
+   Tema claro
+
+   O escuro é a base. O claro não duplica nenhuma regra: só redefine as variáveis
+   que os utilitários já leem (`text-slate-400` é `color: var(--color-slate-400)`).
+
+   - Neutros da interface: os tokens acima, em tons claros.
+   - Escala slate invertida (50↔950, 100↔900…) e `white` quase preto: o texto
+     "claro sobre escuro" dos componentes vira "escuro sobre claro" sem tocar
+     neles. O 500 fica onde está, no meio.
+   - Acentos 300/400: no escuro são a cor de TEXTO de destaque (`text-emerald-400`
+     aparece 71 vezes, como fundo quase nunca). No claro viram 900/800: passam
+     no contraste até sobre o fundo tingido do próprio acento (bg-emerald-500/15).
+     Texto de acento com opacidade (`text-emerald-400/80`) usa `light:` com a cor
+     cheia, porque a transparência derruba o contraste no fundo claro. Onde 300/400 é fundo de texto escuro
+     (selos, hover de botão), o componente usa 200/500, que não mudam.
+   - `black` não muda: é o véu escuro atrás dos modais, certo nos dois temas.
+   --------------------------------------------------------------------------- */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --color-bg: #f4f6fa;
+  --color-bg-deep: #e9edf3;
+  --color-panel: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f4f8;
+  --color-line: #d5dbe5;
+  --color-line-soft: #e3e8ef;
+  --color-line-strong: #bcc5d3;
+
+  --color-white: oklch(20.8% 0.042 265.755);
+  --color-slate-50: oklch(12.9% 0.042 264.695);
+  --color-slate-100: oklch(20.8% 0.042 265.755);
+  --color-slate-200: oklch(27.9% 0.041 260.031);
+  --color-slate-300: oklch(37.2% 0.044 257.287);
+  --color-slate-400: oklch(44.6% 0.043 257.281);
+  --color-slate-600: oklch(70.4% 0.04 256.788);
+  --color-slate-700: oklch(86.9% 0.022 252.894);
+  --color-slate-800: oklch(92.9% 0.013 255.508);
+  --color-slate-900: oklch(96.8% 0.007 247.896);
+  --color-slate-950: oklch(98.4% 0.003 247.858);
+
+  --color-emerald-300: oklch(37.8% 0.077 168.94);
+  --color-emerald-400: oklch(43.2% 0.095 166.913);
+  --color-teal-300: oklch(38.6% 0.063 188.416);
+  --color-teal-400: oklch(43.7% 0.078 188.216);
+  --color-sky-300: oklch(39.1% 0.09 240.876);
+  --color-sky-400: oklch(44.3% 0.11 240.79);
+  --color-cyan-300: oklch(39.8% 0.07 227.392);
+  --color-cyan-400: oklch(45% 0.085 224.283);
+  --color-blue-300: oklch(37.9% 0.146 265.522);
+  --color-blue-400: oklch(42.4% 0.199 265.638);
+  --color-indigo-300: oklch(35.9% 0.144 278.697);
+  --color-indigo-400: oklch(39.8% 0.195 277.366);
+  --color-violet-300: oklch(38% 0.189 293.745);
+  --color-violet-400: oklch(43.2% 0.232 292.759);
+  --color-amber-300: oklch(41.4% 0.112 45.904);
+  --color-amber-400: oklch(47.3% 0.137 46.201);
+  --color-rose-300: oklch(41% 0.159 10.272);
+  --color-rose-400: oklch(45.5% 0.188 13.697);
+}
+
 @layer base {
+  :root {
+    color-scheme: dark;
+  }
+
   body {
     font-family: 'Plus Jakarta Sans Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: var(--color-bg);
-    color: #f1f5f9;
+    color: var(--color-slate-100);
   }
 }
 
@@ -76,6 +149,10 @@
 
 .glow-card {
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='light'] .glow-card {
+  box-shadow: 0 10px 30px -14px rgba(15, 23, 42, 0.18), 0 0 1px 1px rgba(15, 23, 42, 0.04);
 }
 /* ---------------------------------------------------------------------------
    Alvos de toque
@@ -247,7 +324,7 @@
       text-align: left;
       font-family: 'Plus Jakarta Sans Variable', sans-serif;
       font-weight: 600;
-      color: #94a3b8;
+      color: var(--color-slate-400);
     }
 
     /* A primeira célula é o título do card: ocupa a linha toda, sem rótulo. */

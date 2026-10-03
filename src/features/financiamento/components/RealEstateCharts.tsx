@@ -120,8 +120,11 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
                     // celular; a legenda do recharts vem por estilo inline, fora do
                     // alcance das classes do Tailwind.
                     fontSize: '12px',
-                    color: '#94a3b8',
+                    color: 'var(--color-slate-400)',
                   }}
+                  // Sem isto o recharts pinta o texto com a cor da série: o azul-claro
+                  // do imóvel some no fundo claro. A cor fica só na bolinha.
+                  formatter={(value) => <span style={{ color: 'var(--color-slate-400)' }}>{value}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -167,10 +170,10 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
                     <stop offset="95%" stopColor="#fb7185" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1f2636" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-line-soft)" vertical={false} />
                 <XAxis 
                   dataKey="label" 
-                  stroke="#475569" 
+                  stroke="var(--color-slate-500)" 
                   fontSize={10} 
                   tickMargin={10}
                   axisLine={false}
@@ -178,7 +181,7 @@ export const RealEstateCharts: React.FC<RealEstateChartsProps> = ({ summary, par
                   minTickGap={30}
                 />
                 <YAxis 
-                  stroke="#475569" 
+                  stroke="var(--color-slate-500)" 
                   fontSize={10}
                   tickFormatter={(val) => `R$ ${(val / 1000).toFixed(0)}k`}
                   axisLine={false}

@@ -11,7 +11,7 @@ export const BrandMark: React.FC<{
   iconClass?: string;
 }> = ({ icon: Icon, className = 'w-10 h-10 rounded-xl', iconClass = 'w-5 h-5' }) => (
   <div
-    className={`flex items-center justify-center shrink-0 bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-200 text-slate-950 ${className}`}
+    className={`flex items-center justify-center shrink-0 bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-200 text-on-accent ${className}`}
   >
     <Icon className={iconClass} />
   </div>
