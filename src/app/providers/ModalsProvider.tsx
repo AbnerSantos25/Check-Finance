@@ -1,5 +1,6 @@
 import React, { createContext, lazy, Suspense, useContext, useState } from 'react';
 import { getTool, type ToolId } from '../../config/tools.data';
+import { trackEvent, type PixOrigin } from '../../shared/lib/analytics';
 
 // Os modais só existem depois de um clique, então o código deles (e o `qrcode.react`
 // do PIX) fica fora do bundle que toda rota baixa antes de pintar. O chunk chega
@@ -12,7 +13,8 @@ const ComingSoonModal = lazy(() =>
 );
 
 interface ModalsValue {
-  openPix: () => void;
+  /** `origin` identifica o botão no evento `apoiar_abrir` do Analytics. */
+  openPix: (origin: PixOrigin) => void;
   openComingSoon: (toolId: ToolId) => void;
 }
 
@@ -31,7 +33,10 @@ export const ModalsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   return (
     <ModalsContext.Provider
       value={{
-        openPix: () => setIsPixOpen(true),
+        openPix: (origin) => {
+          trackEvent('apoiar_abrir', { local: origin });
+          setIsPixOpen(true);
+        },
         openComingSoon: setComingSoonTool,
       }}
     >
