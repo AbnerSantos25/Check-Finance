@@ -28,6 +28,73 @@ const seconds = (ms) => (typeof ms === 'number' ? `${(ms / 1000).toFixed(1).repl
 const millis = (ms) => (typeof ms === 'number' ? `${Math.round(ms).toLocaleString('pt-BR')} ms` : '—');
 const cls = (value) => (typeof value === 'number' ? value.toFixed(3).replace('.', ',') : '—');
 
+// Nomes das fases no Lighthouse 13 (`lcp-breakdown-insight`) → nomes do 12.
+const LCP_SUBPARTS = {
+  timeToFirstByte: 'TTFB',
+  resourceLoadDelay: 'Load Delay',
+  resourceLoadDuration: 'Load Time',
+  elementRenderDelay: 'Render Delay',
+};
+
+/**
+ * Qual elemento foi o LCP e em que fase o tempo dele foi gasto: TTFB, atraso até
+ * começar a carregar, carregamento e atraso de renderização.
+ *
+ * O Lighthouse 13 (o do PSI desde 2026) traz isso no `lcp-breakdown-insight`; o 12,
+ * no `largest-contentful-paint-element`. Lê os dois, para o relatório não ficar
+ * mudo quando o PSI trocar de versão.
+ */
+export function lcpBreakdown(lhr) {
+  const insight = lhr.audits['lcp-breakdown-insight']?.details?.items;
+  if (Array.isArray(insight)) {
+    const node = insight.find((item) => item.type === 'node');
+    const rows = insight.find((item) => item.type === 'table')?.items ?? [];
+    if (node || rows.length > 0) {
+      return {
+        element: node ? { label: node.nodeLabel ?? '', selector: node.selector ?? '' } : null,
+        phases: Object.fromEntries(rows.map((r) => [LCP_SUBPARTS[r.subpart] ?? r.subpart, r.duration])),
+      };
+    }
+  }
+
+  const tables = lhr.audits['largest-contentful-paint-element']?.details?.items ?? [];
+  const node = tables[0]?.items?.[0]?.node;
+  const phases = tables[1]?.items ?? [];
+  if (!node && phases.length === 0) return null;
+  return {
+    element: node ? { label: node.nodeLabel ?? '', selector: node.selector ?? '' } : null,
+    phases: Object.fromEntries(phases.map((p) => [p.phase, p.timing])),
+  };
+}
+
+/**
+ * O que o navegador do PSI de fato viu, sem a simulação de rede lenta: quando
+ * aconteceram a primeira pintura, o LCP e o `load`, e quais requisições terminaram
+ * até o LCP. É o que separa "o HTML chegou tarde" de "algo segurou a pintura".
+ */
+export function observedTimeline(lhr) {
+  const m = lhr.audits.metrics?.details?.items?.[0];
+  if (!m) return null;
+  const lcpAt = m.observedLargestContentfulPaint;
+  const requests = (lhr.audits['network-requests']?.details?.items ?? [])
+    .filter((r) => typeof r.networkEndTime === 'number' && r.networkEndTime <= lcpAt)
+    .sort((a, b) => a.networkEndTime - b.networkEndTime)
+    .map((r) => ({
+      url: r.url,
+      type: r.resourceType ?? '',
+      start: r.networkRequestTime,
+      end: r.networkEndTime,
+      kb: typeof r.transferSize === 'number' ? Math.round(r.transferSize / 1024) : null,
+    }));
+  return {
+    fcp: m.observedFirstContentfulPaint,
+    lcp: lcpAt,
+    domContentLoaded: m.observedDomContentLoaded,
+    load: m.observedLoad,
+    requests,
+  };
+}
+
 /** Extrai o que interessa de uma resposta da API v5. */
 export function summarize(url, response) {
   const lhr = response.lighthouseResult;
@@ -50,6 +117,8 @@ export function summarize(url, response) {
       tbt: audit('total-blocking-time'),
       cls: audit('cumulative-layout-shift'),
     },
+    lcp: lcpBreakdown(lhr),
+    timeline: observedTimeline(lhr),
     field: field
       ? {
           scope: field === response.loadingExperience ? 'página' : 'domínio',
@@ -83,6 +152,49 @@ export function renderReport(results, failures, minPerformance) {
         `${r.scores['best-practices'] ?? '—'} | ${r.scores.seo ?? '—'} | ${seconds(r.lab.fcp)} | ` +
         `${seconds(r.lab.lcp)} | ${millis(r.lab.tbt)} | ${cls(r.lab.cls)} |`
     );
+  }
+
+  // Sem isto o relatório só diz que o LCP piorou; o elemento e a fase dizem onde.
+  const withLcp = results.filter((r) => r.lcp);
+  if (withLcp.length > 0) {
+    lines.push(
+      '',
+      '### Elemento do LCP',
+      '',
+      '| Página | Elemento | TTFB | Atraso p/ carregar | Carregamento | Atraso de renderização |',
+      '| --- | --- | --- | --- | --- | --- |'
+    );
+    const cell = (text) => text.replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim();
+    for (const r of withLcp) {
+      const el = r.lcp.element;
+      const label = el ? `${cell(el.label).slice(0, 60)} (\`${cell(el.selector).slice(-50)}\`)` : '—';
+      const ph = r.lcp.phases;
+      lines.push(
+        `| ${new URL(r.url).pathname} | ${label} | ${millis(ph.TTFB)} | ${millis(ph['Load Delay'])} | ` +
+          `${millis(ph['Load Time'])} | ${millis(ph['Render Delay'])} |`
+      );
+    }
+  }
+
+  // Recolhido: é para investigar, não para ler toda semana.
+  const withTimeline = results.filter((r) => r.timeline);
+  if (withTimeline.length > 0) {
+    lines.push('', '<details><summary>Linha do tempo observada (sem simulação)</summary>', '');
+    for (const r of withTimeline) {
+      const t = r.timeline;
+      lines.push(
+        `**${new URL(r.url).pathname}** — FCP ${millis(t.fcp)}, LCP ${millis(t.lcp)}, ` +
+          `DOMContentLoaded ${millis(t.domContentLoaded)}, load ${millis(t.load)}`,
+        '',
+        '| Início | Fim | Tipo | kB | Requisição até o LCP |',
+        '| --- | --- | --- | --- | --- |'
+      );
+      for (const q of t.requests.slice(0, 25)) {
+        lines.push(`| ${millis(q.start)} | ${millis(q.end)} | ${q.type} | ${q.kb ?? '—'} | ${q.url.slice(0, 90)} |`);
+      }
+      lines.push('');
+    }
+    lines.push('</details>');
   }
 
   const withField = results.filter((r) => r.field);
