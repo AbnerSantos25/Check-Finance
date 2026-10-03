@@ -74,9 +74,14 @@
          o gtag/js, quando chegar, envia tudo o que ficou esperando.
 
          Consent Mode: o estado padrão precisa vir antes de qualquer `config`. No
-         Espaço Econômico Europeu, no Reino Unido e na Suíça começa negado e só muda
-         quando o visitante responde à mensagem do FundingChoices; no resto, concedido.
-         O comando mais específico (com `region`) vale sobre o geral. -->
+         Espaço Econômico Europeu, no Reino Unido, na Suíça e no Brasil começa negado;
+         no resto, concedido. O comando mais específico (com `region`) vale sobre o
+         geral. Na Europa quem pergunta é a mensagem do FundingChoices; no Brasil, o
+         aviso de cookies do site (LGPD, src/app/ConsentManager.tsx).
+
+         Uma escolha já feita no aviso (localStorage `cf-consent`, ver
+         src/shared/lib/consent.ts) é reaplicada aqui, antes de qualquer tag ler o
+         estado: quem aceitou não volta a ser contado como "negado" a cada visita. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -85,7 +90,7 @@
         ad_user_data: 'denied',
         ad_personalization: 'denied',
         analytics_storage: 'denied',
-        region: ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH'],
+        region: ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH','BR'],
         wait_for_update: 500
       });
       gtag('consent', 'default', {
@@ -94,6 +99,19 @@
         ad_personalization: 'granted',
         analytics_storage: 'granted'
       });
+      (function () {
+        try {
+          var consent = JSON.parse(localStorage.getItem('cf-consent'));
+          if (!consent || consent.v !== 1) return;
+          var ads = consent.ads ? 'granted' : 'denied';
+          gtag('consent', 'update', {
+            analytics_storage: consent.analytics ? 'granted' : 'denied',
+            ad_storage: ads,
+            ad_user_data: ads,
+            ad_personalization: ads
+          });
+        } catch (e) {}
+      })();
       gtag('js', new Date());
 
       gtag('config', 'G-3NYMS8KTGJ');

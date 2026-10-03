@@ -6,6 +6,7 @@ import { Footer } from '../components/layout/Footer';
 import { LegacyHashRedirect } from './LegacyHashRedirect';
 import { useActiveTool } from './useActiveTool';
 import { usePageViews } from './usePageViews';
+import { ConsentManager } from './ConsentManager';
 
 export const RootLayout: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -28,6 +29,9 @@ export const RootLayout: React.FC = () => {
 
       {/* Desvia os endereços com fragmento da versão anterior do site. */}
       <LegacyHashRedirect />
+
+      {/* Aviso de cookies (LGPD): só depois da primeira interação ou 4 s após o load. */}
+      <ConsentManager />
 
       <div className="hidden md:block">
         <AppSidebar
