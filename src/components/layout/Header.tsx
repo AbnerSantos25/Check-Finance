@@ -14,6 +14,7 @@ import { useEconomicData } from '../../app/providers/EconomicDataProvider';
 import { useModals } from '../../app/providers/ModalsProvider';
 import { useActiveTool } from '../../app/useActiveTool';
 import { ThemeToggle } from './ThemeToggle';
+import { trackEvent } from '../../shared/lib/analytics';
 
 interface HeaderProps {
   onOpenMobileMenu: () => void;
@@ -37,6 +38,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
   // o link reabre a mesma simulação.
   const shareTitle = activeTool ? 'Compartilhar esta simulação' : 'Compartilhar o CheckFinance';
 
+  // `share` é um evento recomendado do GA4: `method`, `content_type` e `item_id`
+  // aparecem prontos nos relatórios.
+  const trackShare = (method: 'menu_nativo' | 'copiar_link') =>
+    trackEvent('share', {
+      method,
+      content_type: activeTool ? 'simulacao' : 'site',
+      item_id: activeTool?.id ?? 'inicio',
+    });
+
   const handleShare = async () => {
     const url = window.location.href;
     // No celular, o menu nativo (WhatsApp, Telegram…) é o caminho natural. No
@@ -44,6 +54,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
     if (navigator.share && matchMedia('(pointer: coarse)').matches) {
       try {
         await navigator.share({ title: document.title, url });
+        trackShare('menu_nativo');
         return;
       } catch (err) {
         // Fechar o menu sem escolher nada não é erro.
@@ -53,6 +64,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
     if (navigator.clipboard) {
       try {
         await navigator.clipboard.writeText(url);
+        trackShare('copiar_link');
         setCopiedLink(true);
         setTimeout(() => setCopiedLink(false), 2500);
       } catch (err) {
@@ -191,7 +203,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
           {/* PIX Donation Button with subtle glow */}
           <button
             id="header-pix-btn"
-            onClick={openPix}
+            onClick={() => openPix('cabecalho')}
             className="flex items-center justify-center gap-1.5 min-h-11 min-w-11 md:min-h-0 md:min-w-0 px-3 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 text-on-accent text-xs font-bold shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all cursor-pointer shrink-0"
           >
             <Heart className="w-3.5 h-3.5 fill-on-accent text-on-accent" />

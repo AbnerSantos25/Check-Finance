@@ -268,7 +268,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           <nav className="space-y-1">
             <button
               id={`${idPrefix}nav-pix-btn`}
-              onClick={() => act(openPix)}
+              onClick={() => act(() => openPix('menu_lateral'))}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all group border border-emerald-500/20"
             >
               <Heart className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform fill-emerald-500/20" />
@@ -294,7 +294,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           <div className="mt-2 text-caption text-slate-400 flex justify-between items-center">
             <span>v1.0 MVP • pt-BR</span>
             <button
-              onClick={() => act(openPix)}
+              onClick={() => act(() => openPix('menu_lateral_rodape'))}
               className="text-emerald-400 hover:underline cursor-pointer font-medium"
             >
               Doe via PIX

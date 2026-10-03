@@ -5,12 +5,14 @@ import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { LegacyHashRedirect } from './LegacyHashRedirect';
 import { useActiveTool } from './useActiveTool';
+import { usePageViews } from './usePageViews';
 
 export const RootLayout: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const activeTool = useActiveTool();
   const { pathname } = useLocation();
+  usePageViews();
 
   // A transição de entrada só vale depois da primeira navegação. No carregamento
   // inicial ela atrasaria a primeira pintura, e a classe no primeiro render do

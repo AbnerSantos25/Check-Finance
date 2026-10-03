@@ -52,7 +52,7 @@ export const Footer: React.FC = () => {
             )
           )}
           <button
-            onClick={openPix}
+            onClick={() => openPix('rodape')}
             className="tap-target text-emerald-400 hover:underline transition-colors font-medium"
           >
             Doação PIX

@@ -3,6 +3,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Heart, Copy, Check, ShieldCheck } from 'lucide-react';
 import { Dialog, DialogCloseButton, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/Dialog';
 import { BrandMark } from '../ui/BrandMark';
+import { trackEvent } from '../../shared/lib/analytics';
 
 interface PixModalProps {
   onClose: () => void;
@@ -17,6 +18,7 @@ export const PixModal: React.FC<PixModalProps> = ({ onClose }) => {
   const handleCopy = () => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(pixCode);
+      trackEvent('pix_copiar');
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     }
