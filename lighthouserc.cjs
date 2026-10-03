@@ -15,6 +15,7 @@ const ROUTES = [
   '/',
   '/calculadora-juros-compostos',
   '/simulador-financiamento-imobiliario',
+  '/alugar-ou-comprar-imovel',
   '/calculadora-independencia-financeira',
 ];
 

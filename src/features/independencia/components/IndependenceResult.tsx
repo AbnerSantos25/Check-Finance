@@ -3,8 +3,7 @@ import { AlertTriangle, CheckCircle2, Info, Target, TrendingDown, TrendingUp } f
 import type { IndependenceParams, IndependenceResult as Result } from '../../../types';
 import { formatBRL, formatCompactBRL, formatPercent } from '../../../shared/lib/format';
 import { formatDuration, type Sensitivity } from '../lib/calculateIndependence';
-
-export type ValueBasis = 'real' | 'nominal';
+import { BasisToggle, type ValueBasis } from '../../../shared/components/BasisToggle';
 
 interface IndependenceResultProps {
   result: Result;
@@ -28,32 +27,6 @@ const useTargetDate = (months: number | null): string | null => {
     year: 'numeric',
   });
 };
-
-export const BasisToggle: React.FC<{ basis: ValueBasis; onChange: (basis: ValueBasis) => void }> = ({
-  basis,
-  onChange,
-}) => (
-  <div role="group" aria-label="Base dos valores" className="flex items-center rounded-xl bg-bg-deep p-1 border border-line text-xs">
-    {(
-      [
-        ['real', 'Valores de hoje'],
-        ['nominal', 'Valores nominais'],
-      ] as const
-    ).map(([value, label]) => (
-      <button
-        key={value}
-        type="button"
-        aria-pressed={basis === value}
-        onClick={() => onChange(value)}
-        className={`tap-target px-2.5 py-1 rounded-lg transition-all ${
-          basis === value ? 'bg-line-soft text-white font-medium' : 'text-slate-400 hover:text-slate-200'
-        }`}
-      >
-        {label}
-      </button>
-    ))}
-  </div>
-);
 
 const Stat: React.FC<{ label: string; value: string; detail: string; valueClass: string }> = ({
   label,

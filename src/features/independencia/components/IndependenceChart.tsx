@@ -4,7 +4,7 @@ import { BarChart3 } from 'lucide-react';
 import type { IndependenceParams, IndependenceResult } from '../../../types';
 import { formatBRL, formatCompactBRL, monthlyEquivalentRate } from '../../../shared/lib/format';
 import { LazyChart } from '../../../shared/components/LazyChart';
-import type { ValueBasis } from './IndependenceResult';
+import type { ValueBasis } from '../../../shared/components/BasisToggle';
 
 interface IndependenceChartProps {
   result: IndependenceResult;

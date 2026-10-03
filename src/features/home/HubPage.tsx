@@ -57,13 +57,14 @@ export const HubPage: React.FC = () => {
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
           Simule <strong>juros compostos com inflação e Imposto de Renda</strong>, compare{' '}
-          <strong>SAC e PRICE</strong> no financiamento do seu imóvel e descubra{' '}
+          <strong>SAC e PRICE</strong> no financiamento do seu imóvel, veja se vale mais{' '}
+          <strong>alugar ou comprar</strong> e descubra{' '}
           <strong>com que idade você pode viver de renda</strong>. Todas as ferramentas usam indicadores oficiais do Banco Central e
           funcionam direto no navegador, sem login.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {TOOLS.map((tool) => {
           const Icon = TOOL_ICONS[tool.id];
           const accent = ACCENT_CLASSES[tool.accent];
@@ -144,14 +145,21 @@ export const HubPage: React.FC = () => {
 
           <div className="p-5 rounded-2xl bg-surface border border-line">
             <h3 className="text-lg font-bold text-white mb-1.5">
-              As duas juntas respondem à pergunta mais comum
+              Você está em dúvida entre comprar o imóvel ou continuar no aluguel
             </h3>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Financiar o imóvel agora, ou continuar investindo e comprar à vista mais tarde?
-              Simule o custo total do financiamento de um lado e o crescimento do mesmo dinheiro
-              investido do outro. A comparação passa a ser entre dois números, e não entre duas
-              opiniões.
+              A calculadora alugar ou comprar põe os dois caminhos lado a lado com o mesmo
+              dinheiro: de um lado, a entrada e as parcelas do financiamento; do outro, o aluguel
+              e a diferença investida todo mês. Ela mostra quem termina com mais patrimônio, em
+              valores de hoje, e quanto o imóvel precisaria valorizar para comprar compensar.
             </p>
+            <Link
+              to={getTool('aluguel').path}
+              className="tap-target mt-3 gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300"
+            >
+              Abrir a calculadora alugar ou comprar
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
           <div className="p-5 rounded-2xl bg-surface border border-line">

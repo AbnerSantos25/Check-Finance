@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { decodeParams, encodeParams, type ShareSchema } from '../shareParams';
-import type { IndependenceParams, InvestmentParams, RealEstateParams } from '../../../types';
+import type { IndependenceParams, InvestmentParams, RealEstateParams, RentVsBuyParams } from '../../../types';
 import { DEFAULT_PARAMS as INVESTMENT_DEFAULTS } from '../../../features/investimentos/defaults';
 import { SHARE_SCHEMA as INVESTMENT_SCHEMA } from '../../../features/investimentos/share';
 import { sanitizeParams as sanitizeInvestment } from '../../../features/investimentos/lib/sanitizeParams';
@@ -10,6 +10,9 @@ import { sanitizeParams as sanitizeFinancing } from '../../../features/financiam
 import { DEFAULT_PARAMS as INDEPENDENCE_DEFAULTS } from '../../../features/independencia/defaults';
 import { SHARE_SCHEMA as INDEPENDENCE_SCHEMA } from '../../../features/independencia/share';
 import { sanitizeParams as sanitizeIndependence } from '../../../features/independencia/lib/sanitizeParams';
+import { DEFAULT_PARAMS as RENT_VS_BUY_DEFAULTS } from '../../../features/aluguel/defaults';
+import { SHARE_SCHEMA as RENT_VS_BUY_SCHEMA } from '../../../features/aluguel/share';
+import { sanitizeParams as sanitizeRentVsBuy } from '../../../features/aluguel/lib/sanitizeParams';
 
 interface Sample {
   amount: number;
@@ -81,6 +84,20 @@ describe.each([
     schema: INDEPENDENCE_SCHEMA,
     sanitize: sanitizeIndependence,
     edited: { ...INDEPENDENCE_DEFAULTS, monthlyIncomeGoal: 8000, currentAge: 42, contributionFollowsInflation: false } as IndependenceParams,
+  },
+  {
+    name: 'alugar ou comprar',
+    defaults: RENT_VS_BUY_DEFAULTS,
+    schema: RENT_VS_BUY_SCHEMA,
+    sanitize: sanitizeRentVsBuy,
+    edited: {
+      ...RENT_VS_BUY_DEFAULTS,
+      monthlyRent: 3200,
+      propertyAppreciation: -1.5,
+      amortizationSystem: 'PRICE',
+      taxExempt: true,
+      years: 15,
+    } as RentVsBuyParams,
   },
 ])('link compartilhado de $name', ({ defaults, schema, sanitize, edited }) => {
   type P = typeof edited;

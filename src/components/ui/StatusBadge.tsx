@@ -6,6 +6,7 @@ import React from 'react';
 const GRADIENTS = {
   emerald: 'from-emerald-700 via-[oklch(76.5%_0.177_163.223)] to-[oklch(85.5%_0.138_181.071)]',
   sky: 'from-sky-600 via-[oklch(74.6%_0.16_232.661)] to-[oklch(78.9%_0.154_211.53)]',
+  amber: 'from-amber-600 via-[oklch(82.8%_0.189_84.429)] to-[oklch(90.5%_0.182_98.111)]',
   indigo: 'from-indigo-600 via-[oklch(67.3%_0.182_276.935)] to-[oklch(70.2%_0.183_293.541)]',
 } as const;
 

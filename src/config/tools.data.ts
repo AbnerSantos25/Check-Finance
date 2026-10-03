@@ -6,7 +6,7 @@
  * Node, onde não há pipeline de React. Ícones e classes moram em tools.tsx.
  */
 
-export type ToolId = 'investimentos' | 'financiamento' | 'independencia';
+export type ToolId = 'investimentos' | 'financiamento' | 'aluguel' | 'independencia';
 
 export type ToolStatus = 'ativo' | 'em-breve';
 
@@ -57,6 +57,23 @@ export const TOOLS: ToolMeta[] = [
       title: 'Simulador de Financiamento Imobiliário: SAC vs PRICE | CheckFinance',
       description:
         'Simule o Custo Efetivo Total do seu imóvel, compare os sistemas SAC e PRICE e calcule a redução de prazo e juros com amortizações extraordinárias.',
+      priority: 0.9,
+      changefreq: 'weekly',
+    },
+  },
+  {
+    id: 'aluguel',
+    path: '/alugar-ou-comprar-imovel',
+    label: 'Calculadora Alugar ou Comprar Imóvel',
+    shortLabel: 'Alugar ou Comprar',
+    description:
+      'Compare financiar o imóvel com morar de aluguel e investir a diferença, com valorização, inflação e Imposto de Renda no mesmo cálculo.',
+    accent: 'amber',
+    status: 'ativo',
+    seo: {
+      title: 'Alugar ou comprar imóvel: calculadora com inflação e IR | CheckFinance',
+      description:
+        'Vale mais a pena alugar ou comprar? Compare o patrimônio de quem financia o imóvel com o de quem aluga e investe a diferença, em valores de hoje e com IR.',
       priority: 0.9,
       changefreq: 'weekly',
     },

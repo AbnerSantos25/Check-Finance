@@ -127,6 +127,53 @@ export interface FinancingSummary {
 }
 
 // -----------------------------------------------------
+// RENT VS BUY TYPES
+// -----------------------------------------------------
+
+export interface RentVsBuyParams {
+  propertyValue: number;          // Valor do imóvel hoje
+  downPayment: number;            // Entrada disponível
+  financingRate: number;          // Juros do financiamento (% a.a.)
+  termMonths: number;             // Prazo do financiamento, em meses
+  amortizationSystem: AmortizationSystem;
+  acquisitionCostRate: number;    // ITBI, escritura e registro (% do valor do imóvel)
+  maintenanceRate: number;        // Manutenção do imóvel próprio (% a.a. do valor atual)
+  propertyAppreciation: number;   // Valorização do imóvel (% a.a.)
+  monthlyRent: number;            // Aluguel de um imóvel equivalente, hoje
+  rentAdjustment: number;         // Reajuste anual do aluguel (% a.a.)
+  investmentReturn: number;       // Rendimento do dinheiro investido (% a.a.)
+  inflation: number;              // Inflação, para os valores de hoje (% a.a.)
+  years: number;                  // Horizonte da comparação, em anos
+  taxExempt: boolean;             // true = investimento isento de IR (LCI, LCA)
+}
+
+export interface RentVsBuyYear {
+  year: number;
+  buyNominal: number;       // Imóvel − saldo devedor + o que o comprador investiu (líquido de IR)
+  rentNominal: number;      // Carteira de quem alugou, líquida de IR
+  buyReal: number;          // Os mesmos valores em poder de compra de hoje
+  rentReal: number;
+  propertyValue: number;    // Valor do imóvel no fim do ano
+  outstanding: number;      // Saldo devedor no fim do ano
+  monthlyRent: number;      // Aluguel pago nesse ano
+  monthlyInstallment: number; // Parcela do último mês do ano (0 depois de quitado)
+}
+
+export interface RentVsBuySummary {
+  initialOutlay: number;          // Entrada + custos de aquisição (o que quem aluga investe no início)
+  financed: number;
+  firstInstallment: number;
+  totalInterest: number;
+  winner: 'buy' | 'rent' | 'tie';
+  finalBuyReal: number;
+  finalRentReal: number;
+  differenceReal: number;         // Vantagem do vencedor, em valores de hoje
+  /** Ano a partir do qual comprar fica à frente até o fim do horizonte; null se não fica. */
+  buyAheadFromYear: number | null;
+  yearly: RentVsBuyYear[];
+}
+
+// -----------------------------------------------------
 // FINANCIAL INDEPENDENCE TYPES
 // -----------------------------------------------------
 
