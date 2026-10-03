@@ -2,7 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, TrendingUp } from 'lucide-react';
 import { TOOLS } from '../../config/tools.data';
-import { CONTACT_EMAIL } from '../../config/site';
+import { CONTACT_EMAIL, PRIVACY_PATH } from '../../config/site';
+import { openConsentPreferences } from '../../shared/lib/consent';
 import { useModals } from '../../app/providers/ModalsProvider';
 
 export const Footer: React.FC = () => {
@@ -56,6 +57,16 @@ export const Footer: React.FC = () => {
             className="tap-target text-emerald-400 hover:underline transition-colors font-medium"
           >
             Doação PIX
+          </button>
+          <Link to={PRIVACY_PATH} className="tap-target hover:text-slate-200 transition-colors">
+            Política de Privacidade
+          </Link>
+          <button
+            type="button"
+            onClick={openConsentPreferences}
+            className="tap-target hover:text-slate-200 transition-colors cursor-pointer"
+          >
+            Preferências de cookies
           </button>
         </div>
       </div>

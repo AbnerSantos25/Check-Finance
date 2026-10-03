@@ -13,6 +13,12 @@ export const SITE_TAGLINE = 'Hub de Ferramentas Financeiras';
  *  que é estático e não importa daqui: ao mudar, mude lá também. */
 export const CONTACT_EMAIL = 'contato@checkfinance.com.br';
 
+/** Canal para pedidos sobre dados pessoais (LGPD, art. 18), citado na Política. */
+export const PRIVACY_EMAIL = 'privacidade@checkfinance.com.br';
+
+/** Caminho da Política de Privacidade: rota, rodapé, aviso de cookies e sitemap. */
+export const PRIVACY_PATH = '/privacidade';
+
 /** Cartão social padrão, usado quando a rota não define o seu. */
 export const DEFAULT_OG_IMAGE = '/og-image.png';
 
