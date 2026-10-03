@@ -55,7 +55,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
             </div>
           </div>
           <span
-            className="text-caption font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-mono"
+            className="text-caption text-center font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 font-mono"
             title="Patrimônio líquido em valores de hoje dividido pelos aportes em valores de hoje"
           >
             {formatNumber(summary.realMultiplier, 1)}x real
@@ -104,7 +104,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
               </div>
             </div>
           </div>
-          <span className="text-caption font-semibold px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">
+          <span className="text-caption text-center font-semibold px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 font-mono">
             {formatPercent(investedShare, 1)} do total
           </span>
         </div>
@@ -148,7 +148,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
               </div>
             </div>
           </div>
-          <span className="text-caption font-semibold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">
+          <span className="text-caption text-center font-semibold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 font-mono">
             {formatPercent(interestShare, 1)} do total
           </span>
         </div>
@@ -193,7 +193,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
               </div>
             </div>
           </div>
-          <span className="text-caption font-semibold px-2 py-0.5 rounded-md bg-teal-500/10 text-teal-300 border border-teal-500/20">
+          <span className="text-caption text-center font-semibold px-2 py-0.5 rounded-md bg-teal-500/10 text-teal-300">
             Viver de Renda
           </span>
         </div>

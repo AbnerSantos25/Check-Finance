@@ -1,11 +1,11 @@
 import React from 'react';
-import { 
-  Sliders, 
-  RotateCcw, 
-  HelpCircle, 
-  Percent, 
-  Calendar, 
-  DollarSign, 
+import {
+  Sliders,
+  RotateCcw,
+  HelpCircle,
+  Percent,
+  Calendar,
+  DollarSign,
   Sparkles,
   TrendingUp,
   ShieldCheck
@@ -44,7 +44,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
   const inflationPresets = [3.5, currentIpca, 6];
 
   return (
-    <div 
+    <div
       id="investment-form-container"
       className="rounded-2xl bg-surface border border-line p-5 sm:p-7 shadow-xl mb-8"
     >
@@ -75,13 +75,13 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         {/* 1. Aporte Inicial */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label 
+            <label
               htmlFor="initial-deposit-input"
               className="text-xs font-semibold text-slate-300 flex items-center gap-1.5"
             >
               Aporte Inicial (R$)
-              <span 
-                className="cursor-pointer text-slate-400 hover:text-slate-300" 
+              <span
+                className="cursor-pointer text-slate-400 hover:text-slate-300"
                 title="Capital que você já possui hoje para começar a investir"
               >
                 <HelpCircle className="w-3.5 h-3.5" />
@@ -115,11 +115,10 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 key={val}
                 type="button"
                 onClick={() => onChange({ initialDeposit: val })}
-                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
-                  params.initialDeposit === val
+                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${params.initialDeposit === val
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold'
                     : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
-                }`}
+                  }`}
               >
                 {val === 0 ? 'Zero' : `R$ ${val >= 1000 ? `${val / 1000}k` : val}`}
               </button>
@@ -130,13 +129,13 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         {/* 2. Aporte Mensal */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label 
+            <label
               htmlFor="monthly-deposit-input"
               className="text-xs font-semibold text-slate-300 flex items-center gap-1.5"
             >
               Aporte Mensal (R$)
-              <span 
-                className="cursor-pointer text-slate-400 hover:text-slate-300" 
+              <span
+                className="cursor-pointer text-slate-400 hover:text-slate-300"
                 title="Valor que você economizará e investirá religiosamente todo mês"
               >
                 <HelpCircle className="w-3.5 h-3.5" />
@@ -170,11 +169,10 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 key={val}
                 type="button"
                 onClick={() => onChange({ monthlyDeposit: val })}
-                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
-                  params.monthlyDeposit === val
+                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${params.monthlyDeposit === val
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold'
                     : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
-                }`}
+                  }`}
               >
                 R$ {val >= 1000 ? `${val / 1000}k` : val}
               </button>
@@ -185,13 +183,13 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         {/* 3. Reajuste Anual do Aporte */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label 
+            <label
               htmlFor="annual-adjustment-input"
               className="text-xs font-semibold text-slate-300 flex items-center gap-1.5"
             >
               Reajuste Anual do Aporte (%)
-              <span 
-                className="cursor-pointer text-slate-400 hover:text-slate-300" 
+              <span
+                className="cursor-pointer text-slate-400 hover:text-slate-300"
                 title="Aumento anual no aporte para acompanhar aumentos salariais e inflação"
               >
                 <HelpCircle className="w-3.5 h-3.5" />
@@ -231,8 +229,8 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
           </div>
 
           <div className="text-caption text-slate-400 pt-1">
-            {params.annualAdjustmentRate === 0 
-              ? 'Aporte fixo ao longo dos anos' 
+            {params.annualAdjustmentRate === 0
+              ? 'Aporte fixo ao longo dos anos'
               : `A cada 12 meses o aporte cresce ${formatPercent(params.annualAdjustmentRate, 1)}`}
           </div>
         </div>
@@ -240,13 +238,13 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         {/* 4. Taxa de Rentabilidade Anual Bruta */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label 
+            <label
               htmlFor="annual-interest-input"
               className="text-xs font-semibold text-slate-300 flex items-center gap-1.5"
             >
               Taxa de Juros Anual Bruta (%)
-              <span 
-                className="cursor-pointer text-slate-400 hover:text-slate-300" 
+              <span
+                className="cursor-pointer text-slate-400 hover:text-slate-300"
                 title="Rentabilidade bruta média esperada por ano em sua carteira"
               >
                 <HelpCircle className="w-3.5 h-3.5" />
@@ -293,11 +291,10 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 type="button"
                 title={preset.hint}
                 onClick={() => onChange({ annualInterestRate: preset.rate, taxExempt: preset.taxExempt })}
-                className={`text-caption tap-field px-2 py-1 rounded-lg border text-left flex items-center justify-between gap-2 transition-all ${
-                  params.annualInterestRate === preset.rate && params.taxExempt === preset.taxExempt
+                className={`text-caption tap-field px-2 py-1 rounded-lg border text-left flex items-center justify-between gap-2 transition-all ${params.annualInterestRate === preset.rate && params.taxExempt === preset.taxExempt
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold'
                     : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
-                }`}
+                  }`}
               >
                 <span className="truncate">
                   {preset.name}
@@ -317,13 +314,13 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         {/* 5. Inflação Anual Estimada */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label 
+            <label
               htmlFor="annual-inflation-input"
               className="text-xs font-semibold text-slate-300 flex items-center gap-1.5"
             >
               Inflação Anual Média (IPCA) (%)
-              <span 
-                className="cursor-pointer text-slate-400 hover:text-slate-300" 
+              <span
+                className="cursor-pointer text-slate-400 hover:text-slate-300"
                 title="Para descontar e revelar o poder de compra real do patrimônio"
               >
                 <HelpCircle className="w-3.5 h-3.5" />
@@ -369,11 +366,10 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 type="button"
                 onClick={() => onChange({ annualInflationRate: inf })}
                 title={index === 1 ? 'IPCA acumulado nos últimos 12 meses (IBGE, via BCB)' : undefined}
-                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
-                  params.annualInflationRate === inf
+                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${params.annualInflationRate === inf
                     ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 font-semibold'
                     : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
-                }`}
+                  }`}
               >
                 {index === 1 ? `IPCA 12m (${formatPercent(inf)})` : formatPercent(inf, 1)}
               </button>
@@ -384,13 +380,13 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         {/* 6. Período em Anos */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label 
+            <label
               htmlFor="years-period-input"
               className="text-xs font-semibold text-slate-300 flex items-center gap-1.5"
             >
-              Período de Investimento (Anos)
-              <span 
-                className="cursor-pointer text-slate-400 hover:text-slate-300" 
+              Período de Investimento
+              <span
+                className="cursor-pointer text-slate-400 hover:text-slate-300"
                 title="Tempo total em que você deixará o dinheiro rendendo"
               >
                 <HelpCircle className="w-3.5 h-3.5" />
@@ -436,11 +432,10 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 key={y}
                 type="button"
                 onClick={() => onChange({ years: y })}
-                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
-                  params.years === y
+                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${params.years === y
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold'
                     : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
-                }`}
+                  }`}
               >
                 {y} anos
               </button>
@@ -461,22 +456,20 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
               type="button"
               onClick={() => onChange({ taxExempt: false })}
               title="22,5% até 180 dias, 20% até 360, 17,5% até 720 e 15% acima, aplicado a cada aporte"
-              className={`tap-target px-2.5 py-1 rounded-lg border text-xs font-medium transition-all ${
-                !params.taxExempt
+              className={`tap-target px-2.5 py-1 rounded-lg border text-xs font-medium transition-all ${!params.taxExempt
                   ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
                   : 'bg-surface-2 border-line text-slate-400'
-              }`}
+                }`}
             >
               Tributado (tabela regressiva: 22,5% a 15%)
             </button>
             <button
               type="button"
               onClick={() => onChange({ taxExempt: true })}
-              className={`tap-target px-2.5 py-1 rounded-lg border text-xs font-medium transition-all ${
-                params.taxExempt
+              className={`tap-target px-2.5 py-1 rounded-lg border text-xs font-medium transition-all ${params.taxExempt
                   ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
                   : 'bg-surface-2 border-line text-slate-400'
-              }`}
+                }`}
             >
               Isento (poupança, LCI, LCA, CRI, CRA)
             </button>
