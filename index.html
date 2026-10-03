@@ -25,7 +25,12 @@
          duas cópias na página servida, porque o helmet acrescenta as dele sem
          remover as estáticas. -->
 
+    <!-- Ícones. O Google usa o favicon no resultado da busca e pede um tamanho
+         múltiplo de 48 px: o .ico (48 px) e o PNG de 192 px cobrem isso, e o SVG fica
+         para os navegadores que o aceitam. Nenhum deles entra no caminho da pintura. -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 
@@ -40,6 +45,7 @@
           "@id": "https://checkfinance.com.br/#website",
           "url": "https://checkfinance.com.br/",
           "name": "CheckFinance",
+          "alternateName": ["Check Finance", "checkfinance.com.br"],
           "description": "Hub de ferramentas financeiras gratuitas em português.",
           "inLanguage": "pt-BR",
           "publisher": { "@id": "https://checkfinance.com.br/#organization" }
@@ -58,7 +64,9 @@
           },
           "logo": {
             "@type": "ImageObject",
-            "url": "https://checkfinance.com.br/og-image.png"
+            "url": "https://checkfinance.com.br/icon-512.png",
+            "width": 512,
+            "height": 512
           }
         }
       ]
