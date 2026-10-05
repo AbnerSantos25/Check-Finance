@@ -43,13 +43,14 @@ Esse filtro já resolve três problemas de uma vez:
 | `pix_copiar` | Copiar a chave PIX | — | Evento principal |
 | `exemplo_calcular` | Botão "Fazer esta conta na calculadora" | `exemplo` | Indica se o conteúdo educativo leva ao uso da calculadora |
 | `unidade_trocar` | Trocar a.a.↔a.m. ou anos↔meses | `campo` (`taxa`/`prazo`), `unidade` | Mede a demanda real por taxa ao mês e prazo em meses |
+| `porcentagem_calcular` | Primeiro uso de cada conta da calculadora de porcentagem, uma vez por visita | `modo` (`de`, `quantos`, `aumento_desconto`, `variacao`, `sucessivos`) | Mostra quais contas as pessoas procuram; `sucessivos` mede o interesse na questão viral |
 | `outra_calculadora` | Clique em "Outras calculadoras" | `origem`, `destino` | Indica se os links internos levam a outra ferramenta. Analise pelo parâmetro `origem`, não pelo "Caminho da página": a navegação é imediata e o evento pode sair registrado já na página de destino. Clique do meio e "abrir em nova aba" não contam, então o número é um piso. |
 
 Para ver os parâmetros nos relatórios, cadastre cada um como **dimensão personalizada**:
 
 1. GA4 → Administrador → Definições personalizadas → Criar dimensão personalizada.
 2. Escolha o escopo **Evento**.
-3. Use o mesmo nome do parâmetro: `local`, `exemplo`, `campo`, `unidade`, `origem`, `destino`.
+3. Use o mesmo nome do parâmetro: `local`, `exemplo`, `campo`, `unidade`, `origem`, `destino`, `modo`.
 
 **Crie as dimensões no dia do deploy.** Elas não valem para trás: os dados só aparecem a partir do dia em que cada dimensão é criada.
 
@@ -57,7 +58,7 @@ Para ver os parâmetros nos relatórios, cadastre cada um como **dimensão perso
 
 | Quando | O quê |
 | --- | --- |
-| Logo depois do deploy da Fase 1 | Search Console → Inspeção de URL → `https://checkfinance.com.br/calculadora-juros-compostos` → **Solicitar indexação**. No GA4, criar as dimensões personalizadas da seção anterior. |
+| Logo depois de cada deploy com página nova | Search Console → Inspeção de URL → endereço da página (`/calculadora-juros-compostos`, `/calculadora-porcentagem`) → **Solicitar indexação**. No GA4, criar as dimensões personalizadas da seção anterior. |
 | **3 semanas depois** | Primeira leitura: exportar os dados abaixo e decidir a Fase 3 com as regras seguintes. |
 | 8 semanas depois | Segunda leitura. O Google leva semanas para estabilizar a posição de uma página nova. Não mude o título no meio do caminho por causa de uma oscilação. |
 | Depois, todo mês | Repetir a exportação e comparar com o mês anterior. |
@@ -90,6 +91,7 @@ Os limites são deliberadamente baixos. Para um site novo, 50 impressões em 28 
 | Posição ≤ 10 e CTR < 2% | Reescrever `seo.title` e `seo.description` em `src/config/tools.data.ts`. |
 | ≥ 30% das sessões orgânicas da página com `unidade_trocar` e `unidade = mensal` | Avaliar **taxa ao mês como padrão** (hoje é ao ano). A conta é por **sessões**, não por eventos, porque quem alterna várias vezes infla os eventos. Para fazer: GA4 → **Explorar** → Exploração livre, com a métrica Sessões e um segmento de sessões que tenham o evento `unidade_trocar` com `unidade = mensal`; divida pelas sessões orgânicas da página. |
 | `exemplo_calcular` em menos de 2% das sessões orgânicas da página | O conteúdo educativo não está levando à calculadora. Rever o texto do botão e a posição do exemplo. |
+| Consultas com "porcentagem" com impressões, mas posição > 20 depois de 8 semanas | Reforçar a página com a conta mais procurada pelo `modo` do evento `porcentagem_calcular` (exemplos, texto e FAQ dessa conta). |
 | `outra_calculadora` quase zero | Destacar mais o bloco "Outras calculadoras", ou trazê-lo para mais perto do resultado. |
 
 ## Fora do site (Fase 4)
