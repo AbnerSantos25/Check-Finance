@@ -2,7 +2,6 @@ import React from 'react';
 import { 
   Sliders, 
   RotateCcw, 
-  HelpCircle, 
   Percent, 
   Calendar, 
   DollarSign, 
@@ -14,6 +13,7 @@ import { InvestmentParams, MarketRates } from '../../../types';
 import { formatBRL, formatNumber, formatPercent, monthlyEquivalentRate } from '../../../shared/lib/format';
 import { REFERENCE_DATE } from '../../../shared/lib/economicApi';
 import { DraftNumberInput } from '../../../shared/components/DraftNumberInput';
+import { InfoTip } from '../../../shared/components/InfoTip';
 
 interface InvestmentFormProps {
   params: InvestmentParams;
@@ -75,18 +75,12 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         {/* 1. Aporte Inicial */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label 
-              htmlFor="initial-deposit-input"
-              className="text-xs font-semibold text-slate-300 flex items-center gap-1.5"
-            >
-              Aporte Inicial (R$)
-              <span 
-                className="cursor-pointer text-slate-400 hover:text-slate-300" 
-                title="Capital que você já possui hoje para começar a investir"
-              >
-                <HelpCircle className="w-3.5 h-3.5" />
-              </span>
-            </label>
+            <div className="flex items-center gap-1.5">
+              <label htmlFor="initial-deposit-input" className="text-xs font-semibold text-slate-300">
+                Aporte Inicial (R$)
+              </label>
+              <InfoTip label="Aporte Inicial (R$)" text="Capital que você já possui hoje para começar a investir" />
+            </div>
             <span className="text-xs font-mono font-medium text-emerald-400">
               {formatBRL(params.initialDeposit)}
             </span>
@@ -130,18 +124,12 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         {/* 2. Aporte Mensal */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label 
-              htmlFor="monthly-deposit-input"
-              className="text-xs font-semibold text-slate-300 flex items-center gap-1.5"
-            >
-              Aporte Mensal (R$)
-              <span 
-                className="cursor-pointer text-slate-400 hover:text-slate-300" 
-                title="Valor que você economizará e investirá religiosamente todo mês"
-              >
-                <HelpCircle className="w-3.5 h-3.5" />
-              </span>
-            </label>
+            <div className="flex items-center gap-1.5">
+              <label htmlFor="monthly-deposit-input" className="text-xs font-semibold text-slate-300">
+                Aporte Mensal (R$)
+              </label>
+              <InfoTip label="Aporte Mensal (R$)" text="Valor que você economizará e investirá religiosamente todo mês" />
+            </div>
             <span className="text-xs font-mono font-medium text-emerald-400">
               {formatBRL(params.monthlyDeposit)}
             </span>
@@ -185,18 +173,12 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         {/* 3. Reajuste Anual do Aporte */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label 
-              htmlFor="annual-adjustment-input"
-              className="text-xs font-semibold text-slate-300 flex items-center gap-1.5"
-            >
-              Reajuste Anual do Aporte (%)
-              <span 
-                className="cursor-pointer text-slate-400 hover:text-slate-300" 
-                title="Aumento anual no aporte para acompanhar aumentos salariais e inflação"
-              >
-                <HelpCircle className="w-3.5 h-3.5" />
-              </span>
-            </label>
+            <div className="flex items-center gap-1.5">
+              <label htmlFor="annual-adjustment-input" className="text-xs font-semibold text-slate-300">
+                Reajuste Anual do Aporte (%)
+              </label>
+              <InfoTip label="Reajuste Anual do Aporte (%)" text="Aumento anual no aporte para acompanhar aumentos salariais e inflação" />
+            </div>
             <span className="text-xs font-mono font-medium text-emerald-400">
               {formatNumber(params.annualAdjustmentRate, 1)}% a.a.
             </span>
@@ -240,18 +222,12 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         {/* 4. Taxa de Rentabilidade Anual Bruta */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label 
-              htmlFor="annual-interest-input"
-              className="text-xs font-semibold text-slate-300 flex items-center gap-1.5"
-            >
-              Taxa de Juros Anual Bruta (%)
-              <span 
-                className="cursor-pointer text-slate-400 hover:text-slate-300" 
-                title="Rentabilidade bruta média esperada por ano em sua carteira"
-              >
-                <HelpCircle className="w-3.5 h-3.5" />
-              </span>
-            </label>
+            <div className="flex items-center gap-1.5">
+              <label htmlFor="annual-interest-input" className="text-xs font-semibold text-slate-300">
+                Taxa de Juros Anual Bruta (%)
+              </label>
+              <InfoTip label="Taxa de Juros Anual Bruta (%)" text="Rentabilidade bruta média esperada por ano em sua carteira" />
+            </div>
             <span className="text-xs font-mono font-medium text-emerald-400">
               {formatNumber(params.annualInterestRate)}% a.a.
             </span>
@@ -317,18 +293,12 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         {/* 5. Inflação Anual Estimada */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label 
-              htmlFor="annual-inflation-input"
-              className="text-xs font-semibold text-slate-300 flex items-center gap-1.5"
-            >
-              Inflação Anual Média (IPCA) (%)
-              <span 
-                className="cursor-pointer text-slate-400 hover:text-slate-300" 
-                title="Para descontar e revelar o poder de compra real do patrimônio"
-              >
-                <HelpCircle className="w-3.5 h-3.5" />
-              </span>
-            </label>
+            <div className="flex items-center gap-1.5">
+              <label htmlFor="annual-inflation-input" className="text-xs font-semibold text-slate-300">
+                Inflação Anual Média (IPCA) (%)
+              </label>
+              <InfoTip label="Inflação Anual Média (IPCA) (%)" text="Para descontar e revelar o poder de compra real do patrimônio" />
+            </div>
             <span className="text-xs font-mono font-medium text-amber-400">
               {formatNumber(params.annualInflationRate)}% a.a.
             </span>
@@ -384,18 +354,12 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
         {/* 6. Período em Anos */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label 
-              htmlFor="years-period-input"
-              className="text-xs font-semibold text-slate-300 flex items-center gap-1.5"
-            >
-              Período de Investimento (Anos)
-              <span 
-                className="cursor-pointer text-slate-400 hover:text-slate-300" 
-                title="Tempo total em que você deixará o dinheiro rendendo"
-              >
-                <HelpCircle className="w-3.5 h-3.5" />
-              </span>
-            </label>
+            <div className="flex items-center gap-1.5">
+              <label htmlFor="years-period-input" className="text-xs font-semibold text-slate-300">
+                Período de Investimento (Anos)
+              </label>
+              <InfoTip label="Período de Investimento (Anos)" text="Tempo total em que você deixará o dinheiro rendendo" />
+            </div>
             <span className="text-xs font-mono font-medium text-emerald-400">
               {params.years} {params.years === 1 ? 'ano' : 'anos'} ({params.years * 12} meses)
             </span>
