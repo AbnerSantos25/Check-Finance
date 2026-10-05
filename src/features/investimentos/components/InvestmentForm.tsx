@@ -457,7 +457,8 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
             <div className="w-28 sm:w-24 shrink-0 relative">
               <DraftNumberInput
                 id="years-period-input"
-                min="1"
+                // Em anos, o mínimo é 1 mês (0,08 ano): 7 meses aparecem como 0,58.
+                min={inMonths ? '1' : '0.08'}
                 max={inMonths ? '720' : '60'}
                 // Em anos o prazo pode ser fracionário (100 meses = 8,33 anos).
                 step={inMonths ? '1' : 'any'}
