@@ -2,13 +2,15 @@
 
 Este documento define como medir a estratégia de visibilidade no Google (Fases 1 a 4) e como decidir o que vem depois.
 
-**Regra de ouro:** só conta o que veio da busca orgânica. No GA4, analise sempre com **Origem/mídia = `google / organic`**.
+**Regra de ouro:** só conta o que veio da busca orgânica. No GA4, analise sempre com **Origem/mídia da sessão = `google / organic`**. Não use a "origem do primeiro usuário", que o GA4 também oferece.
 
 Esse filtro já resolve três problemas de uma vez:
 
 - **Robôs de data center.** Ashburn, Cheyenne, San Jose e Praga eram cerca de 41 dos 115 "usuários" de out/2026.
 - **Medições do PageSpeed.** Desde a Fase 1 elas também saem marcadas como `traffic_type: internal`.
 - **Visitas do dono e de conhecidos.** Essas vêm diretas ou por link.
+
+**GA4 e Search Console não se comparam em número absoluto.** O GA4 só registra quem aceitou os cookies de análise, já que no Brasil o padrão é negado. O site ainda é pequeno demais para a modelagem do Consent Mode preencher essa lacuna. Use o GA4 para **proporções** (quanto dos visitantes faz X) e o Search Console para **volume** (impressões e cliques).
 
 ## Ponto de partida (out/2026, antes da Fase 1)
 
@@ -25,7 +27,7 @@ Esse filtro já resolve três problemas de uma vez:
 | # | KPI | Onde ver | Por que importa |
 | --- | --- | --- | --- |
 | 1 | **Impressões** das consultas com "juros" | Search Console → Desempenho → Resultados da pesquisa, filtro *Consulta contém* `juros` | Primeiro sinal de que o Google passou a mostrar a página. Sobe antes dos cliques. |
-| 2 | **Posição média** de "calculadora de juros compostos" e variações | Search Console, mesmo relatório, aba Consultas | Abaixo de 10 quase não há clique. A meta é entrar na primeira página. |
+| 2 | **Posição média** de "calculadora de juros compostos" e variações | Search Console, mesmo relatório, aba Consultas | Fora das 10 primeiras posições (posição > 10), quase não há clique. A meta é entrar na primeira página. |
 | 3 | **Cliques orgânicos** em `/calculadora-juros-compostos` | Search Console, filtro *Página* | O resultado que importa. |
 | 4 | **CTR** da página | Search Console | CTR baixo com posição boa indica que o título ou a descrição não convencem. |
 | 5 | **Sessões engajadas** (orgânico) | GA4 → Relatórios → Aquisição → Aquisição de tráfego, filtro `google / organic` | Mostra se quem chega usa a calculadora ou sai. |
@@ -41,7 +43,7 @@ Esse filtro já resolve três problemas de uma vez:
 | `pix_copiar` | Copiar a chave PIX | — | Evento principal |
 | `exemplo_calcular` | Botão "Fazer esta conta na calculadora" | `exemplo` | Indica se o conteúdo educativo leva ao uso da calculadora |
 | `unidade_trocar` | Trocar a.a.↔a.m. ou anos↔meses | `campo` (`taxa`/`prazo`), `unidade` | Mede a demanda real por taxa ao mês e prazo em meses |
-| `outra_calculadora` | Clique em "Outras calculadoras" | `origem`, `destino` | Indica se os links internos levam a outra ferramenta |
+| `outra_calculadora` | Clique em "Outras calculadoras" | `origem`, `destino` | Indica se os links internos levam a outra ferramenta. Analise pelo parâmetro `origem`, não pelo "Caminho da página": a navegação é imediata e o evento pode sair registrado já na página de destino. Clique do meio e "abrir em nova aba" não contam, então o número é um piso. |
 
 Para ver os parâmetros nos relatórios, cadastre cada um como **dimensão personalizada**:
 
@@ -49,13 +51,13 @@ Para ver os parâmetros nos relatórios, cadastre cada um como **dimensão perso
 2. Escolha o escopo **Evento**.
 3. Use o mesmo nome do parâmetro: `local`, `exemplo`, `campo`, `unidade`, `origem`, `destino`.
 
-Os dados só aparecem a partir do dia em que a dimensão é criada.
+**Crie as dimensões no dia do deploy.** Elas não valem para trás: os dados só aparecem a partir do dia em que cada dimensão é criada.
 
 ## Quando olhar
 
 | Quando | O quê |
 | --- | --- |
-| Logo depois do deploy da Fase 1 | Search Console → Inspeção de URL → `https://checkfinance.com.br/calculadora-juros-compostos` → **Solicitar indexação**. |
+| Logo depois do deploy da Fase 1 | Search Console → Inspeção de URL → `https://checkfinance.com.br/calculadora-juros-compostos` → **Solicitar indexação**. No GA4, criar as dimensões personalizadas da seção anterior. |
 | **3 semanas depois** | Primeira leitura: exportar os dados abaixo e decidir a Fase 3 com as regras seguintes. |
 | 8 semanas depois | Segunda leitura. O Google leva semanas para estabilizar a posição de uma página nova. Não mude o título no meio do caminho por causa de uma oscilação. |
 | Depois, todo mês | Repetir a exportação e comparar com o mês anterior. |
@@ -86,7 +88,8 @@ Os limites são deliberadamente baixos. Para um site novo, 50 impressões em 28 
 | ≥ 50 impressões em consultas com "cdi", "cdb" ou "tesouro" | Criar o **simulador CDB/CDI/Tesouro × Poupança**. |
 | Consultas com "fórmula" ou "juros simples" com impressões, mas posição > 20 | A seção na calculadora não basta. Criar um **artigo próprio** em `/aprenda/...` com link para a calculadora. |
 | Posição ≤ 10 e CTR < 2% | Reescrever `seo.title` e `seo.description` em `src/config/tools.data.ts`. |
-| `unidade_trocar` com `unidade = mensal` em ≥ 30% das sessões orgânicas da página | Avaliar **taxa ao mês como padrão** (hoje é ao ano). |
+| ≥ 30% das sessões orgânicas da página com `unidade_trocar` e `unidade = mensal` | Avaliar **taxa ao mês como padrão** (hoje é ao ano). A conta é por **sessões**, não por eventos, porque quem alterna várias vezes infla os eventos. Para fazer: GA4 → **Explorar** → Exploração livre, com a métrica Sessões e um segmento de sessões que tenham o evento `unidade_trocar` com `unidade = mensal`; divida pelas sessões orgânicas da página. |
+| `exemplo_calcular` em menos de 2% das sessões orgânicas da página | O conteúdo educativo não está levando à calculadora. Rever o texto do botão e a posição do exemplo. |
 | `outra_calculadora` quase zero | Destacar mais o bloco "Outras calculadoras", ou trazê-lo para mais perto do resultado. |
 
 ## Fora do site (Fase 4)
