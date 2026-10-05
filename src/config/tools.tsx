@@ -1,4 +1,4 @@
-import { Compass, Home, KeyRound, TrendingUp, type LucideIcon } from 'lucide-react';
+import { Compass, Home, KeyRound, Percent, TrendingUp, type LucideIcon } from 'lucide-react';
 import type { ToolAccent, ToolId } from './tools.data';
 
 export const TOOL_ICONS: Record<ToolId, LucideIcon> = {
@@ -6,6 +6,7 @@ export const TOOL_ICONS: Record<ToolId, LucideIcon> = {
   financiamento: Home,
   aluguel: KeyRound,
   independencia: Compass,
+  porcentagem: Percent,
 };
 
 interface AccentClasses {
@@ -51,5 +52,12 @@ export const ACCENT_CLASSES: Record<ToolAccent, AccentClasses> = {
     idleIcon: 'text-indigo-400/80 group-hover:text-indigo-400',
     iconSurface: 'bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-200',
     cardHover: 'hover:border-indigo-500/40 hover:shadow-indigo-500/10',
+  },
+  violet: {
+    activeIcon: 'text-violet-400',
+    indicator: 'bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.8)]',
+    idleIcon: 'text-violet-400/80 group-hover:text-violet-400',
+    iconSurface: 'bg-gradient-to-tr from-violet-600 via-violet-500 to-fuchsia-200',
+    cardHover: 'hover:border-violet-500/40 hover:shadow-violet-500/10',
   },
 };

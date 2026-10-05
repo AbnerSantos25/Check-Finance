@@ -6,11 +6,11 @@
  * Node, onde não há pipeline de React. Ícones e classes moram em tools.tsx.
  */
 
-export type ToolId = 'investimentos' | 'financiamento' | 'aluguel' | 'independencia';
+export type ToolId = 'investimentos' | 'financiamento' | 'aluguel' | 'independencia' | 'porcentagem';
 
 export type ToolStatus = 'ativo' | 'em-breve';
 
-export type ToolAccent = 'emerald' | 'sky' | 'amber' | 'indigo';
+export type ToolAccent = 'emerald' | 'sky' | 'amber' | 'indigo' | 'violet';
 
 export interface ToolMeta {
   id: ToolId;
@@ -93,6 +93,24 @@ export const TOOLS: ToolMeta[] = [
         'Descubra quando você pode viver de renda: patrimônio necessário, idade da independência financeira e evolução mês a mês, com a inflação descontada.',
       priority: 0.9,
       changefreq: 'weekly',
+    },
+  },
+  {
+    id: 'porcentagem',
+    path: '/calculadora-porcentagem',
+    label: 'Calculadora de Porcentagem',
+    shortLabel: 'Porcentagem',
+    description:
+      'Quanto é X% de um valor, quantos por cento um número é de outro, aumento, desconto, variação e aumentos e descontos sucessivos.',
+    accent: 'violet',
+    status: 'ativo',
+    seo: {
+      title: 'Calculadora de Porcentagem: aumento, desconto e variação | CheckFinance',
+      description:
+        'Calcule porcentagem: X% de um valor, quantos por cento é, aumento, desconto, variação percentual e aumentos e descontos sucessivos, com a conta explicada.',
+      // Ferramenta de apoio: as calculadoras financeiras continuam na frente no sitemap.
+      priority: 0.8,
+      changefreq: 'monthly',
     },
   },
 ];
