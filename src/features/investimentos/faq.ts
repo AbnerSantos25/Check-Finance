@@ -1,5 +1,5 @@
 import type { FaqItem } from '../../shared/seo/jsonLd';
-import { EXAMPLE } from './example';
+import { EXAMPLE, LONG_RUN_COMPARISON } from './example';
 
 /**
  * Perguntas da calculadora de investimentos.
@@ -28,7 +28,7 @@ export const INVESTMENT_FAQ: FaqItem[] = [
     question: 'Qual a diferença entre juros simples e compostos?',
     answer: [
       'Nos juros simples a taxa incide sempre sobre o capital inicial, e o valor cresce em linha reta: M = C × (1 + i × n). Nos juros compostos a taxa incide sobre o saldo acumulado, e o crescimento acelera.',
-      `No curto prazo a diferença é pequena: ${EXAMPLE.capital} a ${EXAMPLE.rate} ao mês viram ${EXAMPLE.simpleAmount} em 12 meses com juros simples e ${EXAMPLE.amount} com juros compostos. Em 20 anos, a mesma taxa sobre R$ 10.000,00 dá R$ 34.000,00 com juros simples e mais de R$ 108 mil com juros compostos.`,
+      `No curto prazo a diferença é pequena: ${EXAMPLE.capital} a ${EXAMPLE.rate} ao mês viram ${EXAMPLE.simpleAmount} em 12 meses com juros simples e ${EXAMPLE.amount} com juros compostos. ${LONG_RUN_COMPARISON}`,
     ],
   },
   {

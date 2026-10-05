@@ -57,7 +57,9 @@ export const EXAMPLE = {
 };
 
 /** Juros simples × compostos: COMPARISON.capital à taxa COMPARISON.monthlyRate. */
-export const SIMPLE_VS_COMPOUND = [12, 60, 120, 240].map((months) => {
+const SIMPLE_VS_COMPOUND_MONTHS = [12, 60, 120, 240];
+
+export const SIMPLE_VS_COMPOUND = SIMPLE_VS_COMPOUND_MONTHS.map((months) => {
   const simple = simpleAmount(COMPARISON.capital, COMPARISON.monthlyRate, months);
   const compound = compoundAmount(COMPARISON.capital, COMPARISON.monthlyRate, months);
   return {
@@ -68,14 +70,23 @@ export const SIMPLE_VS_COMPOUND = [12, 60, 120, 240].map((months) => {
   };
 });
 
-/** Tabela de juros compostos: quanto TABLE_CAPITAL vira, por taxa mensal e prazo. */
 export const COMPARISON_TEXT = `${formatBRL(COMPARISON.capital)} a ${formatPercent(COMPARISON.monthlyRate * 100, 0)} ao mês`;
 export const TABLE_CAPITAL_TEXT = formatBRL(TABLE_CAPITAL);
 
+const longest = SIMPLE_VS_COMPOUND_MONTHS[SIMPLE_VS_COMPOUND_MONTHS.length - 1];
+/** Frase do FAQ: o prazo mais longo da comparação, por extenso. */
+export const LONG_RUN_COMPARISON = `Em ${longest / 12} anos, a mesma taxa sobre ${formatBRL(COMPARISON.capital)} dá ${formatBRL(
+  simpleAmount(COMPARISON.capital, COMPARISON.monthlyRate, longest),
+)} com juros simples e mais de R$ ${Math.floor(compoundAmount(COMPARISON.capital, COMPARISON.monthlyRate, longest) / 1000)} mil com juros compostos.`;
+
+/** Tabela de juros compostos: quanto TABLE_CAPITAL vira, por taxa mensal e prazo. */
+
+const TABLE_MONTHS = [12, 24, 60, 120];
+
 export const COMPOUND_TABLE = {
-  months: [12, 24, 60, 120],
+  months: TABLE_MONTHS,
   rows: [0.005, 0.01, 0.015].map((rate) => ({
     rate: `${formatPercent(rate * 100, 1)} a.m.`,
-    values: [12, 24, 60, 120].map((months) => formatBRL(compoundAmount(TABLE_CAPITAL, rate, months))),
+    values: TABLE_MONTHS.map((months) => formatBRL(compoundAmount(TABLE_CAPITAL, rate, months))),
   })),
 };

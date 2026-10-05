@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calculateInvestment } from '../calculateInvestment';
 import { sanitizeParams } from '../sanitizeParams';
+import { samePeriod, toMonths } from '../units';
 import { regressiveTaxRate } from '../taxes';
 import type { InvestmentParams } from '../../../../types';
 
@@ -127,6 +128,18 @@ describe('sanitizeParams', () => {
     expect(Math.round(sanitizeParams(BASE, { years: 10.7 }).years * 12)).toBe(128); // 128,4 meses → 128
     expect(sanitizeParams(BASE, { years: 0 }).years).toBeCloseTo(1 / 12, 6);
     expect(sanitizeParams(BASE, { years: 100 / 12 }).years).toBe(8.333333); // link legível
+  });
+
+  it('a última linha do motor é sempre o mesmo prazo dos parâmetros (selo "Final", filtro de marcos)', () => {
+    for (let months = 1; months <= 720; months++) {
+      const params = sanitizeParams(BASE, { years: months / 12 });
+      const rows = calculateInvestment(params).yearlyData;
+      const last = rows[rows.length - 1].year;
+      expect(toMonths(last)).toBe(months);
+      expect(samePeriod(last, params.years)).toBe(true);
+      // Só a última linha casa com o prazo.
+      expect(rows.filter((row) => samePeriod(row.year, params.years))).toHaveLength(1);
+    }
   });
 
   it('ignora valores não finitos e mantém o atual', () => {

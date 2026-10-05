@@ -127,9 +127,12 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
                       <div className="p-3.5 rounded-xl bg-panel border border-line shadow-2xl text-xs space-y-2 min-w-[210px]">
                         <div className="font-bold text-white pb-1.5 border-b border-white/10 flex justify-between items-center">
                           <span>{label}</span>
-                          <span className="text-caption text-slate-400 font-normal">
-                            {toMonths(data.year)} meses
-                          </span>
+                          {/* "Mês 100" já diz o prazo; "Ano 3" ganha o equivalente em meses. */}
+                          {toMonths(data.year) % 12 === 0 && (
+                            <span className="text-caption text-slate-400 font-normal">
+                              {toMonths(data.year)} meses
+                            </span>
+                          )}
                         </div>
                         <div className="flex justify-between items-center text-emerald-400 font-medium">
                           <span>Saldo bruto:</span>

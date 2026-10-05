@@ -39,8 +39,11 @@ function UnitSwitch<T extends string>({
 }: {
   label: string;
   value: T;
-  /** [valor, texto visível, rótulo falado] */
-  options: [T, string, string][];
+  /**
+   * [valor, texto visível, rótulo falado opcional]. O rótulo falado começa pelo
+   * texto visível (WCAG 2.5.3): quem usa comando de voz diz "a.m." e acha o botão.
+   */
+  options: [T, string, string?][];
   onChange: (value: T) => void;
 }) {
   return (
@@ -49,7 +52,7 @@ function UnitSwitch<T extends string>({
         <button
           key={option}
           type="button"
-          aria-label={spoken}
+          aria-label={spoken ? `${text}, ${spoken}` : undefined}
           aria-pressed={value === option}
           onClick={() => onChange(option)}
           className={`min-h-8 px-2.5 rounded-md text-caption font-medium transition-colors cursor-pointer ${
@@ -430,7 +433,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
             <UnitSwitch
               label="Unidade do período"
               value={units.period}
-              options={[['anos', 'anos', 'em anos'], ['meses', 'meses', 'em meses']]}
+              options={[['anos', 'anos'], ['meses', 'meses']]}
               onChange={(period) => onUnitsChange({ ...units, period })}
             />
           </div>
@@ -456,7 +459,8 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 id="years-period-input"
                 min="1"
                 max={inMonths ? '720' : '60'}
-                step="1"
+                // Em anos o prazo pode ser fracionário (100 meses = 8,33 anos).
+                step={inMonths ? '1' : 'any'}
                 value={shownPeriod}
                 onCommit={commitPeriod}
                 aria-describedby="years-period-unit"

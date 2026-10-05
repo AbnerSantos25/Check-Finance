@@ -32,6 +32,13 @@ export const monthlyToAnnual = (monthlyPercent: number): number =>
 /** Prazo em anos (fracionário) → número inteiro de meses. */
 export const toMonths = (years: number): number => Math.round(years * 12);
 
+/**
+ * Dois prazos são o mesmo mês? Compare sempre assim, nunca com `===`: o prazo dos
+ * parâmetros é gravado com 6 casas (8.333333) e o da linha da tabela sai do motor
+ * como meses ÷ 12 (8.333333333333334).
+ */
+export const samePeriod = (a: number, b: number): boolean => toMonths(a) === toMonths(b);
+
 /** "1 ano", "30 anos", "1 mês", "18 meses". */
 export function formatPeriod(years: number): string {
   const months = toMonths(years);

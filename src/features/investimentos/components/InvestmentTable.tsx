@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { formatPeriod, periodRowLabel } from '../lib/units';
+import { formatPeriod, periodRowLabel, samePeriod } from '../lib/units';
 import { Table as TableIcon } from 'lucide-react';
 import { CalculationSummary, YearlyResult } from '../../../types';
 import { formatBRL, formatPercent } from '../../../shared/lib/format';
@@ -17,7 +17,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
 
   // Filter rows if milestones (every 5 years or last year)
   const displayData = filterMode === 'milestones' && years > 5
-    ? summary.yearlyData.filter(d => d.year === 1 || d.year % 5 === 0 || d.year === years)
+    ? summary.yearlyData.filter(d => d.year === 1 || d.year % 5 === 0 || samePeriod(d.year, years))
     : summary.yearlyData;
 
   // Export to CSV
@@ -122,7 +122,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
           </thead>
           <tbody role="rowgroup" className="divide-y divide-surface-2">
             {displayData.map((row) => {
-              const isLastYear = row.year === years;
+              const isLastYear = samePeriod(row.year, years);
               return (
                 <tr
                   role="row"
