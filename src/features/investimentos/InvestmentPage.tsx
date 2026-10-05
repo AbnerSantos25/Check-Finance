@@ -8,6 +8,7 @@ import { useModals } from '../../app/providers/ModalsProvider';
 import { useShareableParams } from '../../app/useShareableParams';
 import { usePersistentState } from '../../app/providers/FormStateProvider';
 import { RelatedTools } from '../../shared/components/RelatedTools';
+import { trackEvent } from '../../shared/lib/analytics';
 import { SummaryCards } from './components/SummaryCards';
 import { InvestmentForm } from './components/InvestmentForm';
 import { ComparisonCharts } from './components/ComparisonCharts';
@@ -74,6 +75,7 @@ export const InvestmentPage: React.FC = () => {
       })
     );
     setUnits({ rate: 'mensal', period: 'meses' });
+    trackEvent('exemplo_calcular', { exemplo: 'formula_juros_compostos' });
     // Leva a pessoa (e o foco do teclado/leitor de tela) até a calculadora preenchida.
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     document
@@ -117,7 +119,12 @@ export const InvestmentPage: React.FC = () => {
         params={params}
         onChange={handleParamChange}
         units={units}
-        onUnitsChange={setUnits}
+        onUnitsChange={(next) => {
+          // Mede a procura por taxa ao mês e prazo em meses (o que a busca "diário" sugere).
+          if (next.rate !== units.rate) trackEvent('unidade_trocar', { campo: 'taxa', unidade: next.rate });
+          if (next.period !== units.period) trackEvent('unidade_trocar', { campo: 'prazo', unidade: next.period });
+          setUnits(next);
+        }}
         onReset={() => {
           setParams(DEFAULT_PARAMS);
           setUnits(DEFAULT_UNITS);
