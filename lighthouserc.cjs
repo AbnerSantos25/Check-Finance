@@ -17,6 +17,7 @@ const ROUTES = [
   '/simulador-financiamento-imobiliario',
   '/alugar-ou-comprar-imovel',
   '/calculadora-independencia-financeira',
+  '/calculadora-porcentagem',
 ];
 
 module.exports = {

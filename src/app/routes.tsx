@@ -82,6 +82,10 @@ export const routes: RouteRecord[] = [
         lazy: lazyRoute(() => import('../features/independencia/IndependencePage'), 'IndependencePage'),
       },
       {
+        path: getTool('porcentagem').path.slice(1),
+        lazy: lazyRoute(() => import('../features/porcentagem/PercentagePage'), 'PercentagePage'),
+      },
+      {
         path: PRIVACY_PATH.slice(1),
         lazy: lazyRoute(() => import('../features/privacidade/PrivacyPage'), 'PrivacyPage'),
       },

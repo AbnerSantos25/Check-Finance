@@ -228,3 +228,25 @@ export interface IndependenceResult {
   /** Mês 0 (hoje) até o mês da meta. Vazio quando não há o que projetar. */
   schedule: IndependenceMonth[];
 }
+
+/**
+ * Calculadora de porcentagem: cinco contas independentes na mesma página. Os
+ * campos ficam num objeto só para o link compartilhado levar todas de uma vez.
+ */
+export interface PercentageParams {
+  ofPercent: number;              // Quanto é X% ...
+  ofValue: number;                // ... de Y
+  partValue: number;              // X é quantos por cento ...
+  wholeValue: number;             // ... de Y
+  changeValue: number;            // Valor que recebe o aumento ou o desconto
+  changePercent: number;          // Percentual do aumento/desconto
+  fromValue: number;              // Variação percentual: valor inicial ...
+  toValue: number;                // ... e valor final
+  chainStart: number;             // Aumentos e descontos sucessivos: valor inicial
+  chainCount: number;             // Quantas etapas estão em uso (1 a 5)
+  chainStep1: number;             // Etapa em %: positivo = aumento, negativo = desconto
+  chainStep2: number;
+  chainStep3: number;
+  chainStep4: number;
+  chainStep5: number;
+}

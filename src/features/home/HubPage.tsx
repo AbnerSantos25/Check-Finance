@@ -64,7 +64,9 @@ export const HubPage: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Com número ímpar de ferramentas, o último card ocupa a linha inteira em vez de
+          ficar sozinho numa coluna. */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:[&>*:last-child:nth-child(odd)]:col-span-2">
         {TOOLS.map((tool) => {
           const Icon = TOOL_ICONS[tool.id];
           const accent = ACCENT_CLASSES[tool.accent];
@@ -177,6 +179,25 @@ export const HubPage: React.FC = () => {
               className="tap-target mt-3 gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300"
             >
               Abrir a calculadora de independência financeira
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-surface border border-line">
+            <h3 className="text-lg font-bold text-white mb-1.5">
+              Você quer calcular um aumento, um desconto ou uma variação
+            </h3>
+            <p className="text-sm text-slate-400 leading-relaxed">
+              A calculadora de porcentagem resolve as contas do dia a dia: quanto é 15% de um valor,
+              quanto fica um preço com desconto, quanto o aluguel subiu em percentual. Ela também
+              mostra por que um aumento de 10% seguido de um desconto de 10% não volta ao valor
+              inicial.
+            </p>
+            <Link
+              to={getTool('porcentagem').path}
+              className="tap-target mt-3 gap-1.5 text-xs font-semibold text-violet-400 hover:text-violet-300"
+            >
+              Abrir a calculadora de porcentagem
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
