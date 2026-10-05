@@ -8,10 +8,15 @@ import { formatBRL } from '../../../shared/lib/format';
  * jeitos. O `toPrecision(15)` desfaz o ruído do ponto flutuante antes de arredondar:
  * 1,005 × 100 dá 100,49999… em binário, e o meio centavo sumiria.
  */
-export const round2 = (value: number): number => {
-  const cents = Math.round(Number((Math.abs(value) * 100).toPrecision(15)));
-  return (Math.sign(value) * cents) / 100 || 0;
+const toCents = (value: number): number => {
+  const scaled = Math.abs(value) * 100;
+  // Acima de 1e11 centavos (R$ 1 bilhão) quinze dígitos não cobrem mais os centavos;
+  // ali o double já é o melhor que dá.
+  const cents = Math.round(scaled < 1e11 ? Number(scaled.toPrecision(15)) : scaled);
+  return Math.sign(value) * cents || 0;
 };
+
+export const round2 = (value: number): number => toCents(value) / 100 || 0;
 
 /** Valor em reais, arredondado por `round2` (o Intl não arredonda de novo). */
 export const formatMoney = (value: number): string => formatBRL(round2(value));
@@ -22,9 +27,11 @@ export const formatMoney = (value: number): string => formatBRL(round2(value));
  * mostrar "+R$ 14,99 → R$ 114,88".
  */
 export function moneyChange(value: number, percent: number) {
-  const base = round2(value);
-  const amount = round2((value * percent) / 100);
-  return { amount, increased: round2(base + amount), discounted: round2(base - amount) };
+  // Em centavos inteiros: a soma é exata em qualquer escala, e a diferença sai da
+  // mesma base exibida (R$ 1,005 aparece como R$ 1,01, e 100% dele é R$ 1,01).
+  const base = toCents(value);
+  const amount = toCents((base * percent) / 10000);
+  return { amount: amount / 100, increased: (base + amount) / 100, discounted: (base - amount) / 100 };
 }
 
 /**

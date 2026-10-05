@@ -141,6 +141,14 @@ describe('formatação', () => {
       }
     }
     expect(broken).toEqual([]);
+    // No limite do formulário (R$ 1 trilhão, 1000%) a conta continua fechando.
+    const big = moneyChange(999999999999.99, 1000);
+    expect([formatMoney(big.amount), formatMoney(big.increased)].map(n)).toEqual([
+      'R$ 9.999.999.999.999,90',
+      'R$ 10.999.999.999.999,89',
+    ]);
+    // A diferença sai da base exibida: R$ 1,005 aparece como R$ 1,01.
+    expect(moneyChange(1.005, 100)).toEqual({ amount: 1.01, increased: 2.02, discounted: 0 });
   });
 
   it('variação com sinal, sem "−0%"', () => {
