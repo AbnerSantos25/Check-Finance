@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ACTIVE_TOOLS, type ToolId } from '../../config/tools.data';
 import { ACCENT_CLASSES, TOOL_ICONS } from '../../config/tools.tsx';
+import { trackEvent } from '../lib/analytics';
 
 /**
  * "Outras calculadoras": links entre as ferramentas, no fim de cada uma.
@@ -27,6 +28,8 @@ export const RelatedTools: React.FC<{ current: ToolId }> = ({ current }) => {
             <Link
               key={tool.id}
               to={tool.path}
+              // Mede se os links internos levam gente de uma calculadora para outra.
+              onClick={() => trackEvent('outra_calculadora', { origem: current, destino: tool.id })}
               className={`group flex items-start gap-3 p-4 rounded-2xl bg-surface border border-line transition-all ${ACCENT_CLASSES[tool.accent].cardHover}`}
             >
               <Icon className={`w-5 h-5 shrink-0 mt-0.5 ${ACCENT_CLASSES[tool.accent].activeIcon}`} aria-hidden="true" />
