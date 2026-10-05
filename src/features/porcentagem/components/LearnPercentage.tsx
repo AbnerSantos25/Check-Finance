@@ -78,7 +78,8 @@ export const LearnPercentage: React.FC = () => (
         Quanto é cada porcentagem dos valores mais comuns:
       </p>
       <p className="sm:hidden mt-1 text-caption text-slate-400">Deslize a tabela para o lado para ver todos os valores.</p>
-      <div className="mt-4 overflow-x-auto max-w-3xl">
+      {/* Rola na horizontal no celular: focável e nomeada, para quem navega pelo teclado. */}
+      <div className="mt-4 overflow-x-auto max-w-3xl" tabIndex={0} role="region" aria-label="Tabela de porcentagens">
         <table className="w-full text-xs sm:text-sm border-collapse">
           <thead className="bg-bg border-b border-line text-slate-300">
             <tr>

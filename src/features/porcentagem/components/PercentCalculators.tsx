@@ -4,7 +4,7 @@ import type { PercentageParams } from '../../../types';
 import { formatBRL } from '../../../shared/lib/format';
 import { DraftNumberInput } from '../../../shared/components/DraftNumberInput';
 import { applyChange, chainChanges, percentChange, percentOf, percentageOfWhole } from '../lib/percentage';
-import { formatPct, formatSignedPct, formatValue } from '../lib/format';
+import { formatMoneyDelta, formatPct, formatSignedPct, formatValue } from '../lib/format';
 import { CHAIN_STEP_KEYS, MAX_CHAIN_STEPS, chainPercents } from '../defaults';
 
 /** Qual das cinco contas a pessoa usou. Vira o parâmetro `modo` do evento no GA4. */
@@ -113,7 +113,10 @@ export const PercentCalculators: React.FC<PercentCalculatorsProps> = ({ params, 
   const focusAfterRender = useRef<string | null>(null);
   useEffect(() => {
     if (!focusAfterRender.current) return;
-    document.getElementById(focusAfterRender.current)?.focus();
+    const field = document.getElementById(focusAfterRender.current) as HTMLInputElement | null;
+    field?.focus();
+    // Seleciona o valor: digitar 7 numa etapa nova dá "7", e não "07".
+    field?.select();
     focusAfterRender.current = null;
   }, [params.chainCount]);
 
@@ -212,12 +215,12 @@ export const PercentCalculators: React.FC<PercentCalculatorsProps> = ({ params, 
           <Result htmlFor="pct-change-value pct-change-percent">
             <span className="flex flex-wrap items-baseline justify-between gap-x-3">
               <span>Com aumento de {formatPct(params.changePercent)}</span>
-              <span className="font-mono text-xs">+{formatBRL(changeAmount)}</span>
+              <span className="font-mono text-xs">{formatMoneyDelta(changeAmount)}</span>
             </span>
             <Big>{formatBRL(increased)}</Big>
             <span className="flex flex-wrap items-baseline justify-between gap-x-3 mt-3">
               <span>Com desconto de {formatPct(params.changePercent)}</span>
-              {params.changePercent <= 100 && <span className="font-mono text-xs">−{formatBRL(changeAmount)}</span>}
+              {params.changePercent <= 100 && <span className="font-mono text-xs">{formatMoneyDelta(-changeAmount)}</span>}
             </span>
             {params.changePercent <= 100 ? (
               <Big>{formatBRL(discounted)}</Big>

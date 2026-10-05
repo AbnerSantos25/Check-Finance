@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { applyChange, chainChanges, percentChange, percentOf, percentageOfWhole } from '../percentage';
 import { sanitizeParams } from '../sanitizeParams';
-import { formatSignedPct, formatValue } from '../format';
+import { formatMoneyDelta, formatSignedPct, formatValue } from '../format';
 import { DEFAULT_PARAMS, chainPercents } from '../../defaults';
 import { EXAMPLE } from '../../example';
 import { PERCENTAGE_FAQ } from '../../faq';
@@ -68,6 +68,20 @@ describe('formatação', () => {
     expect(formatValue(percentOf(0, -200))).toBe('0');
     expect(formatValue(-200)).toBe('−200');
     expect(formatValue(-1234.5)).toBe('−1.234,5');
+  });
+
+  it('arredonda simétrico: o negativo espelha o positivo', () => {
+    expect(formatValue(percentOf(12.5, 1))).toBe('0,13');
+    expect(formatValue(percentOf(12.5, -1))).toBe('−0,13');
+    expect(formatSignedPct(-0.125)).toBe('−0,13%');
+  });
+
+  it('diferença em reais: sinal só quando há diferença', () => {
+    expect(n(formatMoneyDelta(15))).toBe('+R$ 15,00');
+    expect(n(formatMoneyDelta(-15))).toBe('−R$ 15,00');
+    expect(n(formatMoneyDelta(0))).toBe('R$ 0,00');
+    expect(n(formatMoneyDelta(-0))).toBe('R$ 0,00');
+    expect(n(formatMoneyDelta(-0.004))).toBe('R$ 0,00');
   });
 
   it('variação com sinal, sem "−0%"', () => {
