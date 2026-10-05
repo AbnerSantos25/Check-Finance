@@ -6,6 +6,7 @@ import { usePersistentState } from '../../app/providers/FormStateProvider';
 import { useShareableParams } from '../../app/useShareableParams';
 import { Seo } from '../../shared/seo/Seo';
 import { Faq } from '../../shared/components/Faq';
+import { RelatedTools } from '../../shared/components/RelatedTools';
 import { IndependenceForm } from './components/IndependenceForm';
 import { IndependenceResult } from './components/IndependenceResult';
 import type { ValueBasis } from '../../shared/components/BasisToggle';
@@ -84,6 +85,8 @@ export const IndependencePage: React.FC = () => {
       )}
 
       <LearnMore />
+
+      <RelatedTools current="independencia" />
 
       <Faq items={INDEPENDENCE_FAQ} title="Dúvidas sobre independência financeira e FIRE" />
     </>

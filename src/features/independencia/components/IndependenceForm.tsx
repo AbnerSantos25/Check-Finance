@@ -1,9 +1,10 @@
 import React from 'react';
-import { HelpCircle, RotateCcw, Sliders } from 'lucide-react';
+import { RotateCcw, Sliders } from 'lucide-react';
 import type { IndependenceParams, MarketRates } from '../../../types';
 import { formatNumber, formatPercent, monthlyEquivalentRate } from '../../../shared/lib/format';
 import { REFERENCE_DATE } from '../../../shared/lib/economicApi';
 import { DraftNumberInput } from '../../../shared/components/DraftNumberInput';
+import { InfoTip } from '../../../shared/components/InfoTip';
 import { annualRealRate } from '../lib/calculateIndependence';
 import { PARAM_LIMITS } from '../lib/sanitizeParams';
 
@@ -27,17 +28,17 @@ const chipClass = (active: boolean) =>
 const shortMoney = (value: number) =>
   value === 0 ? 'Zero' : value >= 1000 ? `R$ ${formatNumber(value / 1000, 0)}k` : `R$ ${value}`;
 
-const FieldLabel: React.FC<{ htmlFor: string; hint: string; children: React.ReactNode }> = ({
+const FieldLabel: React.FC<{ htmlFor: string; hint: string; children: string }> = ({
   htmlFor,
   hint,
   children,
 }) => (
-  <label htmlFor={htmlFor} className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-    {children}
-    <span className="cursor-help text-slate-400 hover:text-slate-300" title={hint}>
-      <HelpCircle className="w-3.5 h-3.5" />
-    </span>
-  </label>
+  <div className="flex items-center gap-1.5">
+    <label htmlFor={htmlFor} className="text-xs font-semibold text-slate-300">
+      {children}
+    </label>
+    <InfoTip label={children} text={hint} />
+  </div>
 );
 
 const MoneyInput: React.FC<{

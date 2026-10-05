@@ -6,6 +6,7 @@ import { FormStateProvider } from './providers/FormStateProvider';
 import { ModalsProvider } from './providers/ModalsProvider';
 import { RouteError } from './RouteError';
 import { getTool } from '../config/tools.data';
+import { PRIVACY_PATH } from '../config/site';
 import { HubPage } from '../features/home/HubPage';
 import { NotFoundPage } from '../features/not-found/NotFoundPage';
 
@@ -79,6 +80,14 @@ export const routes: RouteRecord[] = [
       {
         path: getTool('independencia').path.slice(1),
         lazy: lazyRoute(() => import('../features/independencia/IndependencePage'), 'IndependencePage'),
+      },
+      {
+        path: getTool('porcentagem').path.slice(1),
+        lazy: lazyRoute(() => import('../features/porcentagem/PercentagePage'), 'PercentagePage'),
+      },
+      {
+        path: PRIVACY_PATH.slice(1),
+        lazy: lazyRoute(() => import('../features/privacidade/PrivacyPage'), 'PrivacyPage'),
       },
       // Rota concreta só para o pré-render gerar dist/404.html, que é o arquivo
       // que o Cloudflare serve (com status 404) em qualquer caminho sem

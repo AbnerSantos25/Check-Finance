@@ -5,7 +5,7 @@ import { trackEvent } from '../shared/lib/analytics';
 /**
  * Envia `page_view` a cada troca de página feita pelo roteador.
  *
- * A primeira visualização sai do `gtag('config')` do `index.html`, com o endereço
+ * A primeira visualização sai do `index.html` (um `page_view` logo após o `config`), com o endereço
  * completo (e as UTMs, se houver). Daí em diante, só conta quando o *caminho* muda:
  * as ferramentas reescrevem a query a cada campo editado (useShareableParams), e a
  * detecção automática do GA4 ("alterações de página com base em eventos do

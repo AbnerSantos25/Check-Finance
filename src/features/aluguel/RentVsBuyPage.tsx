@@ -6,6 +6,7 @@ import { usePersistentState } from '../../app/providers/FormStateProvider';
 import { useShareableParams } from '../../app/useShareableParams';
 import { Seo } from '../../shared/seo/Seo';
 import { Faq } from '../../shared/components/Faq';
+import { RelatedTools } from '../../shared/components/RelatedTools';
 import type { ValueBasis } from '../../shared/components/BasisToggle';
 import { RentVsBuyForm } from './components/RentVsBuyForm';
 import { RentVsBuyResult } from './components/RentVsBuyResult';
@@ -68,6 +69,8 @@ export const RentVsBuyPage: React.FC = () => {
 
       <RentVsBuyChart summary={summary} params={params} basis={basis} />
       <RentVsBuyTable summary={summary} params={params} basis={basis} />
+
+      <RelatedTools current="aluguel" />
 
       <Faq items={RENT_VS_BUY_FAQ} title="Dúvidas sobre alugar ou comprar imóvel" />
     </>

@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import fs from 'node:fs';
 import path from 'path';
 import {defineConfig} from 'vite';
-import {absoluteUrl} from './src/config/site.ts';
+import {absoluteUrl, PRIVACY_PATH} from './src/config/site.ts';
 import {ACTIVE_TOOLS} from './src/config/tools.data.ts';
 
 /** Os `.html` gerados pelo pré-render, um por rota. */
@@ -127,6 +127,7 @@ const writeSitemap = (dist: string) => {
       priority: tool.seo.priority,
       changefreq: tool.seo.changefreq,
     })),
+    { path: PRIVACY_PATH, priority: 0.3, changefreq: 'yearly' },
   ];
 
   const lastmod = new Date().toISOString().slice(0, 10);

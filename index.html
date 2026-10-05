@@ -25,12 +25,21 @@
          duas cópias na página servida, porque o helmet acrescenta as dele sem
          remover as estáticas. -->
 
+    <!-- Ícones. O Google usa o favicon no resultado da busca e pede um tamanho
+         múltiplo de 48 px: o .ico (48 px) e o PNG de 192 px cobrem isso, e o SVG fica
+         para os navegadores que o aceitam. Nenhum deles entra no caminho da pintura. -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 
     <!-- Identidade do site, igual em todas as rotas. O grafo de cada página
-         referencia o #organization daqui em vez de repetir os dados do publisher. -->
+         referencia o #organization daqui em vez de repetir os dados do publisher.
+
+         Perfis oficiais (Instagram, LinkedIn...) entram como "sameAs": ["https://..."]
+         no nó Organization, só depois de existirem e apontarem para o site. Passo a
+         passo em docs/divulgacao.md. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -40,6 +49,7 @@
           "@id": "https://checkfinance.com.br/#website",
           "url": "https://checkfinance.com.br/",
           "name": "CheckFinance",
+          "alternateName": ["Check Finance", "checkfinance.com.br"],
           "description": "Hub de ferramentas financeiras gratuitas em português.",
           "inLanguage": "pt-BR",
           "publisher": { "@id": "https://checkfinance.com.br/#organization" }
@@ -58,7 +68,15 @@
           },
           "logo": {
             "@type": "ImageObject",
-            "url": "https://checkfinance.com.br/og-image.png"
+            "url": "https://checkfinance.com.br/icon-512.png",
+            "width": 512,
+            "height": 512
+          },
+          "parentOrganization": {
+            "@type": "Organization",
+            "@id": "https://www.abstecnologiadev.com.br/#organization",
+            "name": "ABS Tecnologia",
+            "url": "https://www.abstecnologiadev.com.br/"
           }
         }
       ]
@@ -74,9 +92,14 @@
          o gtag/js, quando chegar, envia tudo o que ficou esperando.
 
          Consent Mode: o estado padrão precisa vir antes de qualquer `config`. No
-         Espaço Econômico Europeu, no Reino Unido e na Suíça começa negado e só muda
-         quando o visitante responde à mensagem do FundingChoices; no resto, concedido.
-         O comando mais específico (com `region`) vale sobre o geral. -->
+         Espaço Econômico Europeu, no Reino Unido, na Suíça e no Brasil começa negado;
+         no resto, concedido. O comando mais específico (com `region`) vale sobre o
+         geral. Na Europa quem pergunta é a mensagem do FundingChoices; no Brasil, o
+         aviso de cookies do site (LGPD, src/app/ConsentManager.tsx).
+
+         Uma escolha já feita no aviso (localStorage `cf-consent`, ver
+         src/shared/lib/consent.ts) é reaplicada aqui, antes de qualquer tag ler o
+         estado: quem aceitou não volta a ser contado como "negado" a cada visita. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -85,7 +108,7 @@
         ad_user_data: 'denied',
         ad_personalization: 'denied',
         analytics_storage: 'denied',
-        region: ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH'],
+        region: ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH','BR'],
         wait_for_update: 500
       });
       gtag('consent', 'default', {
@@ -94,9 +117,33 @@
         ad_personalization: 'granted',
         analytics_storage: 'granted'
       });
+      (function () {
+        try {
+          var consent = JSON.parse(localStorage.getItem('cf-consent'));
+          if (!consent || consent.v !== 1) return;
+          var ads = consent.ads ? 'granted' : 'denied';
+          gtag('consent', 'update', {
+            analytics_storage: consent.analytics ? 'granted' : 'denied',
+            ad_storage: ads,
+            ad_user_data: ads,
+            ad_personalization: ads
+          });
+        } catch (e) {}
+      })();
+      // Visitas do Lighthouse/PageSpeed (as nossas medições e o CI) vão como tráfego
+      // interno: o filtro "Internal Traffic" do Analytics as descarta dos relatórios.
+      // Os scripts carregam igual; só os dados ficam de fora.
+      if (/Chrome-Lighthouse/.test(navigator.userAgent)) gtag('set', { traffic_type: 'internal' });
       gtag('js', new Date());
 
-      gtag('config', 'G-3NYMS8KTGJ');
+      // A primeira visualização sai à mão, com o endereço capturado agora: o gtag.js chega
+      // até 4 s depois, e nas ferramentas o link compartilhável reescreve a query em
+      // 300 ms, levando junto as utm_* (a visita perderia a origem da campanha).
+      // O endereço vai só neste evento. Posto no `config`, ele ficaria preso a todos os
+      // eventos seguintes da tag, mesmo depois de trocar de página.
+      gtag('config', 'G-3NYMS8KTGJ', { send_page_view: false });
+      // O <title> pré-renderizado vem antes deste script: o título também é o da página certa.
+      gtag('event', 'page_view', { page_location: location.href, page_title: document.title });
     </script>
 
     <!-- Terceiros (AdSense e Google Analytics) carregados depois da primeira pintura.

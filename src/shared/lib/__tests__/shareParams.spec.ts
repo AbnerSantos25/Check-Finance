@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { decodeParams, encodeParams, type ShareSchema } from '../shareParams';
-import type { IndependenceParams, InvestmentParams, RealEstateParams, RentVsBuyParams } from '../../../types';
+import type { IndependenceParams, InvestmentParams, RealEstateParams, RentVsBuyParams, PercentageParams } from '../../../types';
 import { DEFAULT_PARAMS as INVESTMENT_DEFAULTS } from '../../../features/investimentos/defaults';
 import { SHARE_SCHEMA as INVESTMENT_SCHEMA } from '../../../features/investimentos/share';
 import { sanitizeParams as sanitizeInvestment } from '../../../features/investimentos/lib/sanitizeParams';
@@ -10,6 +10,9 @@ import { sanitizeParams as sanitizeFinancing } from '../../../features/financiam
 import { DEFAULT_PARAMS as INDEPENDENCE_DEFAULTS } from '../../../features/independencia/defaults';
 import { SHARE_SCHEMA as INDEPENDENCE_SCHEMA } from '../../../features/independencia/share';
 import { sanitizeParams as sanitizeIndependence } from '../../../features/independencia/lib/sanitizeParams';
+import { DEFAULT_PARAMS as PERCENTAGE_DEFAULTS } from '../../../features/porcentagem/defaults';
+import { SHARE_SCHEMA as PERCENTAGE_SCHEMA } from '../../../features/porcentagem/share';
+import { sanitizeParams as sanitizePercentage } from '../../../features/porcentagem/lib/sanitizeParams';
 import { DEFAULT_PARAMS as RENT_VS_BUY_DEFAULTS } from '../../../features/aluguel/defaults';
 import { SHARE_SCHEMA as RENT_VS_BUY_SCHEMA } from '../../../features/aluguel/share';
 import { sanitizeParams as sanitizeRentVsBuy } from '../../../features/aluguel/lib/sanitizeParams';
@@ -98,6 +101,13 @@ describe.each([
       taxExempt: true,
       years: 15,
     } as RentVsBuyParams,
+  },
+  {
+    name: 'porcentagem',
+    defaults: PERCENTAGE_DEFAULTS,
+    schema: PERCENTAGE_SCHEMA,
+    sanitize: sanitizePercentage,
+    edited: { ...PERCENTAGE_DEFAULTS, ofPercent: 12.5, toValue: 64.9, chainCount: 3, chainStep3: -5 } as PercentageParams,
   },
 ])('link compartilhado de $name', ({ defaults, schema, sanitize, edited }) => {
   type P = typeof edited;

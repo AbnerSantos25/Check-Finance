@@ -6,16 +6,25 @@ export const PARAM_LIMITS: Record<NumericParam, { min: number; max: number }> = 
   initialDeposit: { min: 0, max: 1_000_000_000 },
   monthlyDeposit: { min: 0, max: 100_000_000 },
   annualAdjustmentRate: { min: 0, max: 50 },
-  annualInterestRate: { min: 0.1, max: 50 },
+  // Até 200% a.a. (cerca de 9,6% a.m.): quem digita a taxa ao mês chega a valores altos.
+  annualInterestRate: { min: 0.1, max: 200 },
   annualInflationRate: { min: 0, max: 30 },
-  years: { min: 1, max: 60 },
+  // Em anos, com precisão de um mês: 1/12 (um mês) até 60 anos.
+  years: { min: 1 / 12, max: 60 },
 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 /**
+ * Prazo em anos com precisão de um mês, arredondado a 6 casas: 100 meses vira
+ * 8.333333 (e não 8.333333333333334), o que deixa o link compartilhado legível.
+ * Volta a 100 meses em `Math.round(anos × 12)`, que é como o motor lê.
+ */
+const wholeMonths = (years: number) => Math.round((Math.round(years * 12) / 12) * 1e6) / 1e6;
+
+/**
  * Drops non-finite values and clamps the rest to the supported range.
- * Years are whole numbers because the engine compounds in 12-month blocks.
+ * Years snap to whole months (twelfths), the engine's smallest step.
  */
 export function sanitizeParams(
   current: InvestmentParams,
@@ -27,7 +36,7 @@ export function sanitizeParams(
     const raw = changes[key];
     if (raw === undefined || !Number.isFinite(raw)) continue;
     const { min, max } = PARAM_LIMITS[key];
-    next[key] = clamp(key === 'years' ? Math.round(raw) : raw, min, max);
+    next[key] = clamp(key === 'years' ? wholeMonths(raw) : raw, min, max);
   }
   return next;
 }
