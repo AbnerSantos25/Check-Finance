@@ -74,7 +74,12 @@ export const InvestmentPage: React.FC = () => {
       })
     );
     setUnits({ rate: 'mensal', period: 'meses' });
-    document.getElementById('investment-form-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Leva a pessoa (e o foco do teclado/leitor de tela) até a calculadora preenchida.
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document
+      .getElementById('investment-form-container')
+      ?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    document.getElementById('annual-interest-input')?.focus({ preventScroll: true });
   };
 
   return (
@@ -113,7 +118,10 @@ export const InvestmentPage: React.FC = () => {
         onChange={handleParamChange}
         units={units}
         onUnitsChange={setUnits}
-        onReset={() => setParams(DEFAULT_PARAMS)}
+        onReset={() => {
+          setParams(DEFAULT_PARAMS);
+          setUnits(DEFAULT_UNITS);
+        }}
         marketRates={rates}
         ratesAreLive={hasFetched && liveCount > 0}
       />

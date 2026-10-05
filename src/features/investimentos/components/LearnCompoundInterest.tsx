@@ -1,6 +1,6 @@
 import React from 'react';
 import { Calculator } from 'lucide-react';
-import { COMPOUND_TABLE, EXAMPLE, SIMPLE_VS_COMPOUND } from '../example';
+import { COMPARISON_TEXT, COMPOUND_TABLE, EXAMPLE, SIMPLE_VS_COMPOUND, TABLE_CAPITAL_TEXT } from '../example';
 
 interface LearnCompoundInterestProps {
   /** Preenche a calculadora com o exemplo resolvido (R$ 1.000 a 1% ao mês por 12 meses). */
@@ -62,7 +62,7 @@ export const LearnCompoundInterest: React.FC<LearnCompoundInterestProps> = ({ on
           {EXAMPLE.capital} aplicados a {EXAMPLE.rate} ao mês por {EXAMPLE.months} meses:
         </p>
         <Formula>
-          M = 1.000 × (1 + 0,01)¹² = 1.000 × {EXAMPLE.factor} = {EXAMPLE.amount}
+          M = {EXAMPLE.substitution} = {EXAMPLE.capitalPlain} × {EXAMPLE.factor} = {EXAMPLE.amount}
         </Formula>
         <p>
           São <strong className="text-slate-200">{EXAMPLE.interest}</strong> de juros. Com juros simples, o mesmo
@@ -96,7 +96,7 @@ export const LearnCompoundInterest: React.FC<LearnCompoundInterestProps> = ({ on
           Nos <strong className="text-slate-200">juros simples</strong>, a taxa incide só sobre o capital inicial:{' '}
           <span className="font-mono text-slate-200">M = C × (1 + i × n)</span>. O crescimento é uma reta. Nos{' '}
           <strong className="text-slate-200">juros compostos</strong>, incide sobre o saldo acumulado, e o
-          crescimento acelera com o tempo. Veja R$ 10.000,00 a 1% ao mês:
+          crescimento acelera com o tempo. Veja {COMPARISON_TEXT}:
         </p>
       </div>
       <div className="mt-4 overflow-x-auto max-w-3xl">
@@ -126,7 +126,7 @@ export const LearnCompoundInterest: React.FC<LearnCompoundInterestProps> = ({ on
     <div>
       <h2 className="text-xl font-extrabold text-white">Tabela de juros compostos</h2>
       <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-3xl">
-        Quanto R$ 1.000,00 se torna, sem novos aportes, para cada taxa mensal e prazo:
+        Quanto {TABLE_CAPITAL_TEXT} se torna, sem novos aportes, para cada taxa mensal e prazo:
       </p>
       <div className="mt-4 overflow-x-auto max-w-3xl">
         <table className="w-full text-xs sm:text-sm border-collapse">

@@ -63,7 +63,7 @@ export const INVESTMENT_FAQ: FaqItem[] = [
     question: 'Reajustar o aporte todo ano muda muito o resultado?',
     answer: [
       'Muda, e é o ajuste mais barato da simulação. Manter o mesmo aporte por 20 ou 30 anos parece disciplina, mas na prática é uma redução silenciosa: com a inflação, aportar R$ 1.000 daqui a 15 anos exige bem menos esforço do que aportar R$ 1.000 hoje.',
-      'A calculadora reajusta o aporte a cada 12 meses pelo percentual que você definir. O bloco de conceitos logo abaixo da tabela mostra, no seu próprio cenário, quanto o patrimônio final cresce por causa desse reajuste.',
+      'A calculadora reajusta o aporte a cada 12 meses pelo percentual que você definir. O bloco "Como os juros compostos constroem patrimônio", mais abaixo nesta página, mostra, no seu próprio cenário, quanto o patrimônio final cresce por causa desse reajuste.',
     ],
   },
   {

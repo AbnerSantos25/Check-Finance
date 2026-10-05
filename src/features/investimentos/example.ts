@@ -1,4 +1,4 @@
-import { formatBRL, formatPercent } from '../../shared/lib/format';
+import { formatBRL, formatNumber, formatPercent } from '../../shared/lib/format';
 import { monthlyToAnnual } from './lib/units';
 
 /**
@@ -27,6 +27,14 @@ export const FORMULA_EXAMPLE = {
   months: 12,
 };
 
+const SUPERSCRIPT = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+const superscript = (n: number) => String(n).replace(/\d/g, (d) => SUPERSCRIPT[Number(d)]);
+
+/** Capital e taxa da comparação juros simples × compostos. */
+export const COMPARISON = { capital: 10000, monthlyRate: 0.01 };
+/** Capital da tabela de juros compostos. */
+export const TABLE_CAPITAL = 1000;
+
 const base = compoundAmount(FORMULA_EXAMPLE.capital, FORMULA_EXAMPLE.monthlyRate, FORMULA_EXAMPLE.months);
 const withDeposits =
   base + depositsAmount(FORMULA_EXAMPLE.deposit, FORMULA_EXAMPLE.monthlyRate, FORMULA_EXAMPLE.months);
@@ -34,9 +42,13 @@ const withDeposits =
 export const EXAMPLE = {
   capital: formatBRL(FORMULA_EXAMPLE.capital),
   deposit: formatBRL(FORMULA_EXAMPLE.deposit),
-  rate: '1%',
+  rate: formatPercent(FORMULA_EXAMPLE.monthlyRate * 100, 0),
   months: FORMULA_EXAMPLE.months,
-  factor: Math.pow(1 + FORMULA_EXAMPLE.monthlyRate, FORMULA_EXAMPLE.months).toFixed(4).replace('.', ','),
+  // Seis casas: com quatro (1,1268), a conta escrita daria R$ 1.126,80, e não 1.126,83.
+  factor: formatNumber(Math.pow(1 + FORMULA_EXAMPLE.monthlyRate, FORMULA_EXAMPLE.months), 6),
+  /** "1.000 × (1 + 0,01)¹²" */
+  substitution: `${formatNumber(FORMULA_EXAMPLE.capital, 0)} × (1 + ${formatNumber(FORMULA_EXAMPLE.monthlyRate, 2)})${superscript(FORMULA_EXAMPLE.months)}`,
+  capitalPlain: formatNumber(FORMULA_EXAMPLE.capital, 0),
   amount: formatBRL(base),
   interest: formatBRL(base - FORMULA_EXAMPLE.capital),
   simpleAmount: formatBRL(simpleAmount(FORMULA_EXAMPLE.capital, FORMULA_EXAMPLE.monthlyRate, FORMULA_EXAMPLE.months)),
@@ -44,10 +56,10 @@ export const EXAMPLE = {
   annualEquivalent: formatPercent(monthlyToAnnual(1)),
 };
 
-/** Juros simples × compostos: R$ 10.000 a 1% ao mês. */
+/** Juros simples × compostos: COMPARISON.capital à taxa COMPARISON.monthlyRate. */
 export const SIMPLE_VS_COMPOUND = [12, 60, 120, 240].map((months) => {
-  const simple = simpleAmount(10000, 0.01, months);
-  const compound = compoundAmount(10000, 0.01, months);
+  const simple = simpleAmount(COMPARISON.capital, COMPARISON.monthlyRate, months);
+  const compound = compoundAmount(COMPARISON.capital, COMPARISON.monthlyRate, months);
   return {
     period: months % 12 === 0 ? `${months / 12} ${months === 12 ? 'ano' : 'anos'}` : `${months} meses`,
     simple: formatBRL(simple),
@@ -56,11 +68,14 @@ export const SIMPLE_VS_COMPOUND = [12, 60, 120, 240].map((months) => {
   };
 });
 
-/** Tabela de juros compostos: quanto R$ 1.000 vira, por taxa mensal e prazo. */
+/** Tabela de juros compostos: quanto TABLE_CAPITAL vira, por taxa mensal e prazo. */
+export const COMPARISON_TEXT = `${formatBRL(COMPARISON.capital)} a ${formatPercent(COMPARISON.monthlyRate * 100, 0)} ao mês`;
+export const TABLE_CAPITAL_TEXT = formatBRL(TABLE_CAPITAL);
+
 export const COMPOUND_TABLE = {
   months: [12, 24, 60, 120],
   rows: [0.005, 0.01, 0.015].map((rate) => ({
     rate: `${formatPercent(rate * 100, 1)} a.m.`,
-    values: [12, 24, 60, 120].map((months) => formatBRL(compoundAmount(1000, rate, months))),
+    values: [12, 24, 60, 120].map((months) => formatBRL(compoundAmount(TABLE_CAPITAL, rate, months))),
   })),
 };

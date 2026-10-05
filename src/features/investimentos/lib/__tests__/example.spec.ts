@@ -16,6 +16,13 @@ describe('números do conteúdo educativo', () => {
     expect(n(EXAMPLE.annualEquivalent)).toBe('12,68%');
   });
 
+  it('a conta escrita fecha: capital × fator arredondado dá o montante exibido', () => {
+    expect(EXAMPLE.substitution).toBe('1.000 × (1 + 0,01)¹²');
+    expect(EXAMPLE.factor).toBe('1,126825');
+    const factor = Number(EXAMPLE.factor.replace(',', '.'));
+    expect((1000 * factor).toFixed(2)).toBe('1126.83');
+  });
+
   it('o botão "fazer esta conta" leva a calculadora ao mesmo montante', () => {
     const s = calculateInvestment({
       initialDeposit: 1000,

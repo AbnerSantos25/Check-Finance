@@ -124,8 +124,9 @@ describe('sanitizeParams', () => {
 
   it('arredonda o prazo para meses inteiros, de 1 mês a 60 anos', () => {
     expect(sanitizeParams(BASE, { years: 1.5 }).years).toBe(1.5); // 18 meses
-    expect(sanitizeParams(BASE, { years: 10.7 }).years * 12).toBeCloseTo(128, 9); // 128,4 meses → 128
-    expect(sanitizeParams(BASE, { years: 0 }).years).toBeCloseTo(1 / 12, 12);
+    expect(Math.round(sanitizeParams(BASE, { years: 10.7 }).years * 12)).toBe(128); // 128,4 meses → 128
+    expect(sanitizeParams(BASE, { years: 0 }).years).toBeCloseTo(1 / 12, 6);
+    expect(sanitizeParams(BASE, { years: 100 / 12 }).years).toBe(8.333333); // link legível
   });
 
   it('ignora valores não finitos e mantém o atual', () => {

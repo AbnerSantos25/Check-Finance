@@ -39,15 +39,17 @@ function UnitSwitch<T extends string>({
 }: {
   label: string;
   value: T;
-  options: [T, string][];
+  /** [valor, texto visível, rótulo falado] */
+  options: [T, string, string][];
   onChange: (value: T) => void;
 }) {
   return (
     <div role="group" aria-label={label} className="flex shrink-0 rounded-lg bg-bg-deep p-0.5 border border-line">
-      {options.map(([option, text]) => (
+      {options.map(([option, text, spoken]) => (
         <button
           key={option}
           type="button"
+          aria-label={spoken}
           aria-pressed={value === option}
           onClick={() => onChange(option)}
           className={`min-h-8 px-2.5 rounded-md text-caption font-medium transition-colors cursor-pointer ${
@@ -78,7 +80,8 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
   const commitRate = (value: number) =>
     onChange({ annualInterestRate: monthlyRate ? monthlyToAnnual(value) : value });
   const inMonths = units.period === 'meses';
-  const shownPeriod = inMonths ? toMonths(params.years) : params.years;
+  // Em anos, um prazo que não fecha ano (ex.: 128 meses) aparece com duas casas, não como 10.666…
+  const shownPeriod = inMonths ? toMonths(params.years) : Math.round(params.years * 100) / 100;
   const commitPeriod = (value: number) => onChange({ years: inMonths ? value / 12 : value });
 
   // Each preset carries the IR regime of the product it represents.
@@ -281,7 +284,7 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
             <UnitSwitch
               label="Unidade da taxa"
               value={units.rate}
-              options={[['anual', 'a.a.'], ['mensal', 'a.m.']]}
+              options={[['anual', 'a.a.', 'ao ano'], ['mensal', 'a.m.', 'ao mês']]}
               onChange={(rate) => onUnitsChange({ ...units, rate })}
             />
           </div>
@@ -304,14 +307,15 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
             <div className="w-28 sm:w-24 shrink-0 relative">
               <DraftNumberInput
                 id="annual-interest-input"
-                min="0.01"
+                min={monthlyRate ? '0.01' : '0.1'}
                 max={monthlyRate ? '9.5' : '200'}
                 step={monthlyRate ? '0.05' : '0.25'}
                 value={shownRate}
                 onCommit={commitRate}
+                aria-describedby="annual-interest-unit"
                 className="w-full tap-field pl-2.5 pr-11 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-caption text-slate-400">
+              <span id="annual-interest-unit" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-caption text-slate-400">
                 {monthlyRate ? '% a.m.' : '% a.a.'}
               </span>
             </div>
@@ -426,13 +430,13 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
             <UnitSwitch
               label="Unidade do período"
               value={units.period}
-              options={[['anos', 'anos'], ['meses', 'meses']]}
+              options={[['anos', 'anos', 'em anos'], ['meses', 'meses', 'em meses']]}
               onChange={(period) => onUnitsChange({ ...units, period })}
             />
           </div>
           <div className="text-xs font-mono font-medium text-emerald-400">
             {formatPeriod(params.years)}
-            {inMonths ? '' : ` (${toMonths(params.years)} meses)`}
+            {!inMonths && toMonths(params.years) % 12 === 0 ? ` (${toMonths(params.years)} meses)` : ''}
           </div>
 
           <div className="flex items-center gap-3">
@@ -455,9 +459,10 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                 step="1"
                 value={shownPeriod}
                 onCommit={commitPeriod}
+                aria-describedby="years-period-unit"
                 className="w-full tap-field pl-2.5 pr-12 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-caption text-slate-400">
+              <span id="years-period-unit" className="absolute right-2 top-1/2 -translate-y-1/2 text-caption text-slate-400">
                 {inMonths ? 'meses' : 'anos'}
               </span>
             </div>

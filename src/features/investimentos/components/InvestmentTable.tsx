@@ -29,7 +29,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
       'Total Aportado (R$)',
       'Saldo Bruto (R$)',
       'Juros Acumulados Brutos (R$)',
-      'Juros no Ano (R$)',
+      'Juros no Período (R$)',
       taxExempt ? 'Saldo Líquido - Isento (R$)' : 'Saldo Líquido de IR - Tabela Regressiva (R$)',
       'Renda Sustentável Mensal Nominal (R$)',
       'Saldo Líquido em Valores de Hoje (R$)'
@@ -78,7 +78,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                Todos ({years})
+                Todos ({summary.yearlyData.length})
               </button>
               <button
                 type="button"
@@ -113,7 +113,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
               <th role="columnheader" className="py-3 px-3.5 rounded-tl-lg">Período</th>
               <th role="columnheader" className="py-3 px-3.5">Total Aportado</th>
               <th role="columnheader" className="py-3 px-3.5 text-emerald-400">Saldo Bruto</th>
-              <th role="columnheader" className="py-3 px-3.5">Juros no Ano</th>
+              <th role="columnheader" className="py-3 px-3.5">Juros no Período</th>
               <th role="columnheader" className="py-3 px-3.5 text-emerald-400">Juros Acumulados</th>
               <th role="columnheader" className="py-3 px-3.5">Líquido de IR</th>
               <th role="columnheader" className="py-3 px-3.5 text-teal-300">Renda Sustentável</th>
@@ -147,7 +147,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                   <td role="cell" data-label="Saldo bruto" className="py-3 px-3.5 font-bold text-emerald-400">
                     {formatBRL(row.grossBalance)}
                   </td>
-                  <td role="cell" data-label="Juros no ano" className="py-3 px-3.5 text-amber-300/90 light:text-amber-300">
+                  <td role="cell" data-label="Juros no período" className="py-3 px-3.5 text-amber-300/90 light:text-amber-300">
                     +{formatBRL(row.yearlyInterestGained)}
                   </td>
                   <td role="cell" data-label="Juros acumulados" className="py-3 px-3.5">
@@ -178,7 +178,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
           <span>
             {taxExempt
               ? 'Sem IR (aplicação isenta).'
-              : `Líquido de IR: tabela regressiva aplicada a cada aporte, como num resgate total no fim do ano (efetivo no período: ${formatPercent(summary.effectiveTaxRate, 1)}).`}{' '}
+              : `Líquido de IR: tabela regressiva aplicada a cada aporte, como num resgate total no fim de cada período (efetivo no período: ${formatPercent(summary.effectiveTaxRate, 1)}).`}{' '}
             Renda sustentável: rendimento mensal após IR e reposição da inflação, em valores nominais de cada ano.
           </span>
         </div>
