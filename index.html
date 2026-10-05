@@ -120,6 +120,10 @@
           });
         } catch (e) {}
       })();
+      // Visitas do Lighthouse/PageSpeed (as nossas medições e o CI) vão como tráfego
+      // interno: o filtro "Internal Traffic" do Analytics as descarta dos relatórios.
+      // Os scripts carregam igual; só os dados ficam de fora.
+      if (/Chrome-Lighthouse/.test(navigator.userAgent)) gtag('set', { traffic_type: 'internal' });
       gtag('js', new Date());
 
       gtag('config', 'G-3NYMS8KTGJ');

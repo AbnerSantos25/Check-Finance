@@ -117,13 +117,15 @@ describe('regressiveTaxRate', () => {
 describe('sanitizeParams', () => {
   it('limita valores fora da faixa suportada', () => {
     const out = sanitizeParams(BASE, { annualInterestRate: 999, years: 200, annualInflationRate: -5 });
-    expect(out.annualInterestRate).toBe(50);
+    expect(out.annualInterestRate).toBe(200);
     expect(out.years).toBe(60);
     expect(out.annualInflationRate).toBe(0);
   });
 
-  it('arredonda anos para inteiro', () => {
-    expect(sanitizeParams(BASE, { years: 10.7 }).years).toBe(11);
+  it('arredonda o prazo para meses inteiros, de 1 mês a 60 anos', () => {
+    expect(sanitizeParams(BASE, { years: 1.5 }).years).toBe(1.5); // 18 meses
+    expect(sanitizeParams(BASE, { years: 10.7 }).years * 12).toBeCloseTo(128, 9); // 128,4 meses → 128
+    expect(sanitizeParams(BASE, { years: 0 }).years).toBeCloseTo(1 / 12, 12);
   });
 
   it('ignora valores não finitos e mantém o atual', () => {
@@ -138,5 +140,29 @@ describe('sanitizeParams', () => {
     // Uma string escaparia do guard e zeraria o IR silenciosamente.
     const coerced = sanitizeParams(BASE, { taxExempt: 'false' as unknown as boolean });
     expect(coerced.taxExempt).toBe(BASE.taxExempt);
+  });
+});
+
+describe('calculateInvestment — prazo em meses', () => {
+  const flat: InvestmentParams = { ...BASE, annualAdjustmentRate: 0, annualInflationRate: 0, taxExempt: true };
+
+  it('18 meses: uma linha no ano 1 e uma linha parcial no mês 18', () => {
+    const s = calculateInvestment({ ...flat, years: 1.5 });
+    expect(s.yearlyData.map((r) => r.year)).toEqual([1, 1.5]);
+    expect(s.totalInvested).toBe(5000 + 1000 * 18);
+  });
+
+  it('bate com a fórmula dos juros compostos com aportes', () => {
+    // M = C(1+i)^n + PMT × ((1+i)^n − 1) / i, com i mensal equivalente e aporte no fim do mês.
+    const i = Math.pow(1.12, 1 / 12) - 1;
+    for (const months of [1, 7, 12, 18, 30]) {
+      const s = calculateInvestment({ ...flat, years: months / 12 });
+      const expected = 5000 * Math.pow(1 + i, months) + 1000 * ((Math.pow(1 + i, months) - 1) / i);
+      expect(s.finalGrossBalance).toBeCloseTo(expected, 1);
+    }
+  });
+
+  it('anos cheios dão o mesmo resultado em meses e em anos', () => {
+    expect(calculateInvestment({ ...BASE, years: 24 / 12 })).toEqual(calculateInvestment({ ...BASE, years: 2 }));
   });
 });

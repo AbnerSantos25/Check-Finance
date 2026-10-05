@@ -30,16 +30,16 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'investimentos',
     path: '/calculadora-juros-compostos',
-    label: 'Calculadora de Investimento a Longo Prazo',
-    shortLabel: 'Investimento a Longo Prazo',
+    label: 'Calculadora de Juros Compostos',
+    shortLabel: 'Juros Compostos',
     description:
-      'Descubra como aportes com reajustes anuais, juros compostos e o desconto da inflação afetam seu patrimônio real ao longo do tempo.',
+      'Simule juros compostos com aportes mensais, taxa ao mês ou ao ano, inflação e Imposto de Renda, e veja quanto o patrimônio vale em dinheiro de hoje.',
     accent: 'emerald',
     status: 'ativo',
     seo: {
       title: 'Calculadora de Juros Compostos com Inflação e IR | CheckFinance',
       description:
-        'Simulador de juros compostos com reajuste anual progressivo de aportes, desconto da inflação (IPCA) e tabela regressiva de IR para calcular sua rentabilidade real.',
+        'Calcule juros compostos com aportes, taxa mensal ou anual, inflação e IR, com taxas do Banco Central. Veja a fórmula, exemplos e juros simples x compostos.',
       priority: 0.9,
       changefreq: 'weekly',
     },

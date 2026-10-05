@@ -13,6 +13,7 @@ import {
   Legend
 } from 'recharts';
 import { CalculationSummary } from '../../../types';
+import { periodRowLabel, toMonths } from '../lib/units';
 import { formatBRL, formatCompactBRL, formatPercent } from '../../../shared/lib/format';
 import { BarChart3, PieChart as PieIcon, Sparkles } from 'lucide-react';
 import { LazyChart } from '../../../shared/components/LazyChart';
@@ -24,7 +25,7 @@ interface ComparisonChartsProps {
 
 export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, taxExempt }) => {
   const areaData = summary.yearlyData.map((d) => ({
-    name: `Ano ${d.year}`,
+    name: periodRowLabel(d.year),
     year: d.year,
     grossBalance: d.grossBalance,
     totalDeposited: d.totalDeposited,
@@ -127,7 +128,7 @@ export const ComparisonCharts: React.FC<ComparisonChartsProps> = ({ summary, tax
                         <div className="font-bold text-white pb-1.5 border-b border-white/10 flex justify-between items-center">
                           <span>{label}</span>
                           <span className="text-caption text-slate-400 font-normal">
-                            Ano {data.year}
+                            {toMonths(data.year)} meses
                           </span>
                         </div>
                         <div className="flex justify-between items-center text-emerald-400 font-medium">

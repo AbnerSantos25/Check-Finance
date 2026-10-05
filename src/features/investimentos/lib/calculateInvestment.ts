@@ -22,6 +22,7 @@ function redemptionTax(lots: DepositLot[], currentMonth: number, monthlyRate: nu
 
 /**
  * Month-by-month compounding with end-of-month deposits adjusted every 12 months.
+ * `years` may be fractional in twelfths: 1.5 means 18 months.
  * IR follows the regressive table per deposit; real values are deflated monthly.
  */
 export function calculateInvestment(params: InvestmentParams): CalculationSummary {
@@ -55,10 +56,19 @@ export function calculateInvestment(params: InvestmentParams): CalculationSummar
   const sustainableIncome = (netBalance: number) =>
     Math.max(0, netBalance * (monthlyRate * (1 - incomeTax) - monthlyInflation));
 
-  for (let year = 1; year <= years; year++) {
-    const currentMonthlyDeposit = monthlyDeposit * Math.pow(1 + annualAdjustmentRate / 100, year - 1);
+  // O prazo aceita meses avulsos (18 meses = 1,5 ano). Os aportes são reajustados a
+  // cada 12 meses e a série tem uma linha por ano, mais uma linha final parcial
+  // quando o prazo não fecha um ano. Nos anos cheios as contas são exatamente as
+  // mesmas de antes, operação por operação.
+  const totalMonths = Math.max(1, Math.round(years * 12));
+  let blockStartMonth = 0;
 
-    for (let m = 1; m <= 12; m++) {
+  while (month < totalMonths) {
+    const yearIndex = Math.floor(month / 12);
+    const currentMonthlyDeposit = monthlyDeposit * Math.pow(1 + annualAdjustmentRate / 100, yearIndex);
+    const blockMonths = Math.min(12, totalMonths - blockStartMonth);
+
+    for (let m = 1; m <= blockMonths; m++) {
       month++;
       grossBalance = grossBalance * (1 + monthlyRate) + currentMonthlyDeposit;
       accumulatedDeposits += currentMonthlyDeposit;
@@ -66,6 +76,7 @@ export function calculateInvestment(params: InvestmentParams): CalculationSummar
       if (currentMonthlyDeposit > 0) lots.push({ month, amount: currentMonthlyDeposit });
     }
 
+    const year = month / 12;
     const totalInterestGained = grossBalance - accumulatedDeposits;
     taxDue = taxExempt ? 0 : redemptionTax(lots, month, monthlyRate);
     const netBalance = grossBalance - taxDue;
@@ -77,18 +88,19 @@ export function calculateInvestment(params: InvestmentParams): CalculationSummar
       grossBalance: round2(grossBalance),
       netBalance: round2(netBalance),
       totalInterestGained: round2(totalInterestGained),
-      yearlyInterestGained: round2(grossBalance - previousYearBalance - currentMonthlyDeposit * 12),
+      yearlyInterestGained: round2(grossBalance - previousYearBalance - currentMonthlyDeposit * blockMonths),
       savingsOnlyBalance: round2(accumulatedDeposits),
       sustainableMonthlyIncome: round2(sustainableIncome(netBalance)),
       realNetBalance: round2(netBalance / inflationFactor),
     });
 
     previousYearBalance = grossBalance;
+    blockStartMonth = month;
   }
 
   const totalInterestGained = grossBalance - accumulatedDeposits;
   const finalNetBalance = grossBalance - taxDue;
-  const finalInflationFactor = Math.pow(1 + annualInflationRate / 100, years);
+  const finalInflationFactor = Math.pow(1 + annualInflationRate / 100, totalMonths / 12);
   const finalRealNetBalance = finalNetBalance / finalInflationFactor;
   const sustainable = sustainableIncome(finalNetBalance);
   const surpassRow = yearlyData.find((row) => row.totalInterestGained > row.totalDeposited);

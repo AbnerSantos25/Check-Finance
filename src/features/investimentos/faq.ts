@@ -1,4 +1,5 @@
 import type { FaqItem } from '../../shared/seo/jsonLd';
+import { EXAMPLE } from './example';
 
 /**
  * Perguntas da calculadora de investimentos.
@@ -9,6 +10,27 @@ import type { FaqItem } from '../../shared/seo/jsonLd';
  * oficial da página.
  */
 export const INVESTMENT_FAQ: FaqItem[] = [
+  {
+    question: 'O que são juros compostos?',
+    answer: [
+      'São juros sobre juros: os rendimentos de cada período entram no saldo e passam a render também no período seguinte. Por isso o dinheiro cresce cada vez mais rápido com o tempo, ao contrário dos juros simples, em que a taxa incide só sobre o valor inicial.',
+      'É o regime usado em praticamente todos os investimentos (CDB, Tesouro Direto, poupança) e também nas dívidas, como cartão de crédito e financiamentos.',
+    ],
+  },
+  {
+    question: 'Como calcular juros compostos?',
+    answer: [
+      'Use a fórmula M = C × (1 + i)^n, em que M é o montante final, C o capital inicial, i a taxa por período em decimal e n o número de períodos, sempre na mesma unidade da taxa.',
+      `Exemplo: ${EXAMPLE.capital} a ${EXAMPLE.rate} ao mês por ${EXAMPLE.months} meses dá ${EXAMPLE.amount}, ou seja, ${EXAMPLE.interest} de juros. Com aportes mensais, some o valor futuro de cada aporte; a calculadora desta página faz essa conta mês a mês, com taxa ao mês ou ao ano.`,
+    ],
+  },
+  {
+    question: 'Qual a diferença entre juros simples e compostos?',
+    answer: [
+      'Nos juros simples a taxa incide sempre sobre o capital inicial, e o valor cresce em linha reta: M = C × (1 + i × n). Nos juros compostos a taxa incide sobre o saldo acumulado, e o crescimento acelera.',
+      `No curto prazo a diferença é pequena: ${EXAMPLE.capital} a ${EXAMPLE.rate} ao mês viram ${EXAMPLE.simpleAmount} em 12 meses com juros simples e ${EXAMPLE.amount} com juros compostos. Em 20 anos, a mesma taxa sobre R$ 10.000,00 dá R$ 34.000,00 com juros simples e mais de R$ 108 mil com juros compostos.`,
+    ],
+  },
   {
     question: 'Por que o patrimônio "em valores de hoje" é tão menor que o saldo bruto?',
     answer: [

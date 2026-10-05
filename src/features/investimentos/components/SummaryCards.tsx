@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatPeriod } from '../lib/units';
 import { AlertTriangle } from 'lucide-react';
 import { CalculationSummary } from '../../../types';
 import { formatBRL, formatNumber, formatPercent } from '../../../shared/lib/format';
@@ -31,7 +32,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
     ? (summary.totalInvested / summary.finalGrossBalance) * 100
     : 0;
   const taxLabel = taxExempt ? 'isento de IR' : 'IR regressivo';
-  const yearsLabel = `${years} ${years === 1 ? 'ano' : 'anos'}`;
+  const yearsLabel = formatPeriod(years);
   const incomeCoversInflation = summary.sustainableMonthlyIncome > 0;
 
   return (
@@ -210,7 +211,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, years, taxE
           </div>
           <div className="mt-1.5 space-y-1">
             {incomeCoversInflation ? (
-              <Row label={`No ano ${years} (nominal):`} value={`${formatBRL(summary.sustainableMonthlyIncome)}/mês`} />
+              <Row label={`Ao fim de ${yearsLabel} (nominal):`} value={`${formatBRL(summary.sustainableMonthlyIncome)}/mês`} />
             ) : (
               <div className="flex items-center gap-1.5 text-caption text-amber-400">
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
