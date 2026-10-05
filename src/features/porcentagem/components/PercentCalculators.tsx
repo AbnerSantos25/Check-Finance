@@ -1,10 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import { Minus, Plus, X } from 'lucide-react';
 import type { PercentageParams } from '../../../types';
-import { formatBRL } from '../../../shared/lib/format';
 import { DraftNumberInput } from '../../../shared/components/DraftNumberInput';
-import { applyChange, chainChanges, percentChange, percentOf, percentageOfWhole } from '../lib/percentage';
-import { chainSummary, formatMoneyDelta, formatPct, formatSignedPct, formatValue } from '../lib/format';
+import { chainChanges, percentChange, percentOf, percentageOfWhole } from '../lib/percentage';
+import {
+  chainSummary,
+  formatMoney,
+  formatMoneyDelta,
+  formatPct,
+  formatSignedPct,
+  formatValue,
+  moneyChange,
+} from '../lib/format';
 import { CHAIN_STEP_KEYS, MAX_CHAIN_STEPS, chainPercents } from '../defaults';
 
 /** Qual das cinco contas a pessoa usou. Vira o parâmetro `modo` do evento no GA4. */
@@ -93,9 +100,7 @@ const isDiscount = (percent: number) => percent < 0 || Object.is(percent, -0);
 export const PercentCalculators: React.FC<PercentCalculatorsProps> = ({ params, onChange }) => {
   const of = percentOf(params.ofPercent, params.ofValue);
   const whole = percentageOfWhole(params.partValue, params.wholeValue);
-  const increased = applyChange(params.changeValue, params.changePercent);
-  const discounted = applyChange(params.changeValue, -params.changePercent);
-  const changeAmount = params.changeValue * (params.changePercent / 100);
+  const money = moneyChange(params.changeValue, params.changePercent);
   const variation = percentChange(params.fromValue, params.toValue);
   const chain = chainChanges(params.chainStart, chainPercents(params));
 
@@ -206,15 +211,15 @@ export const PercentCalculators: React.FC<PercentCalculatorsProps> = ({ params, 
           <Result htmlFor="pct-change-value pct-change-percent">
             <span className="flex flex-wrap items-baseline justify-between gap-x-3">
               <span>Com aumento de {formatPct(params.changePercent)}</span>
-              <span className="font-mono text-xs">{formatMoneyDelta(changeAmount)}</span>
+              <span className="font-mono text-xs">{formatMoneyDelta(money.amount)}</span>
             </span>
-            <Big>{formatBRL(increased)}</Big>
+            <Big>{formatMoney(money.increased)}</Big>
             <span className="flex flex-wrap items-baseline justify-between gap-x-3 mt-3">
               <span>Com desconto de {formatPct(params.changePercent)}</span>
-              {params.changePercent <= 100 && <span className="font-mono text-xs">{formatMoneyDelta(-changeAmount)}</span>}
+              {params.changePercent <= 100 && <span className="font-mono text-xs">{formatMoneyDelta(-money.amount)}</span>}
             </span>
             {params.changePercent <= 100 ? (
-              <Big>{formatBRL(discounted)}</Big>
+              <Big>{formatMoney(money.discounted)}</Big>
             ) : (
               <span className="block mt-1">Desconto acima de 100% deixaria o valor negativo.</span>
             )}
@@ -281,7 +286,7 @@ export const PercentCalculators: React.FC<PercentCalculatorsProps> = ({ params, 
                   <span className="text-xs font-semibold text-slate-300">Etapa {index + 1}</span>
                   <span className="flex items-center gap-1 text-sm">
                     <span className="text-slate-400">vira</span>
-                    <span className="font-mono font-semibold text-white">{formatBRL(step.value)}</span>
+                    <span className="font-mono font-semibold text-white">{formatMoney(step.value)}</span>
                     {params.chainCount > 1 && (
                       <button
                         type="button"
@@ -351,8 +356,8 @@ export const PercentCalculators: React.FC<PercentCalculatorsProps> = ({ params, 
         )}
 
         <Result htmlFor={['pct-chain-start', ...chain.steps.map((_, i) => `pct-chain-step-${i + 1}`)].join(' ')}>
-          De {formatBRL(params.chainStart)} para
-          <Big>{formatBRL(chain.final)}</Big>
+          De {formatMoney(params.chainStart)} para
+          <Big>{formatMoney(chain.final)}</Big>
           {chainSummary(chain.totalPercent)}
         </Result>
       </Card>

@@ -1,6 +1,5 @@
-import { formatBRL } from '../../shared/lib/format';
-import { applyChange, chainChanges, percentChange, percentOf, percentageOfWhole } from './lib/percentage';
-import { formatPct, formatSignedPct, formatValue } from './lib/format';
+import { chainChanges, percentChange, percentOf, percentageOfWhole } from './lib/percentage';
+import { formatMoney, formatPct, formatSignedPct, formatValue, moneyChange, round2 } from './lib/format';
 import { DEFAULT_PARAMS as D, chainPercents } from './defaults';
 
 /**
@@ -9,6 +8,7 @@ import { DEFAULT_PARAMS as D, chainPercents } from './defaults';
  */
 
 const viral = chainChanges(D.chainStart, chainPercents(D));
+const change = moneyChange(D.changeValue, D.changePercent);
 const [up, down] = chainPercents(D);
 /** Aumento que desfaz o desconto da questão: 1 ÷ (1 − 10%) − 1 = 11,11%. */
 const recovery = (1 / (1 + down / 100) - 1) * 100;
@@ -26,10 +26,10 @@ export const EXAMPLE = {
     result: formatPct(percentageOfWhole(D.partValue, D.wholeValue) ?? 0),
   },
   change: {
-    value: formatBRL(D.changeValue),
+    value: formatMoney(D.changeValue),
     percent: formatPct(D.changePercent),
-    increased: formatBRL(applyChange(D.changeValue, D.changePercent)),
-    discounted: formatBRL(applyChange(D.changeValue, -D.changePercent)),
+    increased: formatMoney(change.increased),
+    discounted: formatMoney(change.discounted),
     discountFactor: formatValue(1 - D.changePercent / 100),
   },
   variation: {
@@ -40,12 +40,12 @@ export const EXAMPLE = {
     down: formatSignedPct(percentChange(D.toValue, D.fromValue) ?? 0),
   },
   viral: {
-    start: formatBRL(D.chainStart),
+    start: formatMoney(D.chainStart),
     up: formatPct(up),
     down: formatPct(Math.abs(down)),
-    afterUp: formatBRL(viral.steps[0].value),
-    final: formatBRL(viral.final),
-    loss: formatBRL(D.chainStart - viral.final),
+    afterUp: formatMoney(viral.steps[0].value),
+    final: formatMoney(viral.final),
+    loss: formatMoney(round2(D.chainStart) - round2(viral.final)),
     total: formatSignedPct(viral.totalPercent ?? 0),
     recovery: formatPct(recovery),
   },

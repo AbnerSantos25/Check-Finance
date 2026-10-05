@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { applyChange, chainChanges, percentChange, percentOf, percentageOfWhole } from '../percentage';
 import { sanitizeParams } from '../sanitizeParams';
-import { chainSummary, formatMoneyDelta, formatPct, formatSignedPct, formatValue } from '../format';
+import { chainSummary, formatMoney, formatMoneyDelta, formatPct, formatSignedPct, formatValue, moneyChange, round2 } from '../format';
 import { DEFAULT_PARAMS, chainPercents } from '../../defaults';
 import { EXAMPLE } from '../../example';
 import { PERCENTAGE_FAQ } from '../../faq';
@@ -97,10 +97,50 @@ describe('formatação', () => {
     expect(chainSummary(0.001)).toBe('Variação total de 0%: as etapas se anulam.');
     expect(chainSummary(null)).toBe('Com valor inicial zero, não existe variação percentual.');
     // Para qualquer total, o número com sinal e o número sem sinal são o mesmo.
-    for (let x = -100; x <= 100; x += 0.005) {
+    // Passo inteiro (i / 200): acerta os meios de centavo exatos, sem erro acumulado.
+    for (let i = -20000; i <= 20000; i++) {
+      const x = i / 200;
       const signed = formatSignedPct(x);
       if (signed !== '0%') expect(signed.slice(1)).toBe(formatPct(Math.abs(x)));
     }
+  });
+
+  it('round2 arredonda o meio centavo decimal, apesar do ponto flutuante', () => {
+    expect(round2(1.005)).toBe(1.01); // 1,005 × 100 = 100,4999… em binário
+    expect(round2(-1.005)).toBe(-1.01);
+    expect(round2(114.885)).toBe(114.89);
+    expect(round2(-0.004)).toBe(0);
+    expect(n(formatMoney(1.005))).toBe('R$ 1,01');
+  });
+
+  it('aumento e desconto: valor ± diferença bate com o total, centavo a centavo', () => {
+    const cases: [number, number, string, string, string][] = [
+      [99.9, 15, '14,99', '114,89', '84,91'],
+      [19.9, 25, '4,98', '24,88', '14,92'],
+      [10.01, 50, '5,01', '15,02', '5,00'],
+      [1000.01, 50, '500,01', '1.500,02', '500,00'],
+      [2.01, 50, '1,01', '3,02', '1,00'],
+    ];
+    for (const [value, percent, amount, up, down] of cases) {
+      const m = moneyChange(value, percent);
+      expect([formatValue(m.amount), formatMoney(m.increased), formatMoney(m.discounted)].map(n)).toEqual([
+        amount.replace(/,00$/, '').replace(/(,\d)0$/, '$1'),
+        `R$ ${up}`,
+        `R$ ${down}`,
+      ]);
+    }
+    // Varredura: R$ 0,01 a R$ 500,00 (passo de 7 centavos) × 1% a 100%.
+    const broken: string[] = [];
+    for (let cents = 1; cents <= 50000; cents += 7) {
+      for (let percent = 1; percent <= 100; percent++) {
+        const { amount, increased, discounted } = moneyChange(cents / 100, percent);
+        const diff = Math.round(amount * 100);
+        if (Math.round(increased * 100) !== cents + diff || Math.round(discounted * 100) !== cents - diff) {
+          broken.push(`${cents / 100} × ${percent}%`);
+        }
+      }
+    }
+    expect(broken).toEqual([]);
   });
 
   it('variação com sinal, sem "−0%"', () => {

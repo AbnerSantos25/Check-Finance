@@ -2,10 +2,30 @@ import { formatBRL } from '../../../shared/lib/format';
 
 /**
  * Duas casas, arredondando o meio para longe do zero nos dois sentidos (−0,125 → −0,13).
- * Todo número da calculadora passa por aqui: um arredondamento só, para a mesma
- * frase nunca mostrar o mesmo valor de dois jeitos.
+ *
+ * Todo número da calculadora, em reais ou não, passa por aqui antes de ir para a
+ * tela: um arredondamento só, para a mesma conta nunca mostrar o mesmo valor de dois
+ * jeitos. O `toPrecision(15)` desfaz o ruído do ponto flutuante antes de arredondar:
+ * 1,005 × 100 dá 100,49999… em binário, e o meio centavo sumiria.
  */
-const round2 = (value: number) => (Math.sign(value) * Math.round(Math.abs(value) * 100)) / 100 || 0;
+export const round2 = (value: number): number => {
+  const cents = Math.round(Number((Math.abs(value) * 100).toPrecision(15)));
+  return (Math.sign(value) * cents) / 100 || 0;
+};
+
+/** Valor em reais, arredondado por `round2` (o Intl não arredonda de novo). */
+export const formatMoney = (value: number): string => formatBRL(round2(value));
+
+/**
+ * Aumento e desconto em centavos que fecham: o total é o valor mais (ou menos) a
+ * diferença já arredondada. Arredondar os dois separadamente fazia R$ 99,90 + 15%
+ * mostrar "+R$ 14,99 → R$ 114,88".
+ */
+export function moneyChange(value: number, percent: number) {
+  const base = round2(value);
+  const amount = round2((value * percent) / 100);
+  return { amount, increased: round2(base + amount), discounted: round2(base - amount) };
+}
 
 /**
  * Número com até duas casas, sem zeros sobrando: 30, 12,5, 1.980, −200.
