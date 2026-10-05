@@ -96,4 +96,4 @@ Os limites são deliberadamente baixos. Para um site novo, 50 impressões em 28 
 
 ## Fora do site (Fase 4)
 
-Links de outros sites e menções à marca pesam no ranqueamento, e o site sozinho não consegue gerá-los. O passo a passo entra na Fase 4.
+Links de outros sites e menções à marca pesam no ranqueamento, e o site sozinho não consegue gerá-los. O passo a passo está em [`docs/divulgacao.md`](divulgacao.md): Bing Webmaster Tools, link no site da ABS Tecnologia, perfis oficiais (que entram no `sameAs` do JSON-LD), comunidades e blogs.

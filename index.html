@@ -35,7 +35,11 @@
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 
     <!-- Identidade do site, igual em todas as rotas. O grafo de cada página
-         referencia o #organization daqui em vez de repetir os dados do publisher. -->
+         referencia o #organization daqui em vez de repetir os dados do publisher.
+
+         Perfis oficiais (Instagram, LinkedIn...) entram como "sameAs": ["https://..."]
+         no nó Organization, só depois de existirem e apontarem para o site. Passo a
+         passo em docs/divulgacao.md. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -67,6 +71,12 @@
             "url": "https://checkfinance.com.br/icon-512.png",
             "width": 512,
             "height": 512
+          },
+          "parentOrganization": {
+            "@type": "Organization",
+            "@id": "https://www.abstecnologiadev.com.br/#organization",
+            "name": "ABS Tecnologia",
+            "url": "https://www.abstecnologiadev.com.br/"
           }
         }
       ]
@@ -126,7 +136,14 @@
       if (/Chrome-Lighthouse/.test(navigator.userAgent)) gtag('set', { traffic_type: 'internal' });
       gtag('js', new Date());
 
-      gtag('config', 'G-3NYMS8KTGJ');
+      // A primeira visualização sai à mão, com o endereço capturado agora: o gtag.js chega
+      // até 4 s depois, e nas ferramentas o link compartilhável reescreve a query em
+      // 300 ms, levando junto as utm_* (a visita perderia a origem da campanha).
+      // O endereço vai só neste evento. Posto no `config`, ele ficaria preso a todos os
+      // eventos seguintes da tag, mesmo depois de trocar de página.
+      gtag('config', 'G-3NYMS8KTGJ', { send_page_view: false });
+      // O <title> pré-renderizado vem antes deste script: o título também é o da página certa.
+      gtag('event', 'page_view', { page_location: location.href, page_title: document.title });
     </script>
 
     <!-- Terceiros (AdSense e Google Analytics) carregados depois da primeira pintura.
