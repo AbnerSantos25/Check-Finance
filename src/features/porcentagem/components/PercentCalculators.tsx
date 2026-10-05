@@ -4,7 +4,7 @@ import type { PercentageParams } from '../../../types';
 import { formatBRL } from '../../../shared/lib/format';
 import { DraftNumberInput } from '../../../shared/components/DraftNumberInput';
 import { applyChange, chainChanges, percentChange, percentOf, percentageOfWhole } from '../lib/percentage';
-import { formatMoneyDelta, formatPct, formatSignedPct, formatValue } from '../lib/format';
+import { chainSummary, formatMoneyDelta, formatPct, formatSignedPct, formatValue } from '../lib/format';
 import { CHAIN_STEP_KEYS, MAX_CHAIN_STEPS, chainPercents } from '../defaults';
 
 /** Qual das cinco contas a pessoa usou. Vira o parâmetro `modo` do evento no GA4. */
@@ -86,15 +86,6 @@ const Result: React.FC<{ htmlFor: string; children: React.ReactNode }> = ({ html
 const Big: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <strong className="block text-2xl font-extrabold font-mono text-violet-400 break-words">{children}</strong>
 );
-
-function chainSummary(totalPercent: number | null): string {
-  if (totalPercent === null) return 'Com valor inicial zero, não existe variação percentual.';
-  const shown = formatSignedPct(totalPercent);
-  if (shown === '0%') return 'Variação total de 0%: as etapas se anulam.';
-  return `Variação total de ${shown}: o mesmo que ${totalPercent < 0 ? 'um único desconto' : 'um único aumento'} de ${formatPct(
-    Math.abs(Math.round(totalPercent * 100) / 100),
-  )}.`;
-}
 
 /** −0 conta como desconto: é o que sobra ao escolher "Desconto" numa etapa ainda zerada. */
 const isDiscount = (percent: number) => percent < 0 || Object.is(percent, -0);

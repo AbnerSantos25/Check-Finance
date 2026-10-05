@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { applyChange, chainChanges, percentChange, percentOf, percentageOfWhole } from '../percentage';
 import { sanitizeParams } from '../sanitizeParams';
-import { formatMoneyDelta, formatSignedPct, formatValue } from '../format';
+import { chainSummary, formatMoneyDelta, formatPct, formatSignedPct, formatValue } from '../format';
 import { DEFAULT_PARAMS, chainPercents } from '../../defaults';
 import { EXAMPLE } from '../../example';
 import { PERCENTAGE_FAQ } from '../../faq';
@@ -82,6 +82,25 @@ describe('formatação', () => {
     expect(n(formatMoneyDelta(0))).toBe('R$ 0,00');
     expect(n(formatMoneyDelta(-0))).toBe('R$ 0,00');
     expect(n(formatMoneyDelta(-0.004))).toBe('R$ 0,00');
+  });
+
+  it('resumo dos sucessivos: o total aparece igual nas duas metades da frase', () => {
+    // Desconto de 75% e depois de 12,5%: −78,125%, que arredonda para −78,13% nos dois lugares.
+    const total = chainChanges(1000, [-75, -12.5]).totalPercent;
+    expect(chainSummary(total)).toBe('Variação total de −78,13%: o mesmo que um único desconto de 78,13%.');
+    expect(chainSummary(chainChanges(2000, [10, -10]).totalPercent)).toBe(
+      'Variação total de −1%: o mesmo que um único desconto de 1%.',
+    );
+    expect(chainSummary(chainChanges(100, [10, 10]).totalPercent)).toBe(
+      'Variação total de +21%: o mesmo que um único aumento de 21%.',
+    );
+    expect(chainSummary(0.001)).toBe('Variação total de 0%: as etapas se anulam.');
+    expect(chainSummary(null)).toBe('Com valor inicial zero, não existe variação percentual.');
+    // Para qualquer total, o número com sinal e o número sem sinal são o mesmo.
+    for (let x = -100; x <= 100; x += 0.005) {
+      const signed = formatSignedPct(x);
+      if (signed !== '0%') expect(signed.slice(1)).toBe(formatPct(Math.abs(x)));
+    }
   });
 
   it('variação com sinal, sem "−0%"', () => {
