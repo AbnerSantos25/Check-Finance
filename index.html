@@ -74,6 +74,7 @@
           },
           "parentOrganization": {
             "@type": "Organization",
+            "@id": "https://www.abstecnologiadev.com.br/#organization",
             "name": "ABS Tecnologia",
             "url": "https://www.abstecnologiadev.com.br/"
           }
@@ -135,10 +136,14 @@
       if (/Chrome-Lighthouse/.test(navigator.userAgent)) gtag('set', { traffic_type: 'internal' });
       gtag('js', new Date());
 
-      // Endereço capturado agora, e não quando o gtag.js chegar (até 4 s depois): nas
-      // ferramentas, o link compartilhável reescreve a query em 300 ms e levaria junto
-      // utm_* e gclid, e a visita perderia a origem da campanha.
-      gtag('config', 'G-3NYMS8KTGJ', { page_location: location.href });
+      // A primeira visualização sai à mão, com o endereço capturado agora: o gtag.js chega
+      // até 4 s depois, e nas ferramentas o link compartilhável reescreve a query em
+      // 300 ms, levando junto as utm_* (a visita perderia a origem da campanha).
+      // O endereço vai só neste evento. Posto no `config`, ele ficaria preso a todos os
+      // eventos seguintes da tag, mesmo depois de trocar de página.
+      gtag('config', 'G-3NYMS8KTGJ', { send_page_view: false });
+      // O <title> pré-renderizado vem antes deste script: o título também é o da página certa.
+      gtag('event', 'page_view', { page_location: location.href, page_title: document.title });
     </script>
 
     <!-- Terceiros (AdSense e Google Analytics) carregados depois da primeira pintura.

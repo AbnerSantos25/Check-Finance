@@ -36,8 +36,8 @@ Use o mesmo padrão em todos:
 
 O botão **Compartilhar** de cada calculadora gera um link que abre a simulação preenchida. É o melhor material para post: a pessoa vê a conta e pode mudar os números.
 
-- **Carrossel:** "Aumento de 10% e depois desconto de 10%: volta ao preço original?". Mostre a conta (R$ 2.000 → R$ 2.200 → R$ 1.980) e termine com o link da calculadora de porcentagem. É a pergunta em alta no Google Trends.
-- **Carrossel:** "1% ao mês não é 12% ao ano". A conta está na seção "Fórmula dos juros compostos" da calculadora.
+- **Carrossel:** "Aumento de 10% e depois desconto de 10%: volta ao preço original?". Mostre a conta (R$ 2.000 → R$ 2.200 → R$ 1.980) e termine com o link da calculadora de porcentagem. Em out/2026 essa pergunta estava em alta no Google Trends.
+- **Carrossel:** "1% ao mês não é 12% ao ano". A conta está no bloco "Como calcular juros compostos: exemplo" da calculadora.
 - **Post:** "Alugar ou comprar: o que muda com a valorização do imóvel", com um link compartilhado da simulação.
 
 Uma ou duas postagens por semana bastam. Consistência vale mais que volume.
@@ -49,6 +49,8 @@ Onde as pessoas fazem exatamente as perguntas que as calculadoras respondem:
 - Reddit: **r/investimentos** e **r/financaspessoais**.
 - **Quora em português**: perguntas como "como calcular juros compostos", "vale a pena alugar ou comprar".
 - Grupos de finanças pessoais no Facebook e no Telegram.
+
+**Antes de tudo, leia as regras de cada subreddit ou grupo.** Muitos proíbem link para site próprio. No Facebook e no Telegram, peça permissão ao administrador antes de divulgar.
 
 **Regras para não ser tratado como spam** (o Reddit remove e bane):
 
@@ -97,8 +99,8 @@ Mande poucos e personalizados, nunca em massa. Responda sempre quem responder.
 
 | O quê | Onde |
 | --- | --- |
-| Sites com link para o CheckFinance | Search Console → **Links** → "Principais sites de links externos". Leva semanas para aparecer. |
+| Sites com link para o CheckFinance | Search Console → **Links** → "Principais sites de vinculação". Leva semanas para aparecer. |
 | Buscas pela marca | Search Console → Desempenho → filtro *Consulta contém* `checkfinance`. Mais buscas pela marca indicam que a divulgação está funcionando. |
-| Visitas vindas dos perfis e das comunidades | GA4 → Aquisição de tráfego, por Origem/mídia da sessão. Os perfis aparecem como `instagram / social` (pelas UTMs); Reddit e Quora aparecem como `reddit.com / referral` etc. |
+| Visitas vindas dos perfis e das comunidades | GA4 → Aquisição de tráfego, por Origem/mídia da sessão. Os perfis aparecem como `instagram / social` (pelas UTMs); Reddit e Quora aparecem como `reddit.com / referral` etc. Quem vem pelos apps (Reddit, Instagram sem UTM, WhatsApp) costuma chegar sem referenciador e cai em `(direct) / (none)`, então o número é um piso. |
 
 Revise junto com a leitura mensal de [`docs/seo.md`](seo.md).
