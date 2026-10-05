@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatPeriod, periodRowLabel, samePeriod } from '../lib/units';
 import { Table as TableIcon } from 'lucide-react';
 import { CalculationSummary, YearlyResult } from '../../../types';
 import { formatBRL, formatPercent } from '../../../shared/lib/format';
@@ -16,7 +17,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
 
   // Filter rows if milestones (every 5 years or last year)
   const displayData = filterMode === 'milestones' && years > 5
-    ? summary.yearlyData.filter(d => d.year === 1 || d.year % 5 === 0 || d.year === years)
+    ? summary.yearlyData.filter(d => d.year === 1 || d.year % 5 === 0 || samePeriod(d.year, years))
     : summary.yearlyData;
 
   // Export to CSV
@@ -24,18 +25,18 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
     // Semicolon-separated with decimal comma, as Excel expects in pt-BR.
     const money = (value: number) => value.toFixed(2).replace('.', ',');
     const headers = [
-      'Ano',
+      'Período',
       'Total Aportado (R$)',
       'Saldo Bruto (R$)',
       'Juros Acumulados Brutos (R$)',
-      'Juros no Ano (R$)',
+      'Juros no Período (R$)',
       taxExempt ? 'Saldo Líquido - Isento (R$)' : 'Saldo Líquido de IR - Tabela Regressiva (R$)',
       'Renda Sustentável Mensal Nominal (R$)',
       'Saldo Líquido em Valores de Hoje (R$)'
     ];
 
     const rows = summary.yearlyData.map(d => [
-      d.year,
+      periodRowLabel(d.year),
       money(d.totalDeposited),
       money(d.grossBalance),
       money(d.totalInterestGained),
@@ -51,7 +52,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `simulacao-investimento-${years}-anos.csv`);
+    link.setAttribute('download', `simulacao-juros-compostos-${formatPeriod(years).replace(' ', '-')}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -77,7 +78,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                Todos ({years})
+                Todos ({summary.yearlyData.length})
               </button>
               <button
                 type="button"
@@ -109,10 +110,10 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
               continuaria ocupando 1170px e empurrando a página de lado. */}
           <thead role="rowgroup" className="sm:sticky sm:top-0 z-10 bg-bg border-b border-line text-caption font-semibold text-slate-300 uppercase tracking-wider">
             <tr role="row">
-              <th role="columnheader" className="py-3 px-3.5 rounded-tl-lg">Ano</th>
+              <th role="columnheader" className="py-3 px-3.5 rounded-tl-lg">Período</th>
               <th role="columnheader" className="py-3 px-3.5">Total Aportado</th>
               <th role="columnheader" className="py-3 px-3.5 text-emerald-400">Saldo Bruto</th>
-              <th role="columnheader" className="py-3 px-3.5">Juros no Ano</th>
+              <th role="columnheader" className="py-3 px-3.5">Juros no Período</th>
               <th role="columnheader" className="py-3 px-3.5 text-emerald-400">Juros Acumulados</th>
               <th role="columnheader" className="py-3 px-3.5">Líquido de IR</th>
               <th role="columnheader" className="py-3 px-3.5 text-teal-300">Renda Sustentável</th>
@@ -121,7 +122,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
           </thead>
           <tbody role="rowgroup" className="divide-y divide-surface-2">
             {displayData.map((row) => {
-              const isLastYear = row.year === years;
+              const isLastYear = samePeriod(row.year, years);
               return (
                 <tr
                   role="row"
@@ -132,8 +133,8 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                       : 'hover:bg-white/[0.02]'
                   }`}
                 >
-                  <td role="cell" data-label="Ano" className="py-3 px-3.5 font-sans font-semibold text-white flex items-center gap-1.5">
-                    Ano {row.year}
+                  <td role="cell" data-label="Período" className="py-3 px-3.5 font-sans font-semibold text-white flex items-center gap-1.5">
+                    {periodRowLabel(row.year)}
                     {isLastYear && (
                       <span className="px-1.5 py-0.5 rounded text-caption bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-sans">
                         Final
@@ -146,7 +147,7 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
                   <td role="cell" data-label="Saldo bruto" className="py-3 px-3.5 font-bold text-emerald-400">
                     {formatBRL(row.grossBalance)}
                   </td>
-                  <td role="cell" data-label="Juros no ano" className="py-3 px-3.5 text-amber-300/90 light:text-amber-300">
+                  <td role="cell" data-label="Juros no período" className="py-3 px-3.5 text-amber-300/90 light:text-amber-300">
                     +{formatBRL(row.yearlyInterestGained)}
                   </td>
                   <td role="cell" data-label="Juros acumulados" className="py-3 px-3.5">
@@ -177,12 +178,12 @@ export const InvestmentTable: React.FC<InvestmentTableProps> = ({ summary, years
           <span>
             {taxExempt
               ? 'Sem IR (aplicação isenta).'
-              : `Líquido de IR: tabela regressiva aplicada a cada aporte, como num resgate total no fim do ano (efetivo no período: ${formatPercent(summary.effectiveTaxRate, 1)}).`}{' '}
+              : `Líquido de IR: tabela regressiva aplicada a cada aporte, como num resgate total no fim de cada período (efetivo no período: ${formatPercent(summary.effectiveTaxRate, 1)}).`}{' '}
             Renda sustentável: rendimento mensal após IR e reposição da inflação, em valores nominais de cada ano.
           </span>
         </div>
         <div className="text-slate-400">
-          Total de {years} períodos anuais calculados
+          Prazo de {formatPeriod(years)}, calculado mês a mês
         </div>
       </div>
     </TableCard>

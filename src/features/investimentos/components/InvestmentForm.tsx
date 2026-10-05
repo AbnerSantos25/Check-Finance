@@ -14,25 +14,78 @@ import { formatBRL, formatNumber, formatPercent, monthlyEquivalentRate } from '.
 import { REFERENCE_DATE } from '../../../shared/lib/economicApi';
 import { DraftNumberInput } from '../../../shared/components/DraftNumberInput';
 import { InfoTip } from '../../../shared/components/InfoTip';
+import { annualToMonthly, formatPeriod, monthlyToAnnual, toMonths, type DisplayUnits } from '../lib/units';
 
 interface InvestmentFormProps {
   params: InvestmentParams;
   onChange: (newParams: Partial<InvestmentParams>) => void;
+  /** Unidade em que a taxa e o prazo são digitados. Os parâmetros seguem anuais. */
+  units: DisplayUnits;
+  onUnitsChange: (units: DisplayUnits) => void;
   onReset: () => void;
   marketRates: MarketRates;
   ratesAreLive: boolean;
 }
 
 const round2 = (value: number) => Math.round(value * 100) / 100;
+const round4 = (value: number) => Math.round(value * 10000) / 10000;
+
+/** Seletor compacto de unidade (a.a./a.m., anos/meses). */
+function UnitSwitch<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  /**
+   * [valor, texto visível, rótulo falado opcional]. O rótulo falado começa pelo
+   * texto visível (WCAG 2.5.3): quem usa comando de voz diz "a.m." e acha o botão.
+   */
+  options: [T, string, string?][];
+  onChange: (value: T) => void;
+}) {
+  return (
+    <div role="group" aria-label={label} className="flex shrink-0 rounded-lg bg-bg-deep p-0.5 border border-line">
+      {options.map(([option, text, spoken]) => (
+        <button
+          key={option}
+          type="button"
+          aria-label={spoken ? `${text}, ${spoken}` : undefined}
+          aria-pressed={value === option}
+          onClick={() => onChange(option)}
+          className={`min-h-8 px-2.5 rounded-md text-caption font-medium transition-colors cursor-pointer ${
+            value === option ? 'bg-line-soft text-white' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          {text}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export const InvestmentForm: React.FC<InvestmentFormProps> = ({
   params,
   onChange,
+  units,
+  onUnitsChange,
   onReset,
   marketRates,
   ratesAreLive,
 }) => {
   const currentIpca = round2(marketRates.ipca);
+
+  // Taxa e prazo são guardados ao ano; a unidade só muda o que se digita e se lê.
+  const monthlyRate = units.rate === 'mensal';
+  const shownRate = monthlyRate ? round4(annualToMonthly(params.annualInterestRate)) : params.annualInterestRate;
+  const commitRate = (value: number) =>
+    onChange({ annualInterestRate: monthlyRate ? monthlyToAnnual(value) : value });
+  const inMonths = units.period === 'meses';
+  // Em anos, um prazo que não fecha ano (ex.: 128 meses) aparece com duas casas, não como 10.666…
+  const shownPeriod = inMonths ? toMonths(params.years) : Math.round(params.years * 100) / 100;
+  const commitPeriod = (value: number) => onChange({ years: inMonths ? value / 12 : value });
 
   // Each preset carries the IR regime of the product it represents.
   const presets = [
@@ -219,44 +272,54 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
           </div>
         </div>
 
-        {/* 4. Taxa de Rentabilidade Anual Bruta */}
+        {/* 4. Taxa de juros, ao ano ou ao mês */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
               <label htmlFor="annual-interest-input" className="text-xs font-semibold text-slate-300">
-                Taxa de Juros Anual Bruta (%)
+                Taxa de Juros Bruta (%)
               </label>
-              <InfoTip label="Taxa de Juros Anual Bruta (%)" text="Rentabilidade bruta média esperada por ano em sua carteira" />
+              <InfoTip
+                label="Taxa de Juros Bruta (%)"
+                text="Rentabilidade bruta média esperada. Digite ao ano ou ao mês: a conversão usa a taxa equivalente composta (1% ao mês = 12,68% ao ano, e não 12%)."
+              />
             </div>
-            <span className="text-xs font-mono font-medium text-emerald-400">
-              {formatNumber(params.annualInterestRate)}% a.a.
-            </span>
+            <UnitSwitch
+              label="Unidade da taxa"
+              value={units.rate}
+              options={[['anual', 'a.a.', 'ao ano'], ['mensal', 'a.m.', 'ao mês']]}
+              onChange={(rate) => onUnitsChange({ ...units, rate })}
+            />
+          </div>
+          <div className="text-xs font-mono font-medium text-emerald-400">
+            {formatNumber(params.annualInterestRate)}% a.a. · {formatNumber(annualToMonthly(params.annualInterestRate), 4)}% a.m.
           </div>
 
           <div className="flex items-center gap-3">
             <input
               id="annual-interest-slider"
-              aria-label="Taxa de juros anual bruta (%)"
+              aria-label={monthlyRate ? 'Taxa de juros mensal bruta (%)' : 'Taxa de juros anual bruta (%)'}
               type="range"
-              min="1"
-              max="25"
-              step="0.25"
-              value={params.annualInterestRate}
-              onChange={(e) => onChange({ annualInterestRate: Number(e.target.value) })}
+              min={monthlyRate ? '0.1' : '1'}
+              max={monthlyRate ? '2.5' : '25'}
+              step={monthlyRate ? '0.05' : '0.25'}
+              value={shownRate}
+              onChange={(e) => commitRate(Number(e.target.value))}
               className="w-full accent-emerald-400 range-touch cursor-pointer"
             />
-            <div className="w-28 sm:w-20 shrink-0 relative">
+            <div className="w-28 sm:w-24 shrink-0 relative">
               <DraftNumberInput
                 id="annual-interest-input"
-                min="0.1"
-                max="50"
-                step="0.25"
-                value={params.annualInterestRate}
-                onCommit={(v) => onChange({ annualInterestRate: v })}
-                className="w-full tap-field pl-2.5 pr-7 sm:pr-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
+                min={monthlyRate ? '0.01' : '0.1'}
+                max={monthlyRate ? '9.5' : '200'}
+                step={monthlyRate ? '0.05' : '0.25'}
+                value={shownRate}
+                onCommit={commitRate}
+                aria-describedby="annual-interest-unit"
+                className="w-full tap-field pl-2.5 pr-11 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-caption text-slate-400">
-                %
+              <span id="annual-interest-unit" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-caption text-slate-400">
+                {monthlyRate ? '% a.m.' : '% a.a.'}
               </span>
             </div>
           </div>
@@ -279,7 +342,11 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
                   {preset.name}
                   <span className="text-slate-400 font-normal"> · {preset.taxExempt ? 'isento' : 'com IR'}</span>
                 </span>
-                <span className="font-mono text-emerald-400/80 light:text-emerald-400 shrink-0">{formatNumber(preset.rate)}% a.a.</span>
+                <span className="font-mono text-emerald-400/80 light:text-emerald-400 shrink-0">
+                  {monthlyRate
+                    ? `${formatNumber(annualToMonthly(preset.rate), 2)}% a.m.`
+                    : `${formatNumber(preset.rate)}% a.a.`}
+                </span>
               </button>
             ))}
           </div>
@@ -351,64 +418,80 @@ export const InvestmentForm: React.FC<InvestmentFormProps> = ({
           </div>
         </div>
 
-        {/* 6. Período em Anos */}
+        {/* 6. Prazo, em anos ou meses */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
               <label htmlFor="years-period-input" className="text-xs font-semibold text-slate-300">
-                Período de Investimento (Anos)
+                Período do Investimento
               </label>
-              <InfoTip label="Período de Investimento (Anos)" text="Tempo total em que você deixará o dinheiro rendendo" />
+              <InfoTip
+                label="Período do Investimento"
+                text="Tempo total em que você deixará o dinheiro rendendo, em anos ou em meses. O aporte é reajustado a cada 12 meses."
+              />
             </div>
-            <span className="text-xs font-mono font-medium text-emerald-400">
-              {params.years} {params.years === 1 ? 'ano' : 'anos'} ({params.years * 12} meses)
-            </span>
+            <UnitSwitch
+              label="Unidade do período"
+              value={units.period}
+              options={[['anos', 'anos'], ['meses', 'meses']]}
+              onChange={(period) => onUnitsChange({ ...units, period })}
+            />
+          </div>
+          <div className="text-xs font-mono font-medium text-emerald-400">
+            {formatPeriod(params.years)}
+            {!inMonths && toMonths(params.years) % 12 === 0 ? ` (${toMonths(params.years)} meses)` : ''}
           </div>
 
           <div className="flex items-center gap-3">
             <input
               id="years-period-slider"
-              aria-label="Período de investimento (anos)"
+              aria-label={inMonths ? 'Período de investimento (meses)' : 'Período de investimento (anos)'}
               type="range"
               min="1"
-              max="45"
+              max={inMonths ? '120' : '45'}
               step="1"
-              value={params.years}
-              onChange={(e) => onChange({ years: Number(e.target.value) })}
+              value={shownPeriod}
+              onChange={(e) => commitPeriod(Number(e.target.value))}
               className="w-full accent-emerald-400 range-touch cursor-pointer"
             />
-            <div className="w-28 sm:w-20 shrink-0 relative">
+            <div className="w-28 sm:w-24 shrink-0 relative">
               <DraftNumberInput
                 id="years-period-input"
-                min="1"
-                max="60"
-                step="1"
-                value={params.years}
-                onCommit={(v) => onChange({ years: v })}
-                className="w-full tap-field pl-2.5 pr-7 sm:pr-2.5 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
+                // Em anos, o mínimo é 1 mês (0,08 ano): 7 meses aparecem como 0,58.
+                min={inMonths ? '1' : '0.08'}
+                max={inMonths ? '720' : '60'}
+                // Em anos o prazo pode ser fracionário (100 meses = 8,33 anos).
+                step={inMonths ? '1' : 'any'}
+                value={shownPeriod}
+                onCommit={commitPeriod}
+                aria-describedby="years-period-unit"
+                className="w-full tap-field pl-2.5 pr-12 py-2 bg-bg border border-line rounded-xl text-xs font-mono text-center text-white focus:outline-none focus:border-emerald-500"
               />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-caption text-slate-400">
-                anos
+              <span id="years-period-unit" className="absolute right-2 top-1/2 -translate-y-1/2 text-caption text-slate-400">
+                {inMonths ? 'meses' : 'anos'}
               </span>
             </div>
           </div>
 
-          {/* Quick year pills */}
+          {/* Atalhos de prazo */}
           <div className="flex items-center gap-1.5 pt-1">
-            {[5, 10, 20, 30].map((y) => (
-              <button
-                key={y}
-                type="button"
-                onClick={() => onChange({ years: y })}
-                className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
-                  params.years === y
-                    ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold'
-                    : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                {y} anos
-              </button>
-            ))}
+            {(inMonths ? [6, 12, 24, 36] : [5, 10, 20, 30]).map((value) => {
+              const years = inMonths ? value / 12 : value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onChange({ years })}
+                  className={`text-caption tap-target px-2 py-1 rounded-lg border transition-all ${
+                    toMonths(params.years) === toMonths(years)
+                      ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold'
+                      : 'bg-surface-2 border-line text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  {value} {inMonths ? 'meses' : 'anos'}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

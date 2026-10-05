@@ -6,10 +6,15 @@ import { formatBRL, formatPercent } from '../../shared/lib/format';
 import { useEconomicData } from '../../app/providers/EconomicDataProvider';
 import { useModals } from '../../app/providers/ModalsProvider';
 import { useShareableParams } from '../../app/useShareableParams';
+import { usePersistentState } from '../../app/providers/FormStateProvider';
+import { RelatedTools } from '../../shared/components/RelatedTools';
 import { SummaryCards } from './components/SummaryCards';
 import { InvestmentForm } from './components/InvestmentForm';
 import { ComparisonCharts } from './components/ComparisonCharts';
 import { InvestmentTable } from './components/InvestmentTable';
+import { LearnCompoundInterest } from './components/LearnCompoundInterest';
+import { DEFAULT_UNITS, monthlyToAnnual, periodRowLabel, type DisplayUnits } from './lib/units';
+import { FORMULA_EXAMPLE } from './example';
 import { calculateInvestment } from './lib/calculateInvestment';
 import { sanitizeParams } from './lib/sanitizeParams';
 import { DEFAULT_PARAMS } from './defaults';
@@ -31,6 +36,7 @@ export const InvestmentPage: React.FC = () => {
     SHARE_SCHEMA,
     sanitizeParams
   );
+  const [units, setUnits] = usePersistentState<DisplayUnits>('investimentos:unidades', DEFAULT_UNITS);
   const [isMethodologyOpen, setIsMethodologyOpen] = useState(false);
   const { rates, liveCount, hasFetched } = useEconomicData();
 
@@ -54,6 +60,28 @@ export const InvestmentPage: React.FC = () => {
     setParams((prev) => sanitizeParams(prev, newValues));
   };
 
+  // O exemplo da fórmula na própria calculadora: sem aporte mensal, sem reajuste e
+  // isento de IR, para o saldo bruto bater com a conta do texto.
+  const tryFormulaExample = () => {
+    setParams((prev) =>
+      sanitizeParams(prev, {
+        initialDeposit: FORMULA_EXAMPLE.capital,
+        monthlyDeposit: 0,
+        annualAdjustmentRate: 0,
+        annualInterestRate: monthlyToAnnual(FORMULA_EXAMPLE.monthlyRate * 100),
+        years: FORMULA_EXAMPLE.months / 12,
+        taxExempt: true,
+      })
+    );
+    setUnits({ rate: 'mensal', period: 'meses' });
+    // Leva a pessoa (e o foco do teclado/leitor de tela) até a calculadora preenchida.
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document
+      .getElementById('investment-form-container')
+      ?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    document.getElementById('annual-interest-input')?.focus({ preventScroll: true });
+  };
+
   return (
     <>
       <Seo
@@ -65,12 +93,12 @@ export const InvestmentPage: React.FC = () => {
 
       <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <StatusBadge color="emerald">Simulação Financeira Ativa</StatusBadge>
+          <StatusBadge color="emerald">Juros Compostos · Investimentos</StatusBadge>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            Calculadora de Investimento a Longo Prazo
+            Calculadora de Juros Compostos
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
-            A ferramenta mais completa do mercado: descubra como aportes com <strong>reajustes anuais</strong>, <strong>juros compostos</strong> e o <strong>desconto da inflação</strong> afetam seu patrimônio real ao longo do tempo.
+            Simule <strong>juros compostos</strong> com aportes mensais, <strong>taxa ao mês ou ao ano</strong> e prazo em meses ou anos. O resultado já desconta a <strong>inflação</strong> e o <strong>Imposto de Renda</strong>, com taxas do Banco Central.
           </p>
         </div>
 
@@ -88,7 +116,12 @@ export const InvestmentPage: React.FC = () => {
       <InvestmentForm
         params={params}
         onChange={handleParamChange}
-        onReset={() => setParams(DEFAULT_PARAMS)}
+        units={units}
+        onUnitsChange={setUnits}
+        onReset={() => {
+          setParams(DEFAULT_PARAMS);
+          setUnits(DEFAULT_UNITS);
+        }}
         marketRates={rates}
         ratesAreLive={hasFetched && liveCount > 0}
       />
@@ -99,13 +132,15 @@ export const InvestmentPage: React.FC = () => {
 
       <InvestmentTable summary={summary} years={params.years} taxExempt={params.taxExempt} />
 
+      <LearnCompoundInterest onTryExample={tryFormulaExample} />
+
       <section className="mt-12 pt-8 border-t border-line-soft">
         <div className="mb-6">
           <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
             Conceitos Fundamentais
           </div>
           <h2 className="text-xl font-extrabold text-white">
-            Como os Juros Compostos Constróem sua Independência
+            Como os juros compostos constroem patrimônio
           </h2>
         </div>
 
@@ -117,7 +152,7 @@ export const InvestmentPage: React.FC = () => {
             <p className="text-sm text-slate-400 leading-relaxed">
               Na fórmula de juros compostos, o tempo está no expoente. No começo, quase todo o patrimônio vem dos seus aportes; com os anos, os juros passam a crescer mais rápido que eles.{' '}
               {summary.interestSurpassesDepositsYear
-                ? `No seu cenário, os juros acumulados superam o total aportado no ano ${summary.interestSurpassesDepositsYear}.`
+                ? `No seu cenário, os juros acumulados superam o total aportado no ${periodRowLabel(summary.interestSurpassesDepositsYear).toLowerCase()}.`
                 : 'No seu cenário, os juros acumulados ainda não superam o total aportado dentro do período.'}
             </p>
           </div>
@@ -147,6 +182,8 @@ export const InvestmentPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      <RelatedTools current="investimentos" />
 
       <Faq
         items={INVESTMENT_FAQ}

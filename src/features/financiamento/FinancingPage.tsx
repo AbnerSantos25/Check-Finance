@@ -13,6 +13,7 @@ import { sanitizeParams } from './lib/sanitizeParams';
 import { SHARE_SCHEMA } from './share';
 import { Seo } from '../../shared/seo/Seo';
 import { Faq } from '../../shared/components/Faq';
+import { RelatedTools } from '../../shared/components/RelatedTools';
 import { FINANCING_TOOL, financingJsonLd } from './seo';
 import { FINANCING_FAQ } from './faq';
 
@@ -60,6 +61,8 @@ export const FinancingPage: React.FC = () => {
       <RealEstateCharts summary={summary} params={params} />
 
       <RealEstateTable summary={summary} />
+
+      <RelatedTools current="financiamento" />
 
       <Faq
         items={FINANCING_FAQ}

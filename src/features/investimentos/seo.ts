@@ -7,6 +7,9 @@ export const INVESTMENT_TOOL = getTool('investimentos');
 export const investmentJsonLd: JsonLdNode[] = [
   toolApplicationNode(INVESTMENT_TOOL, [
     'Juros compostos sobre aportes mensais',
+    'Taxa de juros ao mês ou ao ano e prazo em meses ou anos',
+    'Fórmula dos juros compostos com exemplo resolvido',
+    'Comparação entre juros simples e juros compostos',
     'Reajuste anual progressivo do valor aportado',
     'Patrimônio em valor real, com a inflação descontada',
     'Imposto de Renda pela tabela regressiva, com opção de isenção',
