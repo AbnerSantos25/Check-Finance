@@ -62,6 +62,14 @@ describe('formatação', () => {
     expect(formatValue(Infinity)).toBe('—');
   });
 
+  it('nunca mostra "-0", e o menos é tipográfico', () => {
+    expect(formatValue(-0)).toBe('0');
+    expect(formatValue(-0.001)).toBe('0');
+    expect(formatValue(percentOf(0, -200))).toBe('0');
+    expect(formatValue(-200)).toBe('−200');
+    expect(formatValue(-1234.5)).toBe('−1.234,5');
+  });
+
   it('variação com sinal, sem "−0%"', () => {
     expect(formatSignedPct(25)).toBe('+25%');
     expect(formatSignedPct(-1)).toBe('−1%');
@@ -78,6 +86,13 @@ describe('sanitizeParams', () => {
 
   it('desconto de etapa não passa de 100%', () => {
     expect(sanitizeParams(DEFAULT_PARAMS, { chainStep1: -250 }).chainStep1).toBe(-100);
+  });
+
+  it('valores em R$ (aumento/desconto e sucessivos) não ficam negativos', () => {
+    const out = sanitizeParams(DEFAULT_PARAMS, { changeValue: -150, chainStart: -2000, fromValue: -50 });
+    expect(out.changeValue).toBe(0);
+    expect(out.chainStart).toBe(0);
+    expect(out.fromValue).toBe(-50); // a variação aceita negativos
   });
 
   it('ignora valores não finitos', () => {

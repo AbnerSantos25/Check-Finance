@@ -21,7 +21,8 @@ export const RelatedTools: React.FC<{ current: ToolId }> = ({ current }) => {
       <h2 id="outras-calculadoras" className="text-xl font-extrabold text-white mb-4">
         Outras calculadoras
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {/* Duas colunas: com quatro outras ferramentas, três colunas deixavam um card sozinho. */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {others.map((tool) => {
           const Icon = TOOL_ICONS[tool.id];
           return (

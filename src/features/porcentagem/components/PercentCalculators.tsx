@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Minus, Plus, X } from 'lucide-react';
 import type { PercentageParams } from '../../../types';
 import { formatBRL } from '../../../shared/lib/format';
@@ -108,6 +108,15 @@ export const PercentCalculators: React.FC<PercentCalculatorsProps> = ({ params, 
   const variation = percentChange(params.fromValue, params.toValue);
   const chain = chainChanges(params.chainStart, chainPercents(params));
 
+  // Ao adicionar ou remover etapa, o botão clicado some ou muda de lugar. O foco vai
+  // para o campo da etapa certa, e não para o topo da página.
+  const focusAfterRender = useRef<string | null>(null);
+  useEffect(() => {
+    if (!focusAfterRender.current) return;
+    document.getElementById(focusAfterRender.current)?.focus();
+    focusAfterRender.current = null;
+  }, [params.chainCount]);
+
   const setStep = (index: number, percent: number) => onChange('sucessivos', { [CHAIN_STEP_KEYS[index]]: percent });
 
   // Tira a etapa e sobe as seguintes: a lista continua sem buracos.
@@ -115,6 +124,8 @@ export const PercentCalculators: React.FC<PercentCalculatorsProps> = ({ params, 
     const steps = CHAIN_STEP_KEYS.map((key) => params[key]);
     steps.splice(index, 1);
     steps.push(0);
+    // A etapa que ocupou o lugar da removida, ou a anterior se era a última.
+    focusAfterRender.current = `pct-chain-step-${Math.min(index, params.chainCount - 2) + 1}`;
     onChange('sucessivos', {
       chainCount: params.chainCount - 1,
       ...Object.fromEntries(CHAIN_STEP_KEYS.map((key, i) => [key, steps[i]])),
@@ -185,6 +196,7 @@ export const PercentCalculators: React.FC<PercentCalculatorsProps> = ({ params, 
               id="pct-change-value"
               label="Valor"
               prefix="R$"
+              min={0}
               value={params.changeValue}
               onCommit={(changeValue) => onChange('aumento_desconto', { changeValue })}
             />
@@ -257,6 +269,7 @@ export const PercentCalculators: React.FC<PercentCalculatorsProps> = ({ params, 
             id="pct-chain-start"
             label="Valor inicial"
             prefix="R$"
+            min={0}
             value={params.chainStart}
             onCommit={(chainStart) => onChange('sucessivos', { chainStart })}
           />
@@ -332,9 +345,10 @@ export const PercentCalculators: React.FC<PercentCalculatorsProps> = ({ params, 
         {params.chainCount < MAX_CHAIN_STEPS && (
           <button
             type="button"
-            onClick={() =>
-              onChange('sucessivos', { chainCount: params.chainCount + 1, [CHAIN_STEP_KEYS[params.chainCount]]: 0 })
-            }
+            onClick={() => {
+              focusAfterRender.current = `pct-chain-step-${params.chainCount + 1}`;
+              onChange('sucessivos', { chainCount: params.chainCount + 1, [CHAIN_STEP_KEYS[params.chainCount]]: 0 });
+            }}
             className="mt-1 inline-flex items-center gap-1.5 tap-target px-3 py-1.5 rounded-xl bg-surface-2 hover:bg-line border border-line-strong text-xs font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" aria-hidden="true" />

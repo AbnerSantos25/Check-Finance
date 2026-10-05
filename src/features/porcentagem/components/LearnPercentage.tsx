@@ -67,7 +67,7 @@ export const LearnPercentage: React.FC = () => (
         <p>
           São {viral.loss} a menos, uma variação total de <strong className="text-slate-200">{viral.total}</strong>. A
           ordem não importa: desconto primeiro e aumento depois também termina em {viral.final}. Para desfazer um
-          desconto de {viral.down}, o aumento precisa ser de {viral.recovery}.
+          desconto de {viral.down}, o aumento precisa ser de cerca de {viral.recovery}.
         </p>
       </div>
     </div>
@@ -77,6 +77,7 @@ export const LearnPercentage: React.FC = () => (
       <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-3xl">
         Quanto é cada porcentagem dos valores mais comuns:
       </p>
+      <p className="sm:hidden mt-1 text-caption text-slate-400">Deslize a tabela para o lado para ver todos os valores.</p>
       <div className="mt-4 overflow-x-auto max-w-3xl">
         <table className="w-full text-xs sm:text-sm border-collapse">
           <thead className="bg-bg border-b border-line text-slate-300">

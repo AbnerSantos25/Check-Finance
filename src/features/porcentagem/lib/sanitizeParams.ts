@@ -4,6 +4,8 @@ import { MAX_CHAIN_STEPS } from '../defaults';
 type NumericParam = keyof PercentageParams;
 
 const VALUE = { min: -1e12, max: 1e12 };
+// Preço e valor inicial em R$: negativos não fazem sentido e quebrariam o texto ("+-R$ 15").
+const MONEY = { min: 0, max: 1e12 };
 // Desconto passa de 100% só por engano: o valor ficaria negativo.
 const STEP = { min: -100, max: 1000 };
 
@@ -12,11 +14,11 @@ export const PARAM_LIMITS: Record<NumericParam, { min: number; max: number }> = 
   ofValue: VALUE,
   partValue: VALUE,
   wholeValue: VALUE,
-  changeValue: VALUE,
+  changeValue: MONEY,
   changePercent: { min: 0, max: 1000 },
   fromValue: VALUE,
   toValue: VALUE,
-  chainStart: VALUE,
+  chainStart: MONEY,
   chainCount: { min: 1, max: MAX_CHAIN_STEPS },
   chainStep1: STEP,
   chainStep2: STEP,

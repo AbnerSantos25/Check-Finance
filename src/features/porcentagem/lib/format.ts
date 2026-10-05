@@ -1,6 +1,14 @@
-/** Número com até duas casas, sem zeros sobrando: 30, 12,5, 1.980. */
-export const formatValue = (value: number): string =>
-  Number.isFinite(value) ? value.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '—';
+/**
+ * Número com até duas casas, sem zeros sobrando: 30, 12,5, 1.980, −200.
+ *
+ * Arredonda antes de formatar e troca −0 por 0: o Intl escreveria "-0" para −0 e
+ * para −0,001. O sinal de menos é o tipográfico (−), o mesmo de `formatSignedPct`.
+ */
+export const formatValue = (value: number): string => {
+  if (!Number.isFinite(value)) return '—';
+  const rounded = Math.round(value * 100) / 100 || 0;
+  return rounded.toLocaleString('pt-BR', { maximumFractionDigits: 2 }).replace('-', '−');
+};
 
 /** Percentual com até duas casas: 25%, 11,11%. */
 export const formatPct = (value: number): string => `${formatValue(value)}%`;

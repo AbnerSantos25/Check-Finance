@@ -19,7 +19,7 @@ export const PERCENTAGE_FAQ: FaqItem[] = [
     question: 'Um aumento de 10% seguido de um desconto de 10% volta ao valor inicial?',
     answer: [
       `Não. O desconto incide sobre o valor já aumentado, que é maior. ${viral.start} com aumento de ${viral.up} viram ${viral.afterUp}; o desconto de ${viral.down} incide sobre ${viral.afterUp}, e o valor final é ${viral.final}: ${viral.loss} a menos, uma variação total de ${viral.total}.`,
-      `A ordem não muda o resultado: desconto primeiro e aumento depois também dá ${viral.final}. Para voltar exatamente ao valor inicial depois de um desconto de ${viral.down}, o aumento precisa ser de ${viral.recovery}.`,
+      `A ordem não muda o resultado: desconto primeiro e aumento depois também dá ${viral.final}. Para voltar exatamente ao valor inicial depois de um desconto de ${viral.down}, o aumento precisa ser de cerca de ${viral.recovery} (a dízima 11,111…%).`,
     ],
   },
   {
