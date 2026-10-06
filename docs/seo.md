@@ -94,6 +94,22 @@ Os limites são deliberadamente baixos. Para um site novo, 50 impressões em 28 
 | Consultas com "porcentagem" com impressões, mas posição > 20 depois de 8 semanas | Reforçar a página com a conta mais procurada pelo `modo` do evento `porcentagem_calcular` (exemplos, texto e FAQ dessa conta). |
 | `outra_calculadora` quase zero | Destacar mais o bloco "Outras calculadoras", ou trazê-lo para mais perto do resultado. |
 
+## IndexNow (Bing e outros buscadores)
+
+O [IndexNow](https://www.indexnow.org/) é o jeito de o site avisar Bing, Yandex, Seznam e Naver: "estas páginas mudaram, venham buscar". Assim o Bing atualiza em horas, e não em dias. O Google não usa IndexNow; para ele vale o sitemap.
+
+- **Quando dispara:** o workflow `.github/workflows/indexnow.yml` roda a cada push na `main` que muda conteúdo (`src/`, `index.html`, `public/`). Merges que só mexem em dependências não avisam, porque o protocolo pede para avisar apenas o que mudou.
+- **O que faz** (`scripts/indexnow.mjs`):
+  1. espera o deploy da Cloudflare terminar (check run "Workers Builds" do commit);
+  2. confere se a chave está no ar;
+  3. lê as URLs do `sitemap.xml` publicado e as envia para `api.indexnow.org`.
+
+  Se o deploy falhar, não envia nada.
+- **A chave** fica em `public/00d079488946675105c1f68a973e8a25.txt`. Ela é pública de propósito: prova ao buscador que o aviso vem de quem controla o domínio. Para trocar a chave, renomeie o arquivo, atualize o conteúdo e a constante `KEY` no script.
+- **Impacto no site:** nenhum. Nenhuma página carrega nada novo; tudo acontece no GitHub Actions.
+- **Conferir:** no resumo do job em Actions → IndexNow (URLs e resposta: 200 ou 202 é sucesso) e no Bing Webmaster Tools → **IndexNow**.
+- **Rodar à mão:** Actions → IndexNow → **Run workflow**.
+
 ## Fora do site (Fase 4)
 
 Links de outros sites e menções à marca pesam no ranqueamento, e o site sozinho não consegue gerá-los. O passo a passo está em [`docs/divulgacao.md`](divulgacao.md): Bing Webmaster Tools, link no site da ABS Tecnologia, perfis oficiais (que entram no `sameAs` do JSON-LD), comunidades e blogs.

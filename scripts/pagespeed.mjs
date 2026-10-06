@@ -225,7 +225,7 @@ export function renderReport(results, failures, minPerformance) {
   return lines.join('\n') + '\n';
 }
 
-async function sitemapUrls() {
+export async function sitemapUrls() {
   const res = await fetch(`${SITE}/sitemap.xml`, { signal: AbortSignal.timeout(30_000) });
   if (!res.ok) throw new Error(`sitemap respondeu ${res.status}`);
   const urls = [...(await res.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].trim());
