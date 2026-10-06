@@ -1,0 +1,42 @@
+name: IndexNow
+
+# Avisa Bing, Yandex, Seznam e Naver de que as páginas mudaram, para serem buscadas
+# de novo em horas. Roda depois do deploy da Cloudflare (o script espera o check run
+# "Workers Builds" do commit) e não toca no site: performance zero.
+#
+# Só dispara quando muda conteúdo: merge que mexe apenas em dependências não avisa,
+# como pede o protocolo (avisar só o que mudou). Detalhes: docs/seo.md.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'index.html'
+      - 'public/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: read
+
+# Dois merges seguidos: só o último avisa.
+concurrency:
+  group: indexnow
+  cancel-in-progress: true
+
+jobs:
+  indexnow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Avisar o IndexNow
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/indexnow.mjs
