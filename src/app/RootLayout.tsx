@@ -7,6 +7,7 @@ import { LegacyHashRedirect } from './LegacyHashRedirect';
 import { useActiveTool } from './useActiveTool';
 import { usePageViews } from './usePageViews';
 import { ConsentManager } from './ConsentManager';
+import { BackToTop } from '../shared/components/BackToTop';
 
 export const RootLayout: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -32,6 +33,9 @@ export const RootLayout: React.FC = () => {
 
       {/* Aviso de cookies (LGPD): só depois da primeira interação ou 4 s após o load. */}
       <ConsentManager />
+
+      {/* Botão "Voltar ao topo" no celular, depois de rolar uma tela e meia. */}
+      <BackToTop />
 
       <div className="hidden md:block">
         <AppSidebar
@@ -64,7 +68,12 @@ export const RootLayout: React.FC = () => {
       <div className="flex-1 flex flex-col min-w-0">
         <Header onOpenMobileMenu={() => setIsMobileMenuOpen(true)} />
 
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto w-full">
+        {/* tabIndex -1: o "Voltar ao topo" devolve o foco para cá. */}
+        <main
+          id="conteudo"
+          tabIndex={-1}
+          className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto w-full focus:outline-none"
+        >
           {/* A chave remonta o invólucro a cada rota, e é isso que dispara a animação
               de novo. O estado dos formulários vive no FormStateProvider, acima daqui. */}
           <div key={pathname} className={hasNavigated.current ? 'page-enter' : undefined}>
