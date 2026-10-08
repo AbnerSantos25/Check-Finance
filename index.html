@@ -175,12 +175,13 @@
           if (loaded) return;
           loaded = true;
           EVENTS.forEach(function (e) { removeEventListener(e, load, { passive: true }); });
-          inject('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6087444294118231', true);
-
           // Só em produção: os previews de PR (*.workers.dev) e o localhost rodam o
-          // mesmo HTML e contavam como visitas no Analytics. Fora daqui os eventos
-          // ficam na fila do dataLayer e nunca são enviados.
+          // mesmo HTML. No Analytics contavam como visitas; no AdSense viravam pedidos
+          // de anúncio de um site não cadastrado, o que a política de "declarações
+          // desonestas" trata como URL impreciso. Fora daqui os eventos ficam na fila
+          // do dataLayer e nunca são enviados.
           if (/(^|\.)checkfinance\.com\.br$/.test(location.hostname)) {
+            inject('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6087444294118231', true);
             inject('https://www.googletagmanager.com/gtag/js?id=G-3NYMS8KTGJ');
           }
         }
