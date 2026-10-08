@@ -29,6 +29,7 @@ Somava-se a isso o CSS do Google Fonts bloqueando a renderização por 780 ms. R
 1. **Nenhum script de terceiro no `<head>` nem síncrono.** AdSense e Analytics entram pelo carregador em `index.html`, no primeiro toque, rolagem ou tecla, ou `THIRD_PARTY_DELAY_MS` (4 s) depois do `load`.
    - Qualquer tag nova (pixel, chat, heatmap) entra no mesmo carregador, dentro de `load()`.
    - A conta do AdSense é verificada pela meta `google-adsense-account`. O `ads.txt` continua em `public/`.
+   - AdSense e Analytics só carregam em `checkfinance.com.br`. Nos previews de PR e no localhost, anúncio seria pedido de um site não cadastrado na conta, e visita entraria nas métricas.
 2. **Fontes só autohospedadas.** A Plus Jakarta Sans vem de `@fontsource-variable/plus-jakarta-sans`, importada em `src/main.tsx`. O build faz preload do arquivo latino (`preloadFont` em `vite.config.ts`).
    - Nada de `fonts.googleapis.com`.
    - Fonte nova precisa de uso real no CSS: o JetBrains Mono era baixado sem nunca ser usado.
